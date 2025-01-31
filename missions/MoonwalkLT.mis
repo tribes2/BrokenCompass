@@ -1,5 +1,5 @@
 // DisplayName = MoonwalkLT
-// MissionTypes = SCtF
+// MissionTypes = LCTF
 
 //--- MISSION QUOTE BEGIN ---
 //<quote here>
@@ -7,7 +7,7 @@
 //--- MISSION QUOTE END ---
 
 //--- MISSION STRING BEGIN ---
-//[SCtF]800 points to win
+//[CTF]800 points to win
 //Original: vertig0 | Recreated by: EEor
 //<spush><color:FFFF00><a:t2boogaloo.com/maps/>Click Here to Download This Map</a><spop>
 //--- MISSION STRING END ---
