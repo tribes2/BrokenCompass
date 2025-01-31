@@ -1,6 +1,5 @@
 // DisplayName = SideWinder
 // MissionTypes = CTF
-// MapVersion = 0.1
 
 //--- MISSION QUOTE BEGIN ---
 //Omicron Argentis VI, its surface dry and lifeless,
@@ -13,9 +12,8 @@
 
 //--- MISSION STRING BEGIN ---
 //[CTF]500 points to win
-//Original: DOX | Recreated by EEor
+//Original: DOX | Recreated by: EEor
 //<spush><color:FFFF00><a:t2boogaloo.com/maps/>Click Here to Download This Map</a><spop>
-//Version = 0.1
 //--- MISSION STRING END ---
 
 //--- OBJECT WRITE BEGIN ---
@@ -594,8 +592,6 @@ new SimGroup(MissionGroup) {
 		};
 	};
 	new SimGroup(Ambiance) {
-
-
 		new AudioEmitter(eeSignature) {
 			position = "-290.736 -293.429 200.547";
 			rotation = "1 0 0 0";

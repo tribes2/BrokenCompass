@@ -1,6 +1,5 @@
 // DisplayName = CatwalkLT
 // MissionTypes = SCtF
-// MapVersion = 0.1
 
 //--- MISSION QUOTE BEGIN ---
 //<quote here>
@@ -9,19 +8,18 @@
 
 //--- MISSION STRING BEGIN ---
 //[CTF]800 points to win
-//Original: vertig0 | Recreated by EEor
+//Original: DOX | Recreated by: EEor
 //<spush><color:FFFF00><a:t2boogaloo.com/maps/>Click Here to Download This Map</a><spop>
-//Version = 0.1
 //--- MISSION STRING END ---
 
 //--- OBJECT WRITE BEGIN ---
 new SimGroup(MissionGroup) {
 
 	powerCount = "0";
-	CTF_scoreLimit = "8";
 	cdTrack = "2";
-	musicTrack = "lush";
 	CTF_timeLimit = "25";
+	CTF_scoreLimit = "8";
+	musicTrack = "lush";
 
 	new MissionArea(MissionArea) {
 		area = "-512 -384 1040 1040";
@@ -57,24 +55,24 @@ new SimGroup(MissionGroup) {
 		terrainFile = "BeggarsRun.ter";
 		squareSize = "8";
 
-		locked = "true";
-		visibleDistance = "1200";
-		hazeDistance = "250";
 		position = "-1024 -1024 0";
+		locked = "true";
+		hazeDistance = "250";
+		visibleDistance = "1200";
 	};
 	new NavigationGraph(NavGraph) {
 		conjoinAngleDev = "45";
 		cullDensity = "0.3";
 		customArea = "0 0 0 0";
 
+		coverage = "0";
 		YDimOverSize = "0";
+		position = "0 0 0 1";
 		locked = "true";
 		rotation = "0 0 0 0";
 		XDimOverSize = "0";
 		scale = "1 1 1";
 		conjoinBowlDev = "20";
-		coverage = "0";
-		position = "0 0 0 1";
 		GraphFile = "CatwalkLT.nav";
 	};
 	new Sky(Sky) {
@@ -296,103 +294,7 @@ new SimGroup(MissionGroup) {
 
 			};
 			new Item() {
-				position = "18.7973 139.476 232.94";
-				rotation = "0 0 1 136.364";
-				scale = "1 1 1";
-				dataBlock = "RepairPatch";
-				lockCount = "0";
-				homingCount = "0";
-				collideable = "0";
-				static = "1";
-				rotate = "1";
-
-			};
-			new Item() {
-				position = "16.9845 139.602 232.94";
-				rotation = "0 0 1 136.364";
-				scale = "1 1 1";
-				dataBlock = "RepairPatch";
-				lockCount = "0";
-				homingCount = "0";
-				collideable = "0";
-				static = "1";
-				rotate = "1";
-
-			};
-			new Item() {
-				position = "17.5406 101.81 232.94";
-				rotation = "0 0 1 136.364";
-				scale = "1 1 1";
-				dataBlock = "RepairPatch";
-				lockCount = "0";
-				homingCount = "0";
-				collideable = "0";
-				static = "1";
-				rotate = "1";
-
-			};
-			new Item() {
-				position = "15.7277 101.936 232.94";
-				rotation = "0 0 1 136.364";
-				scale = "1 1 1";
-				dataBlock = "RepairPatch";
-				lockCount = "0";
-				homingCount = "0";
-				collideable = "0";
-				static = "1";
-				rotate = "1";
-
-			};
-			new Item() {
-				position = "-2.43875 120.853 232.94";
-				rotation = "0 0 1 48.7014";
-				scale = "1 1 1";
-				dataBlock = "RepairPatch";
-				lockCount = "0";
-				homingCount = "0";
-				collideable = "0";
-				static = "1";
-				rotate = "1";
-
-			};
-			new Item() {
-				position = "35.7447 122.224 232.94";
-				rotation = "0 0 1 48.7014";
-				scale = "1 1 1";
-				dataBlock = "RepairPatch";
-				lockCount = "0";
-				homingCount = "0";
-				collideable = "0";
-				static = "1";
-				rotate = "1";
-
-			};
-			new Item() {
-				position = "-2.23923 122.659 232.94";
-				rotation = "0 0 1 48.7014";
-				scale = "1 1 1";
-				dataBlock = "RepairPatch";
-				lockCount = "0";
-				homingCount = "0";
-				collideable = "0";
-				static = "1";
-				rotate = "1";
-
-			};
-			new Item() {
-				position = "35.5452 120.418 232.94";
-				rotation = "0 0 1 48.7014";
-				scale = "1 1 1";
-				dataBlock = "RepairPatch";
-				lockCount = "0";
-				homingCount = "0";
-				collideable = "0";
-				static = "1";
-				rotate = "1";
-
-			};
-			new Item() {
-				position = "52.1204 85.3907 198.77";
+				position = "-65.2442 188.21 198.631";
 				rotation = "1 0 0 0";
 				scale = "1 1 1";
 				dataBlock = "DiscAmmo";
@@ -404,7 +306,103 @@ new SimGroup(MissionGroup) {
 
 			};
 			new Item() {
-				position = "-17.3026 159.602 198.77";
+				position = "112.502 39.2073 198.08";
+				rotation = "1 0 0 0";
+				scale = "1 1 1";
+				dataBlock = "RepairPatch";
+				lockCount = "0";
+				homingCount = "0";
+				collideable = "0";
+				static = "1";
+				rotate = "1";
+
+			};
+			new Item() {
+				position = "99.1352 54.1418 198.747";
+				rotation = "0 0 1 183.919";
+				scale = "1 1 1";
+				dataBlock = "RepairPatch";
+				lockCount = "0";
+				homingCount = "0";
+				collideable = "0";
+				static = "1";
+				rotate = "1";
+
+			};
+			new Item() {
+				position = "-75.905 150.618 198.394";
+				rotation = "1 0 0 0";
+				scale = "1 1 1";
+				dataBlock = "DiscAmmo";
+				lockCount = "0";
+				homingCount = "0";
+				collideable = "0";
+				static = "1";
+				rotate = "1";
+
+			};
+			new Item() {
+				position = "-63.719 189.553 198.631";
+				rotation = "1 0 0 0";
+				scale = "1 1 1";
+				dataBlock = "DiscAmmo";
+				lockCount = "0";
+				homingCount = "0";
+				collideable = "0";
+				static = "1";
+				rotate = "1";
+
+			};
+			new Item() {
+				position = "111.188 89.3802 198.101";
+				rotation = "1 0 0 0";
+				scale = "1 1 1";
+				dataBlock = "DiscAmmo";
+				lockCount = "0";
+				homingCount = "0";
+				collideable = "0";
+				static = "1";
+				rotate = "1";
+
+			};
+			new Item() {
+				position = "-63.4925 188.654 198.432";
+				rotation = "1 0 0 0";
+				scale = "1 1 1";
+				dataBlock = "RepairPatch";
+				lockCount = "0";
+				homingCount = "0";
+				collideable = "0";
+				static = "1";
+				rotate = "1";
+
+			};
+			new Item() {
+				position = "-64.1041 188.038 198.631";
+				rotation = "1 0 0 0";
+				scale = "1 1 1";
+				dataBlock = "DiscAmmo";
+				lockCount = "0";
+				homingCount = "0";
+				collideable = "0";
+				static = "1";
+				rotate = "1";
+
+			};
+			new Item() {
+				position = "52.1204 85.3907 198.57";
+				rotation = "1 0 0 0";
+				scale = "1 1 1";
+				dataBlock = "DiscAmmo";
+				lockCount = "0";
+				homingCount = "0";
+				collideable = "0";
+				static = "1";
+				rotate = "1";
+
+			};
+			new Item() {
+				position = "-17.3026 159.602 198.57";
 				rotation = "1 0 0 0";
 				scale = "1 1 1";
 				dataBlock = "DiscAmmo";
@@ -428,7 +426,7 @@ new SimGroup(MissionGroup) {
 
 			};
 			new Item() {
-				position = "-17.1484 85.2471 198.77";
+				position = "-17.1484 85.2471 198.57";
 				rotation = "1 0 0 0";
 				scale = "1 1 1";
 				dataBlock = "DiscAmmo";
@@ -440,7 +438,7 @@ new SimGroup(MissionGroup) {
 
 			};
 			new Item() {
-				position = "68.1487 125.182 198.77";
+				position = "68.1487 125.182 198.57";
 				rotation = "1 0 0 0";
 				scale = "1 1 1";
 				dataBlock = "DiscAmmo";
@@ -452,7 +450,7 @@ new SimGroup(MissionGroup) {
 
 			};
 			new Item() {
-				position = "-33.3307 119.811 198.77";
+				position = "-33.3307 119.811 198.57";
 				rotation = "1 0 0 0";
 				scale = "1 1 1";
 				dataBlock = "DiscAmmo";
@@ -464,7 +462,7 @@ new SimGroup(MissionGroup) {
 
 			};
 			new Item() {
-				position = "16.498 71.694 198.77";
+				position = "16.498 71.694 198.57";
 				rotation = "1 0 0 0";
 				scale = "1 1 1";
 				dataBlock = "DiscAmmo";
@@ -476,7 +474,7 @@ new SimGroup(MissionGroup) {
 
 			};
 			new Item() {
-				position = "18.3196 173.299 198.77";
+				position = "18.3196 173.299 198.57";
 				rotation = "1 0 0 0";
 				scale = "1 1 1";
 				dataBlock = "DiscAmmo";
@@ -488,7 +486,7 @@ new SimGroup(MissionGroup) {
 
 			};
 			new Item() {
-				position = "65.5253 106.17 198.77";
+				position = "65.5253 106.17 198.57";
 				rotation = "1 0 0 0";
 				scale = "1 1 1";
 				dataBlock = "DiscAmmo";
@@ -500,7 +498,7 @@ new SimGroup(MissionGroup) {
 
 			};
 			new Item() {
-				position = "-30.7073 138.823 198.77";
+				position = "-30.7073 138.823 198.57";
 				rotation = "1 0 0 0";
 				scale = "1 1 1";
 				dataBlock = "DiscAmmo";
@@ -512,7 +510,7 @@ new SimGroup(MissionGroup) {
 
 			};
 			new Item() {
-				position = "-2.2807 75.6559 198.77";
+				position = "-2.2807 75.6559 198.57";
 				rotation = "1 0 0 0";
 				scale = "1 1 1";
 				dataBlock = "DiscAmmo";
@@ -536,7 +534,7 @@ new SimGroup(MissionGroup) {
 
 			};
 			new Item() {
-				position = "-1.06323 169.83 198.77";
+				position = "-1.06323 169.83 198.57";
 				rotation = "1 0 0 0";
 				scale = "1 1 1";
 				dataBlock = "DiscAmmo";
@@ -548,7 +546,7 @@ new SimGroup(MissionGroup) {
 
 			};
 			new Item() {
-				position = "63.3176 144.271 198.77";
+				position = "63.3176 144.271 198.57";
 				rotation = "1 0 0 0";
 				scale = "1 1 1";
 				dataBlock = "DiscAmmo";
@@ -560,7 +558,7 @@ new SimGroup(MissionGroup) {
 
 			};
 			new Item() {
-				position = "35.881 75.1625 198.77";
+				position = "35.881 75.1625 198.57";
 				rotation = "1 0 0 0";
 				scale = "1 1 1";
 				dataBlock = "DiscAmmo";
@@ -572,7 +570,7 @@ new SimGroup(MissionGroup) {
 
 			};
 			new Item() {
-				position = "-28.4998 100.722 198.77";
+				position = "-28.4998 100.722 198.57";
 				rotation = "1 0 0 0";
 				scale = "1 1 1";
 				dataBlock = "DiscAmmo";
@@ -584,7 +582,19 @@ new SimGroup(MissionGroup) {
 
 			};
 			new Item() {
-				position = "108.333 39.8278 262.738";
+				position = "-76.3109 188.216 198.394";
+				rotation = "1 0 0 0";
+				scale = "1 1 1";
+				dataBlock = "DiscAmmo";
+				lockCount = "0";
+				homingCount = "0";
+				collideable = "0";
+				static = "1";
+				rotate = "1";
+
+			};
+			new Item() {
+				position = "110.25 38.553 261.738";
 				rotation = "1 0 0 0";
 				scale = "1 1 1";
 				dataBlock = "RepairPatch";
@@ -596,7 +606,19 @@ new SimGroup(MissionGroup) {
 
 			};
 			new Item() {
-				position = "109.099 40.6475 262.738";
+				position = "-58.9838 202.419 198.394";
+				rotation = "1 0 0 0";
+				scale = "1 1 1";
+				dataBlock = "DiscAmmo";
+				lockCount = "0";
+				homingCount = "0";
+				collideable = "0";
+				static = "1";
+				rotate = "1";
+
+			};
+			new Item() {
+				position = "109.665 39.6793 261.738";
 				rotation = "1 0 0 0";
 				scale = "1 1 1";
 				dataBlock = "RepairPatch";
@@ -608,7 +630,19 @@ new SimGroup(MissionGroup) {
 
 			};
 			new Item() {
-				position = "107.748 40.9542 262.738";
+				position = "-40.1838 202.419 198.394";
+				rotation = "1 0 0 0";
+				scale = "1 1 1";
+				dataBlock = "DiscAmmo";
+				lockCount = "0";
+				homingCount = "0";
+				collideable = "0";
+				static = "1";
+				rotate = "1";
+
+			};
+			new Item() {
+				position = "110.94 39.4752 261.738";
 				rotation = "1 0 0 0";
 				scale = "1 1 1";
 				dataBlock = "RepairPatch";
@@ -620,7 +654,31 @@ new SimGroup(MissionGroup) {
 
 			};
 			new Item() {
-				position = "108.514 41.7738 262.738";
+				position = "-21.3838 202.419 198.394";
+				rotation = "1 0 0 0";
+				scale = "1 1 1";
+				dataBlock = "DiscAmmo";
+				lockCount = "0";
+				homingCount = "0";
+				collideable = "0";
+				static = "1";
+				rotate = "1";
+
+			};
+			new Item() {
+				position = "111.203 70.5803 198.101";
+				rotation = "1 0 0 0";
+				scale = "1 1 1";
+				dataBlock = "DiscAmmo";
+				lockCount = "0";
+				homingCount = "0";
+				collideable = "0";
+				static = "1";
+				rotate = "1";
+
+			};
+			new Item() {
+				position = "-77.8842 202.176 261.597";
 				rotation = "1 0 0 0";
 				scale = "1 1 1";
 				dataBlock = "RepairPatch";
@@ -632,7 +690,43 @@ new SimGroup(MissionGroup) {
 
 			};
 			new Item() {
-				position = "110.555 42.3893 262.738";
+				position = "-76.108 169.417 198.394";
+				rotation = "1 0 0 0";
+				scale = "1 1 1";
+				dataBlock = "DiscAmmo";
+				lockCount = "0";
+				homingCount = "0";
+				collideable = "0";
+				static = "1";
+				rotate = "1";
+
+			};
+			new Item() {
+				position = "111.219 50.7803 198.101";
+				rotation = "1 0 0 0";
+				scale = "1 1 1";
+				dataBlock = "DiscAmmo";
+				lockCount = "0";
+				homingCount = "0";
+				collideable = "0";
+				static = "1";
+				rotate = "1";
+
+			};
+			new Item() {
+				position = "95.076 38.6488 198.101";
+				rotation = "1 0 0 0";
+				scale = "1 1 1";
+				dataBlock = "DiscAmmo";
+				lockCount = "0";
+				homingCount = "0";
+				collideable = "0";
+				static = "1";
+				rotate = "1";
+
+			};
+			new Item() {
+				position = "-77.2153 203.113 261.597";
 				rotation = "1 0 0 0";
 				scale = "1 1 1";
 				dataBlock = "RepairPatch";
@@ -644,7 +738,7 @@ new SimGroup(MissionGroup) {
 
 			};
 			new Item() {
-				position = "109.789 41.5697 262.738";
+				position = "-76.691 202.107 261.597";
 				rotation = "1 0 0 0";
 				scale = "1 1 1";
 				dataBlock = "RepairPatch";
@@ -656,7 +750,7 @@ new SimGroup(MissionGroup) {
 
 			};
 			new Item() {
-				position = "109.232 42.5342 262.738";
+				position = "15.5422 120.573 206.015";
 				rotation = "1 0 0 0";
 				scale = "1 1 1";
 				dataBlock = "RepairPatch";
@@ -668,91 +762,7 @@ new SimGroup(MissionGroup) {
 
 			};
 			new Item() {
-				position = "-75.6925 199.487 262.597";
-				rotation = "0 0 1 178.763";
-				scale = "1 1 1";
-				dataBlock = "RepairPatch";
-				lockCount = "0";
-				homingCount = "0";
-				collideable = "0";
-				static = "1";
-				rotate = "1";
-
-			};
-			new Item() {
-				position = "-76.2702 200.439 262.597";
-				rotation = "0 0 1 178.763";
-				scale = "1 1 1";
-				dataBlock = "RepairPatch";
-				lockCount = "0";
-				homingCount = "0";
-				collideable = "0";
-				static = "1";
-				rotate = "1";
-
-			};
-			new Item() {
-				position = "-77.0183 199.604 262.597";
-				rotation = "0 0 1 178.763";
-				scale = "1 1 1";
-				dataBlock = "RepairPatch";
-				lockCount = "0";
-				homingCount = "0";
-				collideable = "0";
-				static = "1";
-				rotate = "1";
-
-			};
-			new Item() {
-				position = "-74.992 200.263 262.597";
-				rotation = "0 0 1 178.763";
-				scale = "1 1 1";
-				dataBlock = "RepairPatch";
-				lockCount = "0";
-				homingCount = "0";
-				collideable = "0";
-				static = "1";
-				rotate = "1";
-
-			};
-			new Item() {
-				position = "-74.2439 201.099 262.597";
-				rotation = "0 0 1 178.763";
-				scale = "1 1 1";
-				dataBlock = "RepairPatch";
-				lockCount = "0";
-				homingCount = "0";
-				collideable = "0";
-				static = "1";
-				rotate = "1";
-
-			};
-			new Item() {
-				position = "-75.6013 201.376 262.597";
-				rotation = "0 0 1 178.763";
-				scale = "1 1 1";
-				dataBlock = "RepairPatch";
-				lockCount = "0";
-				homingCount = "0";
-				collideable = "0";
-				static = "1";
-				rotate = "1";
-
-			};
-			new Item() {
-				position = "-74.8531 202.212 262.597";
-				rotation = "0 0 1 178.763";
-				scale = "1 1 1";
-				dataBlock = "RepairPatch";
-				lockCount = "0";
-				homingCount = "0";
-				collideable = "0";
-				static = "1";
-				rotate = "1";
-
-			};
-			new Item() {
-				position = "15.5422 120.573 206.815";
+				position = "14.8242 119.813 206.015";
 				rotation = "1 0 0 0";
 				scale = "1 1 1";
 				dataBlock = "RepairPatch";
@@ -764,7 +774,7 @@ new SimGroup(MissionGroup) {
 
 			};
 			new Item() {
-				position = "14.8242 119.813 206.815";
+				position = "14.0582 118.993 206.015";
 				rotation = "1 0 0 0";
 				scale = "1 1 1";
 				dataBlock = "RepairPatch";
@@ -776,7 +786,7 @@ new SimGroup(MissionGroup) {
 
 			};
 			new Item() {
-				position = "14.0582 118.993 206.815";
+				position = "15.6407 119.099 206.015";
 				rotation = "1 0 0 0";
 				scale = "1 1 1";
 				dataBlock = "RepairPatch";
@@ -788,20 +798,8 @@ new SimGroup(MissionGroup) {
 
 			};
 			new Item() {
-				position = "15.6407 119.099 206.815";
-				rotation = "0 0 1 85.9437";
-				scale = "1 1 1";
-				dataBlock = "RepairPatch";
-				lockCount = "0";
-				homingCount = "0";
-				collideable = "0";
-				static = "1";
-				rotate = "1";
-
-			};
-			new Item() {
-				position = "13.9597 120.467 206.815";
-				rotation = "0 0 1 85.9437";
+				position = "13.9597 120.467 206.015";
+				rotation = "1 0 0 0";
 				scale = "1 1 1";
 				dataBlock = "RepairPatch";
 				lockCount = "0";
@@ -860,7 +858,7 @@ new SimGroup(MissionGroup) {
 
 			};
 			new Item() {
-				position = "5.0021 109.306 204.192";
+				position = "75.276 38.6488 198.101";
 				rotation = "1 0 0 0";
 				scale = "1 1 1";
 				dataBlock = "DiscAmmo";
@@ -1136,8 +1134,8 @@ new SimGroup(MissionGroup) {
 
 			};
 			new Item() {
-				position = "93.0945 160.672 204.411";
-				rotation = "0 0 1 188.503";
+				position = "93.0256 159.757 204.411";
+				rotation = "1 0 0 0";
 				scale = "1 1 1";
 				dataBlock = "RepairPatch";
 				lockCount = "0";
@@ -1148,8 +1146,8 @@ new SimGroup(MissionGroup) {
 
 			};
 			new Item() {
-				position = "93.507 159.472 204.411";
-				rotation = "0 0 1 188.503";
+				position = "93.4381 158.557 204.411";
+				rotation = "1 0 0 0";
 				scale = "1 1 1";
 				dataBlock = "RepairPatch";
 				lockCount = "0";
@@ -1160,8 +1158,8 @@ new SimGroup(MissionGroup) {
 
 			};
 			new Item() {
-				position = "92.2759 159.863 204.411";
-				rotation = "0 0 1 188.503";
+				position = "92.207 158.948 204.411";
+				rotation = "1 0 0 0";
 				scale = "1 1 1";
 				dataBlock = "RepairPatch";
 				lockCount = "0";
@@ -1412,7 +1410,7 @@ new SimGroup(MissionGroup) {
 
 			};
 			new Item() {
-				position = "99.8052 54.6311 198.946";
+				position = "99.3397 53.1131 198.946";
 				rotation = "1 0 0 0";
 				scale = "1 1 1";
 				dataBlock = "DiscAmmo";
@@ -1424,7 +1422,7 @@ new SimGroup(MissionGroup) {
 
 			};
 			new Item() {
-				position = "-79.1629 199.298 198.832";
+				position = "-65.8353 187.521 198.432";
 				rotation = "1 0 0 0";
 				scale = "1 1 1";
 				dataBlock = "RepairPatch";
@@ -1436,7 +1434,7 @@ new SimGroup(MissionGroup) {
 
 			};
 			new Item() {
-				position = "97.9831 54.2267 198.946";
+				position = "56.476 38.6488 198.101";
 				rotation = "1 0 0 0";
 				scale = "1 1 1";
 				dataBlock = "DiscAmmo";
@@ -1460,7 +1458,7 @@ new SimGroup(MissionGroup) {
 
 			};
 			new Item() {
-				position = "-79.6103 198.37 198.832";
+				position = "111.262 37.522 198.08";
 				rotation = "1 0 0 0";
 				scale = "1 1 1";
 				dataBlock = "RepairPatch";
@@ -1472,7 +1470,7 @@ new SimGroup(MissionGroup) {
 
 			};
 			new Item() {
-				position = "-79.9129 199.603 198.832";
+				position = "-79.4836 200.998 198.232";
 				rotation = "1 0 0 0";
 				scale = "1 1 1";
 				dataBlock = "RepairPatch";
@@ -1484,7 +1482,7 @@ new SimGroup(MissionGroup) {
 
 			};
 			new Item() {
-				position = "-79.0352 200.06 198.832";
+				position = "-78.4257 202.448 198.232";
 				rotation = "1 0 0 0";
 				scale = "1 1 1";
 				dataBlock = "RepairPatch";
@@ -1496,7 +1494,7 @@ new SimGroup(MissionGroup) {
 
 			};
 			new Item() {
-				position = "-80.4401 198.286 198.832";
+				position = "-80.5939 198.858 198.232";
 				rotation = "1 0 0 0";
 				scale = "1 1 1";
 				dataBlock = "RepairPatch";
@@ -1520,8 +1518,8 @@ new SimGroup(MissionGroup) {
 
 			};
 			new Item() {
-				position = "100.105 53.6964 198.747";
-				rotation = "0 0 1 183.919";
+				position = "111.198 38.8369 198.08";
+				rotation = "1 0 0 0";
 				scale = "1 1 1";
 				dataBlock = "RepairPatch";
 				lockCount = "0";
@@ -1544,91 +1542,7 @@ new SimGroup(MissionGroup) {
 
 			};
 			new Item() {
-				position = "99.1352 54.1418 198.747";
-				rotation = "0 0 1 183.919";
-				scale = "1 1 1";
-				dataBlock = "RepairPatch";
-				lockCount = "0";
-				homingCount = "0";
-				collideable = "0";
-				static = "1";
-				rotate = "1";
-
-			};
-			new Item() {
-				position = "111.155 38.3934 198.68";
-				rotation = "1 0 0 0";
-				scale = "1 1 1";
-				dataBlock = "RepairPatch";
-				lockCount = "0";
-				homingCount = "0";
-				collideable = "0";
-				static = "1";
-				rotate = "1";
-
-			};
-			new Item() {
-				position = "111.67 39.5653 198.68";
-				rotation = "0 0 1 4.97438";
-				scale = "1 1 1";
-				dataBlock = "RepairPatch";
-				lockCount = "0";
-				homingCount = "0";
-				collideable = "0";
-				static = "1";
-				rotate = "1";
-
-			};
-			new Item() {
-				position = "112.923 39.2512 198.68";
-				rotation = "0 0 1 4.97438";
-				scale = "1 1 1";
-				dataBlock = "RepairPatch";
-				lockCount = "0";
-				homingCount = "0";
-				collideable = "0";
-				static = "1";
-				rotate = "1";
-
-			};
-			new Item() {
-				position = "98.9483 52.4355 198.747";
-				rotation = "0 0 1 183.919";
-				scale = "1 1 1";
-				dataBlock = "RepairPatch";
-				lockCount = "0";
-				homingCount = "0";
-				collideable = "0";
-				static = "1";
-				rotate = "1";
-
-			};
-			new Item() {
-				position = "111.683 37.5659 198.68";
-				rotation = "1 0 0 0";
-				scale = "1 1 1";
-				dataBlock = "RepairPatch";
-				lockCount = "0";
-				homingCount = "0";
-				collideable = "0";
-				static = "1";
-				rotate = "1";
-
-			};
-			new Item() {
-				position = "112.26 39.0097 198.68";
-				rotation = "1 0 0 0";
-				scale = "1 1 1";
-				dataBlock = "RepairPatch";
-				lockCount = "0";
-				homingCount = "0";
-				collideable = "0";
-				static = "1";
-				rotate = "1";
-
-			};
-			new Item() {
-				position = "-75.905 150.618 198.394";
+				position = "15.2881 122.208 251.192";
 				rotation = "1 0 0 0";
 				scale = "1 1 1";
 				dataBlock = "DiscAmmo";
@@ -1640,7 +1554,7 @@ new SimGroup(MissionGroup) {
 
 			};
 			new Item() {
-				position = "75.276 38.6488 198.101";
+				position = "15.633 120.582 251.192";
 				rotation = "1 0 0 0";
 				scale = "1 1 1";
 				dataBlock = "DiscAmmo";
@@ -1652,7 +1566,7 @@ new SimGroup(MissionGroup) {
 
 			};
 			new Item() {
-				position = "56.476 38.6488 198.101";
+				position = "13.9376 123.266 251.192";
 				rotation = "1 0 0 0";
 				scale = "1 1 1";
 				dataBlock = "DiscAmmo";
@@ -1664,7 +1578,7 @@ new SimGroup(MissionGroup) {
 
 			};
 			new Item() {
-				position = "-58.9838 202.419 198.394";
+				position = "19.4398 120.302 251.192";
 				rotation = "1 0 0 0";
 				scale = "1 1 1";
 				dataBlock = "DiscAmmo";
@@ -1676,7 +1590,7 @@ new SimGroup(MissionGroup) {
 
 			};
 			new Item() {
-				position = "-40.1838 202.419 198.394";
+				position = "17.963 119.675 251.192";
 				rotation = "1 0 0 0";
 				scale = "1 1 1";
 				dataBlock = "DiscAmmo";
@@ -1688,7 +1602,7 @@ new SimGroup(MissionGroup) {
 
 			};
 			new Item() {
-				position = "-21.3838 202.419 198.394";
+				position = "14.8233 120.339 251.192";
 				rotation = "1 0 0 0";
 				scale = "1 1 1";
 				dataBlock = "DiscAmmo";
@@ -1700,7 +1614,7 @@ new SimGroup(MissionGroup) {
 
 			};
 			new Item() {
-				position = "-76.3109 188.216 198.394";
+				position = "17.5886 122.26 251.192";
 				rotation = "1 0 0 0";
 				scale = "1 1 1";
 				dataBlock = "DiscAmmo";
@@ -1712,175 +1626,7 @@ new SimGroup(MissionGroup) {
 
 			};
 			new Item() {
-				position = "-76.108 169.417 198.394";
-				rotation = "1 0 0 0";
-				scale = "1 1 1";
-				dataBlock = "DiscAmmo";
-				lockCount = "0";
-				homingCount = "0";
-				collideable = "0";
-				static = "1";
-				rotate = "1";
-
-			};
-			new Item() {
-				position = "95.076 38.6488 198.101";
-				rotation = "1 0 0 0";
-				scale = "1 1 1";
-				dataBlock = "DiscAmmo";
-				lockCount = "0";
-				homingCount = "0";
-				collideable = "0";
-				static = "1";
-				rotate = "1";
-
-			};
-			new Item() {
-				position = "111.219 50.7803 198.101";
-				rotation = "1 0 0 0";
-				scale = "1 1 1";
-				dataBlock = "DiscAmmo";
-				lockCount = "0";
-				homingCount = "0";
-				collideable = "0";
-				static = "1";
-				rotate = "1";
-
-			};
-			new Item() {
-				position = "111.203 70.5803 198.101";
-				rotation = "1 0 0 0";
-				scale = "1 1 1";
-				dataBlock = "DiscAmmo";
-				lockCount = "0";
-				homingCount = "0";
-				collideable = "0";
-				static = "1";
-				rotate = "1";
-
-			};
-			new Item() {
-				position = "111.188 89.3802 198.101";
-				rotation = "1 0 0 0";
-				scale = "1 1 1";
-				dataBlock = "DiscAmmo";
-				lockCount = "0";
-				homingCount = "0";
-				collideable = "0";
-				static = "1";
-				rotate = "1";
-
-			};
-			new Item() {
-				position = "-64.1041 188.038 198.631";
-				rotation = "1 0 0 0";
-				scale = "1 1 1";
-				dataBlock = "DiscAmmo";
-				lockCount = "0";
-				homingCount = "0";
-				collideable = "0";
-				static = "1";
-				rotate = "1";
-
-			};
-			new Item() {
-				position = "-65.4725 186.609 198.631";
-				rotation = "1 0 0 0";
-				scale = "1 1 1";
-				dataBlock = "DiscAmmo";
-				lockCount = "0";
-				homingCount = "0";
-				collideable = "0";
-				static = "1";
-				rotate = "1";
-
-			};
-			new Item() {
-				position = "-63.6823 187.137 198.631";
-				rotation = "1 0 0 0";
-				scale = "1 1 1";
-				dataBlock = "DiscAmmo";
-				lockCount = "0";
-				homingCount = "0";
-				collideable = "0";
-				static = "1";
-				rotate = "1";
-
-			};
-			new Item() {
-				position = "-63.4925 188.654 198.432";
-				rotation = "1 0 0 0";
-				scale = "1 1 1";
-				dataBlock = "RepairPatch";
-				lockCount = "0";
-				homingCount = "0";
-				collideable = "0";
-				static = "1";
-				rotate = "1";
-
-			};
-			new Item() {
-				position = "-64.7677 188.858 198.432";
-				rotation = "1 0 0 0";
-				scale = "1 1 1";
-				dataBlock = "RepairPatch";
-				lockCount = "0";
-				homingCount = "0";
-				collideable = "0";
-				static = "1";
-				rotate = "1";
-
-			};
-			new Item() {
-				position = "-65.8353 187.521 198.432";
-				rotation = "1 0 0 0";
-				scale = "1 1 1";
-				dataBlock = "RepairPatch";
-				lockCount = "0";
-				homingCount = "0";
-				collideable = "0";
-				static = "1";
-				rotate = "1";
-
-			};
-			new Item() {
-				position = "-64.8375 187.143 198.432";
-				rotation = "1 0 0 0";
-				scale = "1 1 1";
-				dataBlock = "RepairPatch";
-				lockCount = "0";
-				homingCount = "0";
-				collideable = "0";
-				static = "1";
-				rotate = "1";
-
-			};
-			new Item() {
-				position = "-63.719 189.553 198.631";
-				rotation = "1 0 0 0";
-				scale = "1 1 1";
-				dataBlock = "DiscAmmo";
-				lockCount = "0";
-				homingCount = "0";
-				collideable = "0";
-				static = "1";
-				rotate = "1";
-
-			};
-			new Item() {
-				position = "-65.0788 188.027 198.631";
-				rotation = "1 0 0 0";
-				scale = "1 1 1";
-				dataBlock = "DiscAmmo";
-				lockCount = "0";
-				homingCount = "0";
-				collideable = "0";
-				static = "1";
-				rotate = "1";
-
-			};
-			new Item() {
-				position = "99.3155 53.2433 198.946";
+				position = "17.73 123.393 251.192";
 				rotation = "1 0 0 0";
 				scale = "1 1 1";
 				dataBlock = "DiscAmmo";
@@ -1894,6 +1640,7 @@ new SimGroup(MissionGroup) {
 		};
 	};
 	new SimGroup(Ambiance) {
+
 		new AudioEmitter(eeSignature) {
 			position = "-290.736 -293.429 200.547";
 			rotation = "1 0 0 0";
@@ -1921,10 +1668,35 @@ new SimGroup(MissionGroup) {
 
 	};
 	new SimGroup(ObserverDropPoints) {
+		new Camera() {
+			position = "-78.5005 37.5779 225.576";
+			rotation = "0.149062 -0.044482 0.987827 33.6181";
+			scale = "1 1 1";
+			dataBlock = "Observer";
+			lockCount = "0";
+			homingCount = "0";
 
-	};
-	new SimGroup() {
+		};
+		new Camera() {
+			position = "-80.1565 193.143 294.547";
+			rotation = "0.124843 -0.172746 0.977023 109.549";
+			scale = "1 1 1";
+			dataBlock = "Observer";
+			lockCount = "0";
+			homingCount = "0";
 
+		};
+		new Camera() {
+			position = "105.341 202.327 349.149";
+			rotation = "-0.125476 -0.274171 0.95346 227.149";
+			scale = "1 1 1";
+			dataBlock = "Observer";
+			lockCount = "0";
+			homingCount = "0";
+
+		};
 	};
+	
+	
 };
 //--- OBJECT WRITE END ---
