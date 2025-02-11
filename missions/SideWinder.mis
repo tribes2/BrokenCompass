@@ -1,5 +1,5 @@
 // DisplayName = SideWinder
-// MissionTypes = CTF SCtF LCTF
+// MissionTypes = CTF
 
 //--- MISSION QUOTE BEGIN ---
 //Omicron Argentis VI, its surface dry and lifeless,
@@ -20,10 +20,10 @@
 new SimGroup(MissionGroup) {
 
 	CTF_scoreLimit = "5";
-	musicTrack = "desert";
 	cdTrack = "6";
 	CTF_timeLimit = "25";
 	powerCount = "0";
+	musicTrack = "desert";
 
 	new MissionArea(MissionArea) {
 		area = "-480 -520 960 1024";
@@ -62,8 +62,8 @@ new SimGroup(MissionGroup) {
 
 		visibleDistance = "1200";
 		position = "-1024 -1024 0";
-		locked = "true";
 		hazeDistance = "275";
+		locked = "true";
 	};
 	new NavigationGraph(NavGraph) {
 		conjoinAngleDev = "45";
@@ -71,14 +71,14 @@ new SimGroup(MissionGroup) {
 		customArea = "0 0 0 0";
 
 		scale = "1 1 1";
-		GraphFile = "SideWinder.nav";
-		coverage = "0";
-		YDimOverSize = "0";
-		position = "0 0 0 1";
 		XDimOverSize = "0";
-		locked = "true";
+		position = "0 0 0 1";
 		conjoinBowlDev = "20";
+		coverage = "0";
+		locked = "true";
 		rotation = "0 0 0 0";
+		GraphFile = "SideWinder.nav";
+		YDimOverSize = "0";
 	};
 	new Sky(Sky) {
 		position = "-1216 -848 0";
@@ -111,8 +111,8 @@ new SimGroup(MissionGroup) {
 		high_fogVolume2 = "-1 0 0";
 		high_fogVolume3 = "-1 0 0";
 
-		cloudSpeed0 = "0.000000 0.000000";
 		locked = "true";
+		cloudSpeed0 = "0.000000 0.000000";
 	};
 	new SimGroup(Teams) {
 
@@ -154,8 +154,8 @@ new SimGroup(MissionGroup) {
 					locked = "false";
 				};
 				new Turret() {
-					position = "319.957 70.0513 77.0411";
-					rotation = "-0.440219 -0.273908 -0.855092 72.0836";
+					position = "320.466 69.8006 77.2779";
+					rotation = "-0.290445 -0.180716 -0.939672 67.022";
 					scale = "1 1 1";
 					dataBlock = "TurretBaseLarge";
 					lockCount = "0";
@@ -174,8 +174,8 @@ new SimGroup(MissionGroup) {
 					locked = "false";
 				};
 				new Turret() {
-					position = "284.043 229.288 61.1478";
-					rotation = "-0.191577 -0.299408 -0.934694 118.236";
+					position = "284.554 229.524 61.3729";
+					rotation = "-0.116892 -0.182685 -0.976198 116.021";
 					scale = "1 1 1";
 					dataBlock = "TurretBaseLarge";
 					lockCount = "0";
@@ -454,18 +454,17 @@ new SimGroup(MissionGroup) {
 					locked = "true";
 				};
 				new Turret() {
-					position = "-301.039 -245.458 64.5891";
-					rotation = "-0.420702 0.263759 0.86801 71.68";
+					position = "-301.469 -245.666 64.8229";
+					rotation = "-0.295282 0.185127 0.937303 67.5561";
 					scale = "1 1 1";
 					dataBlock = "TurretBaseLarge";
 					lockCount = "0";
 					homingCount = "0";
 					initialBarrel = "PlasmaBarrelLarge";
 
-					locked = "true";
 				};
 				new Turret() {
-					position = "-387.377 -110.69 103.251";
+					position = "-387.377 -110.69 103.461";
 					rotation = "0 0 1 90";
 					scale = "1 1 1";
 					dataBlock = "TurretBaseLarge";
@@ -474,10 +473,9 @@ new SimGroup(MissionGroup) {
 					initialBarrel = "MortarBarrelLarge";
 
 					lastProjectile = "12218";
-					locked = "true";
 				};
 				new Turret() {
-					position = "-387.373 -150.737 103.251";
+					position = "-387.373 -150.737 103.461";
 					rotation = "0 0 1 90";
 					scale = "1 1 1";
 					dataBlock = "TurretBaseLarge";
@@ -485,11 +483,10 @@ new SimGroup(MissionGroup) {
 					homingCount = "0";
 					initialBarrel = "MissileBarrelLarge";
 
-					locked = "true";
 				};
 				new Turret() {
-					position = "-329.095 -34.2684 74.3724";
-					rotation = "-0.17431 0.30039 0.937754 122.893";
+					position = "-329.619 -33.9686 74.5867";
+					rotation = "-0.106137 0.182909 0.977384 120.88";
 					scale = "1 1 1";
 					dataBlock = "TurretBaseLarge";
 					lockCount = "0";
@@ -497,7 +494,6 @@ new SimGroup(MissionGroup) {
 					initialBarrel = "PlasmaBarrelLarge";
 
 					lastProjectile = "12215";
-					locked = "true";
 				};
 				new InteriorInstance() {
 					position = "-298.461 -244.236 62.2832";
@@ -592,6 +588,8 @@ new SimGroup(MissionGroup) {
 		};
 	};
 	new SimGroup(Ambiance) {
+
+
 		new AudioEmitter(eeSignature) {
 			position = "-290.736 -293.429 200.547";
 			rotation = "1 0 0 0";
