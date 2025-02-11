@@ -14,10 +14,10 @@
 new SimGroup(MissionGroup) {
 
 	CTF_timeLimit = "25";
-	musicTrack = "lush";
 	CTF_scoreLimit = "8";
 	powerCount = "0";
 	cdTrack = "2";
+	musicTrack = "lush";
 
 	new MissionArea(MissionArea) {
 		area = "-384 -664 896 1008";
@@ -63,17 +63,18 @@ new SimGroup(MissionGroup) {
 		cullDensity = "0.3";
 		customArea = "0 0 0 0";
 
+		coverage = "0";
+		GraphFile = "DangerousCrossing_nef.nav";
+		position = "0 0 0 1";
+		YDimOverSize = "0";
+		locked = "true";
 		XDimOverSize = "0";
 		rotation = "0 0 0 0";
 		scale = "1 1 1";
 		conjoinBowlDev = "20";
-		coverage = "0";
-		GraphFile = "DangerousCrossing_nef.nav";
-		YDimOverSize = "0";
-		position = "0 0 0 1";
-		locked = "true";
 	};
 	new SimGroup(AmbientSounds) {
+
 
 		new AudioEmitter(eeSignature) {
 			position = "-290.736 -293.429 200.547";
@@ -549,7 +550,7 @@ new SimGroup(MissionGroup) {
 				};
 			};
 			new InteriorInstance() {
-				position = "-214.268 48.4394 80.406";
+				position = "-212.925 47.2253 80.406";
 				rotation = "0 0 1 30";
 				scale = "1 1 1";
 				interiorFile = "ee_dx_4waybase.dif";
@@ -592,7 +593,7 @@ new SimGroup(MissionGroup) {
 				};
 			};
 			new InteriorInstance() {
-				position = "287.951 -283.997 86.772";
+				position = "285.997 -283.342 86.772";
 				rotation = "0 0 1 30";
 				scale = "1 1 1";
 				interiorFile = "ee_dx_4waybase.dif";
@@ -950,7 +951,7 @@ new SimGroup(MissionGroup) {
 			};
 			new TSStatic() {
 				position = "-428 -684 122.912";
-				rotation = "0.0250507 -0.0214751 -0.999455 81.0306";
+				rotation = "0.0250507 -0.0214751 -0.999456 81.0305";
 				scale = "0.8 0.8 0.8";
 				shapeName = "borg1.dts";
 

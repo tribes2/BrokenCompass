@@ -1,4 +1,4 @@
-// DisplayName = HillFling LT
+// DisplayName = HillFling LT (Ledge)
 // MissionTypes = SCtF LCTF
 
 //--- MISSION QUOTE BEGIN ---
@@ -14,10 +14,10 @@
 //--- OBJECT WRITE BEGIN ---
 new SimGroup(MissionGroup) {
 
-	CTF_scoreLimit = "10";
-	powerCount = "0";
 	cdTrack = "6";
 	musicTrack = "desert";
+	CTF_scoreLimit = "10";
+	powerCount = "0";
 
 	new MissionArea(MissionArea) {
 		area = "-434 -483 994 1036";
@@ -53,10 +53,10 @@ new SimGroup(MissionGroup) {
 		terrainFile = "HillKing.ter";
 		squareSize = "7";
 
-		visibleDistance = "1200";
-		hazeDistance = "250";
 		position = "-1024 -1024 0";
 		locked = "true";
+		hazeDistance = "250";
+		visibleDistance = "1200";
 	};
 	new NavigationGraph(NavGraph) {
 		conjoinAngleDev = "45";
@@ -65,11 +65,11 @@ new SimGroup(MissionGroup) {
 
 		coverage = "0";
 		GraphFile = "FrozenHope.nav";
-		position = "0 0 0 1";
-		YDimOverSize = "0";
-		locked = "true";
 		XDimOverSize = "0";
+		position = "0 0 0 1";
+		locked = "true";
 		rotation = "0 0 0 0";
+		YDimOverSize = "0";
 		scale = "1 1 1";
 		conjoinBowlDev = "20";
 	};
@@ -151,8 +151,8 @@ new SimGroup(MissionGroup) {
 				};
 			};
 			new Item() {
-				position = "101.202 168.118 145.546";
-				rotation = "0 0 -1 3.43793";
+				position = "80.2528 185.804 164.946";
+				rotation = "0 0 1 6.87527";
 				scale = "1 1 1";
 				nameTag = "Flag";
 				dataBlock = "flag";
@@ -162,8 +162,8 @@ new SimGroup(MissionGroup) {
 				static = "1";
 				rotate = "0";
 
-				className = "FlagObj";
 				searchSchedule = "63603";
+				className = "FlagObj";
 			};
 		};
 		new SimGroup(Team2) {
@@ -225,8 +225,8 @@ new SimGroup(MissionGroup) {
 
 			};
 			new Item() {
-				position = "40.9251 -105.138 141.86";
-				rotation = "0 0 1 2.29138";
+				position = "43.7866 -134.311 166";
+				rotation = "0 0 1 6.30252";
 				scale = "1 1 1";
 				nameTag = "Flag";
 				dataBlock = "flag";
@@ -236,8 +236,8 @@ new SimGroup(MissionGroup) {
 				static = "1";
 				rotate = "0";
 
-				className = "FlagObj";
 				searchSchedule = "63603";
+				className = "FlagObj";
 			};
 			new InteriorInstance(InteriorInstance) {
 				position = "420.636 713.001 244.585";
@@ -367,8 +367,8 @@ new SimGroup(MissionGroup) {
 		high_fogVolume2 = "-1 1.71806e-36 4.28417e-38";
 		high_fogVolume3 = "-1 2.01058e-37 4.28473e-38";
 
-		cloudSpeed0 = "0.000000 0.000000";
 		locked = "true";
+		cloudSpeed0 = "0.000000 0.000000";
 	};
 	new SimGroup(RandomOrganics) {
 
@@ -1772,23 +1772,23 @@ new SimGroup(MissionGroup) {
 
 	};
 	new InteriorInstance() {
-		position = "101.209 168.129 120.548";
-		rotation = "0 0 1 109.435";
+		position = "40.3669 -171.8 144";
+		rotation = "-0 0 -1 84.8434";
 		scale = "1 1 1";
-		interiorFile = "ee_dx_4way-ramp.dif";
+		interiorFile = "ee_dx_4way-ramp-lowbase.dif";
 		showTerrainInside = "0";
 
 	};
 	new InteriorInstance() {
-		position = "40.9361 -105.163 116.85";
-		rotation = "0 0 -1 89.3814";
+		position = "84.4081 223.431 143";
+		rotation = "0 0 1 96.3025";
 		scale = "1 1 1";
-		interiorFile = "ee_dx_4way-ramp.dif";
+		interiorFile = "ee_dx_4way-ramp-lowbase.dif";
 		showTerrainInside = "0";
 
 	};
 	new InteriorInstance() {
-		position = "46.4642 29.1906 228.831";
+		position = "60.3564 12.088 236.92";
 		rotation = "1 0 0 0";
 		scale = "1 1 1";
 		interiorFile = "bplat3.dif";
@@ -1796,7 +1796,7 @@ new SimGroup(MissionGroup) {
 
 	};
 	new Item() {
-		position = "43.5116 23.1736 226.081";
+		position = "57.2037 6.15697 235.225";
 		rotation = "1 0 0 0";
 		scale = "1 1 1";
 		dataBlock = "RepairKit";
