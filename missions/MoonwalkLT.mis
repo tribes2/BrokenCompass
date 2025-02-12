@@ -15,11 +15,11 @@
 //--- OBJECT WRITE BEGIN ---
 new SimGroup(MissionGroup) {
 
-	cdTrack = "2";
-	musicTrack = "lush";
-	CTF_scoreLimit = "8";
-	CTF_timeLimit = "25";
 	powerCount = "0";
+	CTF_scoreLimit = "8";
+	cdTrack = "2";
+	CTF_timeLimit = "25";
+	musicTrack = "lush";
 
 	new MissionArea(MissionArea) {
 		area = "-512 -384 1040 1040";
@@ -55,25 +55,25 @@ new SimGroup(MissionGroup) {
 		terrainFile = "BeggarsRun.ter";
 		squareSize = "8";
 
-		position = "-1024 -1024 0";
 		locked = "true";
 		hazeDistance = "250";
 		visibleDistance = "1200";
+		position = "-1024 -1024 0";
 	};
 	new NavigationGraph(NavGraph) {
 		conjoinAngleDev = "45";
 		cullDensity = "0.3";
 		customArea = "0 0 0 0";
 
-		coverage = "0";
-		GraphFile = "MoonwalkLT.nav";
-		XDimOverSize = "0";
-		position = "0 0 0 1";
-		locked = "true";
-		YDimOverSize = "0";
-		rotation = "0 0 0 0";
-		scale = "1 1 1";
 		conjoinBowlDev = "20";
+		coverage = "0";
+		locked = "true";
+		rotation = "0 0 0 0";
+		XDimOverSize = "0";
+		scale = "1 1 1";
+		YDimOverSize = "0";
+		GraphFile = "MoonwalkLT.nav";
+		position = "0 0 0 1";
 	};
 	new Sky(Sky) {
 		position = "-1216 -848 0";
@@ -1011,6 +1011,33 @@ new SimGroup(MissionGroup) {
 		lockCount = "0";
 		homingCount = "0";
 
+	};
+	new InteriorInstance() {
+		position = "330.158 104.424 266.178";
+		rotation = "0 0 -1 90.0913";
+		scale = "9.08647 0.714524 0.295";
+		interiorFile = "swall1.dif";
+		showTerrainInside = "0";
+
+		locked = "false";
+	};
+	new InteriorInstance() {
+		position = "328.74 147.112 266.178";
+		rotation = "0 0 -1 90.0913";
+		scale = "10.4771 0.714524 0.295";
+		interiorFile = "swall1.dif";
+		showTerrainInside = "0";
+
+		locked = "false";
+	};
+	new InteriorInstance() {
+		position = "330.073 195.294 266.178";
+		rotation = "0 0 -1 90.0913";
+		scale = "9.08647 0.714524 0.295";
+		interiorFile = "swall1.dif";
+		showTerrainInside = "0";
+
+		locked = "false";
 	};
 };
 //--- OBJECT WRITE END ---
