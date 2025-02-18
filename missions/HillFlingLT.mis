@@ -119,9 +119,11 @@ new SimGroup(MissionGroup) {
 		new SimGroup(Team1) {
 
 			providesPower = "1";
+			powerCount = "1";
 
 			new SimGroup(spawnspheres) {
 
+				powerCount = "1";
 
 				new SpawnSphere() {
 					position = "271.347 205.164 213.439";
@@ -134,7 +136,6 @@ new SimGroup(MissionGroup) {
 					sphereWeight = "100";
 					indoorWeight = "100";
 					outdoorWeight = "100";
-
 				};
 				new SpawnSphere() {
 					position = "40.6273 393.152 240.039";
@@ -147,7 +148,6 @@ new SimGroup(MissionGroup) {
 					sphereWeight = "100";
 					indoorWeight = "100";
 					outdoorWeight = "100";
-
 				};
 			};
 			new Item() {
@@ -169,9 +169,11 @@ new SimGroup(MissionGroup) {
 		new SimGroup(Team2) {
 
 			providesPower = "1";
+			powerCount = "1";
 
 			new SimGroup(spawnspheres) {
 
+				powerCount = "1";
 
 				new SpawnSphere() {
 					position = "-61.5162 -255.61 232.921";
@@ -184,7 +186,6 @@ new SimGroup(MissionGroup) {
 					sphereWeight = "100";
 					indoorWeight = "100";
 					outdoorWeight = "100";
-
 				};
 				new SpawnSphere() {
 					position = "358.895 -214.378 211.197";
@@ -197,7 +198,6 @@ new SimGroup(MissionGroup) {
 					sphereWeight = "100";
 					indoorWeight = "100";
 					outdoorWeight = "100";
-
 				};
 			};
 			new InteriorInstance(InteriorInstance) {
@@ -250,7 +250,42 @@ new SimGroup(MissionGroup) {
 		};
 		new SimGroup(Team0) {
 
+			new InteriorInstance() {
+				position = "101.209 168.129 120.548";
+				rotation = "0 0 1 109.435";
+				scale = "1 1 1";
+				interiorFile = "ee_dx_4way-ramp.dif";
+				showTerrainInside = "0";
 
+			};
+			new InteriorInstance() {
+				position = "40.9361 -105.163 116.85";
+				rotation = "0 0 -1 89.3814";
+				scale = "1 1 1";
+				interiorFile = "ee_dx_4way-ramp.dif";
+				showTerrainInside = "0";
+
+			};
+			new InteriorInstance() {
+				position = "46.4642 29.1906 228.831";
+				rotation = "1 0 0 0";
+				scale = "1 1 1";
+				interiorFile = "bplat3.dif";
+				showTerrainInside = "0";
+
+			};
+			new Item() {
+				position = "43.5116 23.1736 226.081";
+				rotation = "1 0 0 0";
+				scale = "1 1 1";
+				dataBlock = "RepairKit";
+				lockCount = "0";
+				homingCount = "0";
+				collideable = "0";
+				static = "1";
+				rotate = "0";
+
+			};
 			new InteriorInstance(InteriorInstance) {
 				position = "-108.672 -298.139 235.68";
 				rotation = "0 0 1 25.2103";
@@ -1769,43 +1804,29 @@ new SimGroup(MissionGroup) {
 		};
 	};
 	new SimGroup() {
+		new AudioEmitter(eeSignature) {
+			position = "-290.736 -293.429 200.547";
+			rotation = "1 0 0 0";
+			scale = "1 1 1";
+			fileName = "fx/environment/ee_signature.wav";
+			useProfileDescription = "0";
+			outsideAmbient = "1";
+			volume = "0.5";
+			isLooping = "0";
+			is3D = "0";
+			minDistance = "10";
+			maxDistance = "2000";
+			coneInsideAngle = "360";
+			coneOutsideAngle = "360";
+			coneOutsideVolume = "1";
+			coneVector = "0 0 1";
+			loopCount = "-1";
+			minLoopGap = "0";
+			maxLoopGap = "0";
+			type = "EffectAudioType";
 
+		};
 	};
-	new InteriorInstance() {
-		position = "101.209 168.129 120.548";
-		rotation = "0 0 1 109.435";
-		scale = "1 1 1";
-		interiorFile = "ee_dx_4way-ramp.dif";
-		showTerrainInside = "0";
 
-	};
-	new InteriorInstance() {
-		position = "40.9361 -105.163 116.85";
-		rotation = "0 0 -1 89.3814";
-		scale = "1 1 1";
-		interiorFile = "ee_dx_4way-ramp.dif";
-		showTerrainInside = "0";
-
-	};
-	new InteriorInstance() {
-		position = "46.4642 29.1906 228.831";
-		rotation = "1 0 0 0";
-		scale = "1 1 1";
-		interiorFile = "bplat3.dif";
-		showTerrainInside = "0";
-
-	};
-	new Item() {
-		position = "43.5116 23.1736 226.081";
-		rotation = "1 0 0 0";
-		scale = "1 1 1";
-		dataBlock = "RepairKit";
-		lockCount = "0";
-		homingCount = "0";
-		collideable = "0";
-		static = "1";
-		rotate = "0";
-
-	};
 };
 //--- OBJECT WRITE END ---
