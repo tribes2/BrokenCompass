@@ -1,5 +1,5 @@
 // MissionTypes = CTF
-// DisplayName = Triple Peak
+// DisplayName = DMP2-Triple Peak
 
 //--- OBJECT WRITE BEGIN ---
 new SimGroup(MissionGroup) {
