@@ -1,0 +1,2357 @@
+// DisplayName = Infernos Roar
+// MissionTypes = CTF
+
+//--- MISSION QUOTE BEGIN ---
+// "Dont stand in the lava"
+//--- MISSION QUOTE END ---
+
+//--- MISSION STRING BEGIN ---
+//[CTF]800 points to wins it!
+//Map By: DarkTiger
+//--- MISSION STRING END ---
+
+$vocTimeSec = 25 * 60;
+$vocFloodAmount = 25;
+
+function voc3Sim(){
+	if(($MatchStarted + $missionRunning) == 2 && isObject(lavablock) && ($HostGamePlayerCount - $HostGameBotCount > 0) && !$testcheats){
+		%amount = $vocFloodAmount / $vocTimeSec;
+		if(lavablock.he  < $vocFloodAmount){
+			lavablock.he += %amount;
+			lavablock.setTransform(vectorAdd(lavablock.getPosition(), "0 0" SPC %amount) SPC "0 0 1 0");
+		}
+		lavablock.simSec++;
+		if(lavablock.simSec >= (60 * 5) && !lavablock.teamOne){
+			vocBoom(1);
+			lavablock.teamOne = 1;
+		}
+		
+		if(lavablock.simSec >= (60 * 10) && !lavablock.teamTwo){
+			vocBoom(2);
+			lavablock.teamTwo = 1;
+		}
+		voc3Spew();
+	}
+	if($missionName $= "infernosroar"){
+		$voc3SimEvent = schedule(1000, 0, "voc3Sim");
+	}
+	else{// map change kill any events 
+		for(%i = 0; %i < 4; %i++){
+			cancel($voc3SCH[%i]);
+		}
+	}
+}
+
+if(!isEventPending($voc3SimEvent)){
+	lavablock.he = 0;
+	lavablock.simSec = 0;
+	lavablock.teamOne = 0;
+	lavablock.teamTwo = 0;
+	$voc3SimEvent = schedule(35000, 0, "voc3Sim");// allow time in case we open the editor 
+}
+
+function voc3Spew(){
+  if(isObject(t1VOCEmitter) &&  isObject(t2VOCEmitter)){
+      %pos = getRandom(1,2) == 1 ? "-601.444 -668.605 470" : "598.206 648.93 470"; 
+  }
+  else if(isObject(t1VOCEmitter) && getRandom(1,2) == 1){
+      %pos = "-601.444 -668.605 470"; 
+  }
+  else if(isObject(t2VOCEmitter) && getRandom(1,2) == 2){
+      %pos = "598.206 648.93 470";  
+  }
+  else{
+      return;  
+  }
+  
+  if(getRandom(1,25) == 1){
+      InitContainerRadiusSearch("0 0 300",  1024, $TypeMasks::PlayerObjectType | $TypeMasks::TurretObjectType | $TypeMasks::SensorObjectType);           //| $TypeMasks::PlayerObjectType
+      %listCount = 0;
+      while ((%obj = containerSearchNext()) != 0){
+         %listPos[%listCount] = %obj.getPosition();
+         %listCount++; 
+      }
+      //error(%listPos[getRandom(0,%listCount-1)]);
+     dropBigRock(%listPos[getRandom(0,%listCount-1)]);
+  }
+  
+   %vec = "0 0 1";
+   for(%i = 0; %i < getRandom(1,4); %i++){
+      %x = (getRandom() - 0.5) * 2 * 3.1415926 * 0.25;
+      %y = (getRandom() - 0.5) * 2 * 3.1415926 * 0.25;
+      %z = (getRandom() - 0.5) * 2 * 3.1415926 * 0.25;
+      %mat = MatrixCreateFromEuler(%x SPC %y SPC %z);
+      %vector = MatrixMulVector(%mat,  %vec);
+      %p = new GrenadeProjectile() {
+            dataBlock        = vocBlastExplosionProj;
+            initialDirection = %vector;
+            initialPosition  = VectorAdd(%pos, VectorScale(%vec, 5));
+            sourceObject     = -1; 
+            sourceSlot       = 0;
+            vehicleObject    = 0;
+         };
+      MissionCleanup.add(%p);
+      %p.setScopeAlways();
+   }  
+}
+
+
+function vocBoom(%team){
+   if(%team == 1){
+      %position = "-601.444 -668.605 470";
+      %vec = "0 0 1";
+      if(!isObject(t1VOCEmitter)){
+         new ParticleEmissionDummy(t1VOCEmitter) {//team1
+            position = "-603.371 -664.313 360";
+            rotation = "1 0 0 0";
+            scale = "1 1 1";
+            dataBlock = "defaultEmissionDummy";
+            lockCount = "0";
+            homingCount = "0";
+            emitter = "vocAshSmokeEmitter";
+            velocity = "1";
+         };  
+         MissionCleanup.add(t1VOCEmitter);
+         
+         %ln = new Lightning() {
+            position = "-603.371 -664.313 600";
+            rotation = "1 0 0 0";
+            scale = "200 200 800";
+            dataBlock = "VocZapStorm";
+            strikesPerMinute = "12";
+            strikeWidth = "2.5";
+            chanceToHitTarget = "0.95";
+            strikeRadius = "20";
+            boltStartRadius = "20";
+            color = "1.000000 1.000000 1.000000 1.000000";
+            fadeColor = "0.300000 0.300000 1.000000 1.000000";
+            useFog = "1";
+         };
+         MissionCleanup.add(%ln); 
+      }
+   }
+   else{
+      %position = "598.206 648.93 470";
+      %vec = "0 0 1";
+      new ParticleEmissionDummy(t2VOCEmitter) {//team2
+         position = "598.206 648.93 360";
+         rotation = "1 0 0 0";
+         scale = "1 1 1";
+         dataBlock = "defaultEmissionDummy";
+         lockCount = "0";
+         homingCount = "0";
+         emitter = "vocAshSmokeEmitter";
+         velocity = "1";
+      };
+      MissionCleanup.add(t2VOCEmitter);
+      
+      %ln = new Lightning() {
+            position = "598.206 648.93 600";
+            rotation = "1 0 0 0";
+            scale = "200 200 800";
+            dataBlock = "VocZapStorm";
+            strikesPerMinute = "12";
+            strikeWidth = "2.5";
+            chanceToHitTarget = "0.95";
+            strikeRadius = "20";
+            boltStartRadius = "20";
+            color = "1.000000 1.000000 1.000000 1.000000";
+            fadeColor = "0.300000 0.300000 1.000000 1.000000";
+            useFog = "1";
+         };
+         MissionCleanup.add(%ln); 
+   }
+   
+   %a = new AudioEmitter() {
+			position = "0 0 200";
+			rotation = "1 0 0 0";
+			scale = "1 1 1";
+			fileName = "thud.wav";
+			useProfileDescription = "0";
+			outsideAmbient = "1";
+			volume = "1";
+			isLooping = "0";
+			is3D = "0";
+			minDistance = "20";
+			maxDistance = "2048";
+			coneInsideAngle = "360";
+			coneOutsideAngle = "360";
+			coneOutsideVolume = "1";
+			coneVector = "0 0 1";
+			loopCount = "-1";
+			minLoopGap = "0";
+			maxLoopGap = "0";
+			type = "EffectAudioType";
+   };
+   %a.schedule(1000,"delete");
+   MissionCleanup.add(%a);
+   %p = new LinearFlareProjectile() {
+         dataBlock        = explVoc;
+         initialDirection = VectorScale(%vec, -1);
+         initialPosition  = VectorAdd(%position, VectorScale(%vec, 5));
+         sourceObject     = -1; 
+         sourceSlot       = 0;
+         vehicleObject    = 0;
+      };  
+   MissionCleanup.add(%p);
+   %p.setScopeAlways();
+   $voc3SCH[0] = schedule(400,0,"vocDelayBoom",%position);
+   $voc3SCH[1] = schedule(400,0,"vocPartboom",%position,%vec);
+   $voc3SCH[2] = schedule(1500,0,"vocAudioEvent",%position);
+   $voc3SCH[3] = schedule(5000,0,"vocSkyEvent",%position);
+   for(%i = 0; %i < ClientGroup.getCount(); %i++){
+      %cobj = ClientGroup.getObject(%i).getControlObject();
+      %cobj.schedule(100,"setWhiteout",0.75); 
+   }
+}
+
+function vocDelayBoom(%position){
+    %p = new LinearFlareProjectile() {
+         dataBlock        = vocExplTwo;
+         initialDirection = "0 0 -1";
+         initialPosition  = %position;
+         sourceObject     = -1;
+         sourceSlot       = 0;
+         vehicleObject    = 0;
+      };  
+      %p.setScopeAlways();
+}
+function vocAudioEvent(%position){
+    %a = new AudioEmitter() {
+			position = %position;
+			rotation = "1 0 0 0";
+			scale = "1 1 1";
+			fileName = "ve3.wav";
+			useProfileDescription = "0";
+			outsideAmbient = "1";
+			volume = "0.8";
+			isLooping = "0";
+			is3D = "1";
+			minDistance = "1024";
+			maxDistance = "2048";
+			coneInsideAngle = "360";
+			coneOutsideAngle = "360";
+			coneOutsideVolume = "1";
+			coneVector = "0 0 1";
+			loopCount = "-1";
+			minLoopGap = "0";
+			maxLoopGap = "0";
+			type = "EffectAudioType";
+   };
+   %a.schedule(40000,"delete");
+   MissionCleanup.add(%a);  
+}
+function vocPartboom(%position,%vec){
+   %a = new AudioEmitter() {
+			position = "0 0 200";
+			rotation = "1 0 0 0";
+			scale = "1 1 1";
+			fileName = "vocBoomStr.wav";
+			useProfileDescription = "0";
+			outsideAmbient = "1";
+			volume = "0.7";
+			isLooping = "0";
+			is3D = "0";
+			minDistance = "20";
+			maxDistance = "2048";
+			coneInsideAngle = "360";
+			coneOutsideAngle = "360";
+			coneOutsideVolume = "1";
+			coneVector = "0 0 1";
+			loopCount = "-1";
+			minLoopGap = "0";
+			maxLoopGap = "0";
+			type = "EffectAudioType";
+   };
+   %a.schedule(30000,"delete");
+   %a = new AudioEmitter() {
+			position = "0 0 200";
+			rotation = "1 0 0 0";
+			scale = "1 1 1";
+			fileName = "lowrum.wav";
+			useProfileDescription = "0";
+			outsideAmbient = "1";
+			volume = "1";
+			isLooping = "0";
+			is3D = "0";
+			minDistance = "20";
+			maxDistance = "2048";
+			coneInsideAngle = "360";
+			coneOutsideAngle = "360";
+			coneOutsideVolume = "1";
+			coneVector = "0 0 1";
+			loopCount = "-1";
+			minLoopGap = "0";
+			maxLoopGap = "0";
+			type = "EffectAudioType";
+   };
+   %a.schedule(35000,"delete");
+   MissionCleanup.add(%a);
+   for(%i = 0; %i < 150; %i++){
+      %x = (getRandom() - 0.5) * 2 * 3.1415926 * 0.15;
+      %y = (getRandom() - 0.5) * 2 * 3.1415926 * 0.15;
+      %z = (getRandom() - 0.5) * 2 * 3.1415926 * 0.15;
+      %mat = MatrixCreateFromEuler(%x SPC %y SPC %z);
+      %vector = MatrixMulVector(%mat,  %vec);
+      %p = new GrenadeProjectile() {
+            dataBlock        = vocBlastExplosionProj;
+            initialDirection = %vector;
+            initialPosition  = VectorAdd(%position, VectorScale(%vec, 5));//vectorAdd(%position,"0 0 100");
+            sourceObject     = -1; 
+            sourceSlot       = 0;
+            vehicleObject    = 0;
+         };
+      MissionCleanup.add(%p);
+      %p.setScopeAlways();
+   }
+   %part = new ParticleEmissionDummy() {
+      position =  %position;
+      rotation = "1 0 0 0";
+      scale = "1 1 1";
+      dataBlock = manyTimeEmissionDummy;
+      emitter = "vocBlastExplosionEmitterS";
+      velocity = "1";
+   };  
+   MissionCleanup.add(%part);
+   %part.setScopeAlways();
+   %part.schedule(10000, "delete");
+   %part = new ParticleEmissionDummy() {
+      position = %position;
+      rotation = "1 0 0 0";
+      scale = "1 1 1";
+      dataBlock = defaultEmissionDummy;
+      emitter = "vocBlastShockwaveEmitter";
+      velocity = "1";
+   }; 
+   MissionCleanup.add(%part);
+   %part.setScopeAlways();
+   %part.schedule(10000, "delete");
+}
+
+function vocSkyEvent(){
+   if(!isObject(FireballAtmosphere)){
+      %fireball = new FireballAtmosphere(FireballAtmosphere)
+      {
+         position = "0 0 0";
+         rotation = "1 0 0 0";
+         scale = "1 1 1";
+         dataBlock = "fireball";
+         lockCount = "1";
+         homingCount = "1";
+         dropRadius = 300;
+         dropsPerMinute = 60;
+         minDropAngle = "0";
+         maxDropAngle = "50";
+         startVelocity = "300";
+         dropHeight = "2000";
+         dropDir = "0.212 0.212 -0.953998";
+      };
+      MissionCleanup.add(%fireball);
+      %embers = new Precipitation(Precipitation)
+      {
+         position = "116.059 -26.7731 156.557";
+         rotation = "1 0 0 0";
+         scale = "1 1 1";
+         dataBlock = "Snow";
+         lockCount = "0";
+         homingCount = "0";
+         percentage = "1";
+         color1 = "0.000000 0.000000 0.000000 1.000000";
+         color2 = "-1.000000 0.000000 0.000000 1.000000";
+         color3 = "-1.000000 0.000000 0.000000 1.000000";
+         offsetSpeed = "0";
+         minVelocity = "0.02";
+         maxVelocity = "0.06";
+         maxNumDrops = "500";
+         maxRadius = "125";
+      };   
+      MissionCleanup.add(%embers);
+   }
+}
+
+
+datablock ParticleEmissionDummyData(manyTimeEmissionDummy){
+   timeMultiple = 20.0;
+};
+
+datablock ParticleData(vocBlastShockwaveParticle) {
+   dragCoefficient = "2";
+   windCoefficient = "0";
+   gravityCoefficient = "1";
+   inheritedVelFactor = "0";
+   constantAcceleration = "0";
+   lifetimeMS = "30000";
+   lifetimeVarianceMS = "100";
+   spinSpeed = "0";
+   spinRandomMin = "-10";
+   spinRandomMax = "10";
+   useInvAlpha = "1";
+   animateTexture = "0";
+   framesPerSec = "1";
+   textureCoords[0] = "0 0";
+   textureCoords[1] = "0 1";
+   textureCoords[2] = "1 1";
+   textureCoords[3] = "1 0";
+   animTexTiling = "0 0";
+   textureName = "smoke02";
+   colors[0] = "0.458824 0.458824 0.458824 1";
+   colors[1] = "0.321569 0.321569 0.321569 0.496";
+   colors[2] = "0.584314 0.584314 0.588235 1";
+   colors[3] = "0.843137 0.847059 0.847059 0";
+   sizes[0] = "150";
+   sizes[1] = "150";
+   sizes[2] = "150";
+   sizes[3] = "150";
+   times[0] = "0";
+   times[1] = "0.291667";
+   times[2] = "0.6875";
+   times[3] = "1";
+};
+
+datablock ParticleEmitterData(vocBlastShockwaveEmitter) {
+   ejectionPeriodMS = "1";
+   periodVarianceMS = "0";
+   ejectionVelocity = "600";
+   velocityVariance = "0";
+   ejectionOffset = "0";
+   ejectionOffsetVariance = "0";
+   thetaMin = "0";
+   thetaMax = "90";
+   phiReferenceVel = "0";
+   phiVariance = "360";
+   softnessDistance = "0.0001";
+   ambientFactor = "0";
+   overrideAdvance = "0";
+   orientParticles = "0";
+   orientOnVelocity = "1";
+   particles = "vocBlastShockwaveParticle";
+   lifetimeMS = "2000";
+   lifetimeVarianceMS = "0";
+   
+   
+};
+
+datablock ParticleData(vocBlastExplosionParticleS) {
+   dragCoefficient = "1";
+   windCoefficient = "0";
+   gravityCoefficient = "0";
+   inheritedVelFactor = "0";
+   constantAcceleration = "1";
+   lifetimeMS = "5376";
+   lifetimeVarianceMS = "0";
+   spinSpeed = "0";
+   spinRandomMin = "-360";
+   spinRandomMax = "720";
+   useInvAlpha = "0";
+   animateTexture = "0";
+   framesPerSec = "1";
+   textureCoords[0] = "0 0";
+   textureCoords[1] = "0 1";
+   textureCoords[2] = "1 1";
+   textureCoords[3] = "1 0";
+   animTexTiling = "0 0";
+   textureName = "dParticle";
+   colors[0] = "0.984 0.992 0.992 0.157";
+   colors[1] = "0.984 0.984 0.992 0.173";
+   colors[2] = "0.996 0.996 0.992 0.197";
+   colors[3] = "0.996 0.996 0.992 0";
+   sizes[0] = "150";
+   sizes[1] = "150";
+   sizes[2] = "150";
+   sizes[3] = "150";
+   times[0] = "0";
+   times[1] = "0.0416667";
+   times[2] = "0.125";
+   times[3] = "0.375";
+};
+
+datablock ParticleEmitterData(vocBlastExplosionEmitterS) {
+   ejectionPeriodMS = "1";
+   periodVarianceMS = "0";
+   ejectionVelocity = "655.34";
+   velocityVariance = "0";
+   ejectionOffset = "100";
+   ejectionOffsetVariance = "0";
+   thetaMin = "0";
+   thetaMax = "180";
+   phiReferenceVel = "0";
+   phiVariance = "360";
+   softnessDistance = "0.0001";
+   ambientFactor = "0";
+   overrideAdvance = "0";
+   orientParticles = "0";
+   orientOnVelocity = "1";
+   particles = "vocBlastExplosionParticleS";
+   lifetimeMS = "150";
+   lifetimeVarianceMS = "0";  
+};
+
+datablock ParticleData(vocBlastFireParticle) {
+   dragCoefficient = "1";
+   windCoefficient = "0";
+   gravityCoefficient = "0";
+   inheritedVelFactor = "0";
+   constantAcceleration = "0";
+   lifetimeMS = "100";
+   lifetimeVarianceMS = "0";
+   spinSpeed = "0";
+   spinRandomMin = "-90";
+   spinRandomMax = "500";
+   useInvAlpha = "0";
+   animateTexture = "0";
+   framesPerSec = "1";
+   textureCoords[0] = "0 0";
+   textureCoords[1] = "0 1";
+   textureCoords[2] = "1 1";
+   textureCoords[3] = "1 0";
+   animTexTiling = "0 0";
+   textureName = "dParticle";
+   colors[0] = "0.996078 0.301961 0.00784314 1";
+   colors[1] = "0.996078 0.301961 0.00784314 0.77";
+   colors[2] = "0.996078 0.301961 0.00784314 0.761";
+   colors[3] = "0.996078 0.301961 0.00784314 1";
+   sizes[0] = "3";
+   sizes[1] = "3";
+   sizes[2] = "3";
+   sizes[3] = "3";
+   times[0] = "0";
+   times[1] = "0.270833";
+   times[2] = "0.625";
+   times[3] = "1";
+};
+
+datablock ParticleEmitterData(vocBlastFireEmitter) {
+   ejectionPeriodMS = "2";
+   periodVarianceMS = "0";
+   ejectionVelocity = "0";
+   velocityVariance = "0";
+   ejectionOffset = "0";
+   ejectionOffsetVariance = "0";
+   thetaMin = "0";
+   thetaMax = "15";
+   phiReferenceVel = "0";
+   phiVariance = "360";
+   softnessDistance = "1";
+   ambientFactor = "0";
+   overrideAdvance = "1";
+   orientParticles = "0";
+   orientOnVelocity = "0";
+   particles = "vocBlastFireParticle";
+   lifetimeMS = "0";
+   lifetimeVarianceMS = "0";
+   
+   
+   useInvAlpha = false;
+   sortParticles = "0";
+   reverseOrder = "0";
+   alignParticles = "0";
+   alignDirection = "0 1 0";
+   highResOnly = "1";
+   
+   
+   
+   Dampening = "0.8";
+   elasticity = "0.3";
+   
+   
+   
+};
+
+datablock ParticleData(vocBlastFireParticle2) {
+   dragCoefficient = "0.0";
+   windCoefficient = "0";
+   gravityCoefficient = "0";
+   inheritedVelFactor = "0";
+   constantAcceleration = "0";
+   lifetimeMS = "3000";//was 9000
+   lifetimeVarianceMS = "1000";
+   spinSpeed = "1";
+   spinRandomMin = "-90";
+   spinRandomMax = "500";
+   useInvAlpha = "1";
+   animateTexture = "0";
+   framesPerSec = "1";
+   textureCoords[0] = "0 0";
+   textureCoords[1] = "0 1";
+   textureCoords[2] = "1 1";
+   textureCoords[3] = "1 0";
+   animTexTiling = "0 0";
+   textureName = "smoke02";
+   colors[0] = "0.458824 0.458824 0.458824 1";
+   colors[1] = "0.321569 0.321569 0.321569 0.496";
+   colors[2] = "0.584314 0.584314 0.588235 1";
+   colors[3] = "0.843137 0.847059 0.847059 0";
+   sizes[0] = "5";
+   sizes[1] = "5";
+   sizes[2] = "5";
+   sizes[3] = "5";
+   times[0] = "0";
+   times[1] = "0.329412";
+   times[2] = "0.666667";
+   times[3] = "1";
+};
+
+datablock ParticleEmitterData(vocBlastFireEmitter2) {
+   ejectionPeriodMS = "15";
+   periodVarianceMS = "0";
+   ejectionVelocity = "0";
+   velocityVariance = "0";
+   ejectionOffset = "4.583";
+   ejectionOffsetVariance = "0";
+   thetaMin = "0";
+   thetaMax = "5";
+   phiReferenceVel = "0";
+   phiVariance = "360";
+   softnessDistance = "1";
+   ambientFactor = "0";
+   overrideAdvance = "1";
+   orientParticles = "0";
+   orientOnVelocity = "0";
+   particles = "vocBlastFireParticle2";
+   lifetimeMS = "0";
+   lifetimeVarianceMS = "0";  
+};
+
+datablock GrenadeProjectileData(vocBlastExplosionProj)
+{
+   projectileShapeName = "grenade_projectile.dts";
+   emitterDelay        = -1;
+   directDamage        = 0.0;
+   hasDamageRadius     = true;
+   indirectDamage      = 0.40;
+   damageRadius        = 15.0;
+   radiusDamageType    = $DamageType::Explosion;
+   kickBackStrength    = 1500;
+   bubbleEmitTime      = 1.0;
+
+   //sound               = "";
+   explosion           = FireballAtmosphereBoltExplosion;
+   underwaterExplosion = UnderwaterMortarExplosion;
+   velInheritFactor    = 0.85; 
+
+   baseEmitter         = vocBlastFireEmitter2;
+   delayEmitter        = vocBlastFireEmitter;
+   emitterDelay = 32;
+   bubbleEmitter       = MortarBubbleEmitter;
+
+   grenadeElasticity = 0.30; 
+   grenadeFriction   = 0.2;
+   armingDelayMS     = 250;
+   muzzleVelocity    = 200.00;
+   gravityMod        = 3.9; 
+};
+
+
+
+
+datablock ExplosionData(vocBlastSmokeStack){
+   lifeTimeMS = 30000;
+   offset = 0;
+   shakeCamera = true;
+   camShakeFreq = "8.0 8.0 8.0";
+   camShakeAmp = "5.0 5.0 5.0";
+   camShakeDuration = 5;
+   camShakeRadius = 2500.0;
+};
+
+datablock LinearFlareProjectileData(vocExplTwo){
+   //projectileShapeName = "disc_explosion.dts";
+   scale               = "1.0 1.0 1.0";
+   faceViewer          = true;
+   directDamage        = 0.0;
+   hasDamageRadius     = true;
+   indirectDamage      = 1.0;
+   damageRadius        = 7.7;
+   kickBackStrength    = 0.0;
+   radiusDamageType    = $DamageType::Explosion;
+
+   explosion           = "vocBlastSmokeStack";
+
+   dryVelocity       = 0.1;
+   wetVelocity       = -1;
+   velInheritFactor  = 0.3;
+   fizzleTimeMS      = 0;
+   lifetimeMS        = 1000;
+   explodeOnDeath    = true;
+   reflectOnWaterImpactAngle = 0.0;
+   explodeOnWaterImpact      = true;
+   deflectionOnWaterImpact   = 0.0;
+   fizzleUnderwaterMS        = -1;
+
+   activateDelayMS = -1;
+
+   size[0]           = 0.9;
+   size[1]           = 1.0;
+   size[2]           = 0.8;
+
+
+   numFlares         = 80;
+   flareColor        = "0.0 1.0 0.0";
+   flareModTexture   = "flaremod";
+   flareBaseTexture  = "flarebase";
+	sound        = PlasmaProjectileSound;
+   wetFireSound = PlasmaFireWetSound;
+
+   hasLight    = true;
+   lightRadius = 5.0;
+   lightColor  = "0 1.0 0";
+};
+
+
+
+
+datablock ParticleData(vocBlastRingParticle) {
+   dragCoefficient = "0.8";
+   windCoefficient = "0";
+   gravityCoefficient = "0";
+   inheritedVelFactor = "0";
+   constantAcceleration = "0";
+   lifetimeMS = "9000";
+   lifetimeVarianceMS = "1000";
+   spinSpeed = "0.167";
+   spinRandomMin = "-90";
+   spinRandomMax = "500";
+   useInvAlpha = "1";
+   animateTexture = "0";
+   framesPerSec = "1";
+   textureCoords[0] = "0 0";
+   textureCoords[1] = "0 1";
+   textureCoords[2] = "1 1";
+   textureCoords[3] = "1 0";
+   animTexTiling = "0 0";
+   textureName = "smoke02";
+   colors[0] = "0.494118 0.494118 0.494118 0.559";
+   colors[1] = "0.388235 0.388235 0.388235 0.568";
+   colors[2] = "0.403922 0.403922 0.403922 0.556";
+   colors[3] = "0.462745 0.462745 0.462745 0";
+   sizes[0] = "50";
+   sizes[1] = "50";
+   sizes[2] = "50";
+   sizes[3] = "50";
+   times[0] = "0";
+   times[1] = "0.375";
+   times[2] = "0.854167";
+   times[3] = "1";
+};
+
+datablock ParticleEmitterData(vocBlastRingEmitter) {
+   ejectionPeriodMS = "1";
+   periodVarianceMS = "0";
+   ejectionVelocity = "600";
+   velocityVariance = "50";
+   ejectionOffset = "0";
+   ejectionOffsetVariance = "0";
+   thetaMin = "90";
+   thetaMax = "90";
+   phiReferenceVel = "0";
+   phiVariance = "360";
+   softnessDistance = "1";
+   ambientFactor = "0";
+   overrideAdvance = "1";
+   orientParticles = "0";
+   orientOnVelocity = "0";
+   particles = "vocBlastRingParticle";
+   lifetimeMS = "0";
+   lifetimeVarianceMS = "0";
+   
+   
+   blendStyle = "NORMAL";
+   sortParticles = "0";
+   reverseOrder = "0";
+   alignParticles = "0";
+   alignDirection = "0 1 0";
+   highResOnly = "1";
+   
+   
+   
+   Dampening = "0.8";
+   elasticity = "0.3";
+   
+   
+   
+};
+
+datablock ParticleData(vocBlastExplosionParticle2) {
+   dragCoefficient = "0.25";
+   windCoefficient = "0";
+   gravityCoefficient = "1";
+   inheritedVelFactor = "0";
+   constantAcceleration = "0";
+   lifetimeMS = "20000";
+   lifetimeVarianceMS = "0";
+   spinSpeed = "0.083";
+   spinRandomMin = "-10";
+   spinRandomMax = "10";
+   useInvAlpha = "1";
+   animateTexture = "0";
+   framesPerSec = "1";
+   textureCoords[0] = "0 0";
+   textureCoords[1] = "0 1";
+   textureCoords[2] = "1 1";
+   textureCoords[3] = "1 0";
+   animTexTiling = "0 0";
+   textureName = "smoke02";
+   animTexName = "smoke02";
+   colors[0] = "0.529412 0.533333 0.533333 0.495";
+   colors[1] = "0.537 0.537 0.541 0.538";
+   colors[2] = "0.568627 0.568627 0.564706 0.492";
+   colors[3] = "0.502 0.502 0.498 0";
+   sizes[0] = "150";
+   sizes[1] = "150";
+   sizes[2] = "150";
+   sizes[3] = "150";
+   times[0] = "0";
+   times[1] = "0.229167";
+   times[2] = "0.8875";
+   times[3] = "1";
+};
+
+datablock ParticleEmitterData(vocBlastExplosionEmitter2) {
+   ejectionPeriodMS = "1";
+   periodVarianceMS = "0";
+   ejectionVelocity = "150";
+   velocityVariance = "100.83";
+   ejectionOffset = "0";
+   ejectionOffsetVariance = "0";
+   thetaMin = "0";
+   thetaMax = "90";
+   phiReferenceVel = "0";
+   phiVariance = "360";
+   softnessDistance = "0.0001";
+   ambientFactor = "0";
+   overrideAdvance = "0";
+   orientParticles = "0";
+   orientOnVelocity = "1";
+   particles = "vocBlastExplosionParticle2";
+   lifetimeMS = "4000";
+   lifetimeVarianceMS = "0";
+   
+};
+
+datablock ParticleData(vocBlastExplosionParticle) {
+   dragCoefficient = "1.8";
+   windCoefficient = "0";
+   gravityCoefficient = "0";
+   inheritedVelFactor = "0";
+   constantAcceleration = "0";
+   lifetimeMS = "6188";
+   lifetimeVarianceMS = "0";
+   spinSpeed = "0";
+   spinRandomMin = "-360";
+   spinRandomMax = "720";
+   useInvAlpha = "0";
+   animateTexture = "0";
+   framesPerSec = "1";
+   textureCoords[0] = "0 0";
+   textureCoords[1] = "0 1";
+   textureCoords[2] = "1 1";
+   textureCoords[3] = "1 0";
+   animTexTiling = "0 0";
+   textureName = "dParticle";
+   colors[0] = "0.992 0.301961 0.0 1";
+   colors[1] = "0.992 0.301961 0.0 1";
+   colors[2] = "0.996078 0.301961 0.00784314 1";
+   colors[3] = "0.980392 0.301961 0.0156863 0";
+   sizes[0] = "100";
+   sizes[1] = "100";
+   sizes[2] = "100";
+   sizes[3] = "100";
+   times[0] = "0";
+   times[1] = "0.104167";
+   times[2] = "0.208333";
+   times[3] = "0.354167";
+};
+
+datablock ParticleEmitterData(vocBlastExplosionEmitter) {
+   ejectionPeriodMS = "1";
+   periodVarianceMS = "0";
+   ejectionVelocity = "655.35";
+   velocityVariance = "0";
+   ejectionOffset = "0";
+   ejectionOffsetVariance = "0";
+   thetaMin = "0";
+   thetaMax = "90";
+   phiReferenceVel = "0";
+   phiVariance = "360";
+   softnessDistance = "0.0001";
+   ambientFactor = "0";
+   overrideAdvance = "0";
+   orientParticles = "0";
+   orientOnVelocity = "1";
+   particles = "vocBlastExplosionParticle";
+   lifetimeMS = "2000";
+   lifetimeVarianceMS = "0";
+   
+   
+   useInvAlpha = false;
+   sortParticles = "1";
+   reverseOrder = "0";
+   alignParticles = "0";
+   alignDirection = "0 1 0";
+   highResOnly = "1";
+   
+   glow = "1";
+   
+   Dampening = "0.8";
+   elasticity = "0.3";
+   
+   
+   
+};
+
+
+datablock ExplosionData(vocBlastExplosion)
+{
+   
+   emitter[0] = vocBlastExplosionEmitter;
+   emitter[1] = vocBlastExplosionEmitter2;
+   emitter[2] = vocBlastRingEmitter;
+   
+   lifeTimeMS = 6000;
+   
+   shakeCamera = true;
+   camShakeFreq = "8.0 8.0 8.0";
+   camShakeAmp = "1.0 1.0 1.0";
+   camShakeDuration = 5;
+   camShakeRadius = 2500.0;
+
+};
+
+datablock LinearFlareProjectileData(explVoc){
+   scale               = "1.0 1.0 1.0";
+   faceViewer          = true;
+   directDamage        = 0.0;
+   hasDamageRadius     = true;
+   indirectDamage      = 1.0;
+   damageRadius        = 400.7;
+   kickBackStrength    = 50000.0;
+   radiusDamageType    = $DamageType::Explosion;
+
+   explosion           = "vocBlastExplosion";
+
+   dryVelocity       = 0.1;
+   wetVelocity       = -1;
+   velInheritFactor  = 0.3;
+   fizzleTimeMS      = 0;
+   lifetimeMS        = 256;
+   explodeOnDeath    = true;
+   reflectOnWaterImpactAngle = 0.0;
+   explodeOnWaterImpact      = true;
+   deflectionOnWaterImpact   = 0.0;
+   fizzleUnderwaterMS        = -1;
+   activateDelayMS = -1;
+
+   size[0]           = 0.9;
+   size[1]           = 1.0;
+   size[2]           = 0.8;
+
+
+   numFlares         = 80;
+   flareColor        = "0.0 1.0 0.0";
+   flareModTexture   = "flaremod";
+   flareBaseTexture  = "flarebase";
+	sound        = PlasmaProjectileSound;
+   wetFireSound = PlasmaFireWetSound;
+
+   hasLight    = true;
+   lightRadius = 5.0;
+   lightColor  = "0 1.0 0";
+};
+
+
+datablock AudioProfile(VocLightningZapSound){
+   filename = "fx/misc/lightning_impact.wav";
+   description = AudioExplosion3d;
+};
+
+datablock LightningData(VocZapStorm){
+   directDamageType = $DamageType::Lightning;
+   directDamage = 1;
+   
+   strikeTextures[0]  = "special/skyLightning";
+
+   strikeSound = VocLightningZapSound;
+};
+
+
+datablock ParticleData(vocBlastBigFireParticle) {
+   dragCoefficient = "1";
+   windCoefficient = "0";
+   gravityCoefficient = "0";
+   inheritedVelFactor = "0";
+   constantAcceleration = "0";
+   lifetimeMS = "100";
+   lifetimeVarianceMS = "0";
+   spinSpeed = "0";
+   spinRandomMin = "-90";
+   spinRandomMax = "500";
+   useInvAlpha = "0";
+   animateTexture = "0";
+   framesPerSec = "1";
+   textureCoords[0] = "0 0";
+   textureCoords[1] = "0 1";
+   textureCoords[2] = "1 1";
+   textureCoords[3] = "1 0";
+   animTexTiling = "0 0";
+   textureName = "dParticle";
+   colors[0] = "0.996078 0.301961 0.00784314 1";
+   colors[1] = "0.996078 0.301961 0.00784314 0.77";
+   colors[2] = "0.996078 0.301961 0.00784314 0.761";
+   colors[3] = "0.996078 0.301961 0.00784314 1";
+   sizes[0] = "13";
+   sizes[1] = "13";
+   sizes[2] = "13";
+   sizes[3] = "13";
+   times[0] = "0";
+   times[1] = "0.270833";
+   times[2] = "0.625";
+   times[3] = "1";
+};
+
+datablock ParticleEmitterData(vocBlastBigFireEmitter) {
+   ejectionPeriodMS = "2";
+   periodVarianceMS = "0";
+   ejectionVelocity = "0";
+   velocityVariance = "0";
+   ejectionOffset = "0";
+   ejectionOffsetVariance = "0";
+   thetaMin = "0";
+   thetaMax = "15";
+   phiReferenceVel = "0";
+   phiVariance = "360";
+   softnessDistance = "1";
+   ambientFactor = "0";
+   overrideAdvance = "1";
+   orientParticles = "0";
+   orientOnVelocity = "0";
+   particles = "vocBlastBigFireParticle";
+   lifetimeMS = "0";
+   lifetimeVarianceMS = "0";
+   
+   
+   useInvAlpha = false;
+   sortParticles = "0";
+   reverseOrder = "0";
+   alignParticles = "0";
+   alignDirection = "0 1 0";
+   highResOnly = "1";
+   
+   
+   
+   Dampening = "0.8";
+   elasticity = "0.3";
+   
+   
+   
+};
+
+datablock ParticleData(vocBlastBigFireParticle2) {
+   dragCoefficient = "0.0";
+   windCoefficient = "0";
+   gravityCoefficient = "0";
+   inheritedVelFactor = "0";
+   constantAcceleration = "0";
+   lifetimeMS = "3000";//was 9000
+   lifetimeVarianceMS = "1000";
+   spinSpeed = "1";
+   spinRandomMin = "-90";
+   spinRandomMax = "500";
+   useInvAlpha = "1";
+   animateTexture = "0";
+   framesPerSec = "1";
+   textureCoords[0] = "0 0";
+   textureCoords[1] = "0 1";
+   textureCoords[2] = "1 1";
+   textureCoords[3] = "1 0";
+   animTexTiling = "0 0";
+   textureName = "smoke02";
+   colors[0] = "0.458824 0.458824 0.458824 1";
+   colors[1] = "0.321569 0.321569 0.321569 0.496";
+   colors[2] = "0.584314 0.584314 0.588235 1";
+   colors[3] = "0.843137 0.847059 0.847059 0";
+   sizes[0] = "15";
+   sizes[1] = "15";
+   sizes[2] = "15";
+   sizes[3] = "15";
+   times[0] = "0";
+   times[1] = "0.329412";
+   times[2] = "0.666667";
+   times[3] = "1";
+};
+
+datablock ParticleEmitterData(vocBlastBigFireEmitter2) {
+   ejectionPeriodMS = "15";
+   periodVarianceMS = "0";
+   ejectionVelocity = "0";
+   velocityVariance = "0";
+   ejectionOffset = "4.583";
+   ejectionOffsetVariance = "0";
+   thetaMin = "0";
+   thetaMax = "5";
+   phiReferenceVel = "0";
+   phiVariance = "360";
+   softnessDistance = "1";
+   ambientFactor = "0";
+   overrideAdvance = "1";
+   orientParticles = "0";
+   orientOnVelocity = "0";
+   particles = "vocBlastbigFireParticle2";
+   lifetimeMS = "0";
+   lifetimeVarianceMS = "0";  
+};
+
+datablock GrenadeProjectileData(vocBlastBigExplosionProj)
+{
+   projectileShapeName = "grenade_projectile.dts";
+   emitterDelay        = -1;
+   directDamage        = 0.0;
+   hasDamageRadius     = true;
+   indirectDamage      = 0.40;
+   damageRadius        = 15.0;
+   radiusDamageType    = $DamageType::Explosion;
+   kickBackStrength    = 1500;
+   bubbleEmitTime      = 1.0;
+
+   //sound               = "";
+   explosion           = VehicleBombExplosion;
+   underwaterExplosion = UnderwaterMortarExplosion;
+   velInheritFactor    = 0.85; 
+
+   baseEmitter         = vocBlastBigFireEmitter2;
+   delayEmitter        = vocBlastBigFireEmitter;
+   emitterDelay = 32;
+   bubbleEmitter       = MortarBubbleEmitter;
+
+   grenadeElasticity = 0.30; 
+   grenadeFriction   = 0.2;
+   armingDelayMS     = 250;
+   muzzleVelocity    = 200.00;
+   gravityMod        = 3.9; 
+};
+
+
+datablock GrenadeProjectileData(vocBlastExplosionProjSlow)
+{
+   projectileShapeName = "grenade_projectile.dts";
+   emitterDelay        = -1;
+   directDamage        = 0.0;
+   hasDamageRadius     = true;
+   indirectDamage      = 0.40;
+   damageRadius        = 15.0;
+   radiusDamageType    = $DamageType::Explosion;
+   kickBackStrength    = 1500;
+   bubbleEmitTime      = 1.0;
+
+   //sound               = "";
+   explosion           = FireballAtmosphereBoltExplosion;
+   underwaterExplosion = UnderwaterMortarExplosion;
+   velInheritFactor    = 0.85; 
+
+   baseEmitter         = vocBlastFireEmitter2;
+   delayEmitter        = vocBlastFireEmitter;
+   emitterDelay = 32;
+   bubbleEmitter       = MortarBubbleEmitter;
+
+   grenadeElasticity = 0.30; 
+   grenadeFriction   = 0.2;
+   armingDelayMS     = 250;
+   muzzleVelocity    = 100.00;
+   gravityMod        = 3.9; 
+};
+
+
+
+function vocBlastBigExplosionProj::onExplode(%data, %proj, %pos, %mod){
+   parent::onExplode(%data, %proj, %pos, %mod);
+      
+   %vec = vectorScale(%proj.initialDirection,-1);
+   for(%i = 0; %i < 15; %i++){
+      %x = (getRandom() - 0.5) * 2 * 3.1415926 * 0.25;
+      %y = (getRandom() - 0.5) * 2 * 3.1415926 * 0.25;
+      %z = (getRandom() - 0.5) * 2 * 3.1415926 * 0.25;
+      %mat = MatrixCreateFromEuler(%x SPC %y SPC %z);
+      %vector = MatrixMulVector(%mat,  %vec);
+      %p = new GrenadeProjectile() {
+            dataBlock        = vocBlastExplosionProjSlow;
+            initialDirection = %vector;
+            initialPosition  = VectorAdd(%pos, VectorScale(%vec, 5));
+            sourceObject     = -1; 
+            sourceSlot       = 0;
+            vehicleObject    = 0;
+         };
+      MissionCleanup.add(%p);
+      %p.setScopeAlways();
+   }  
+}
+
+function dropBigRock(%pos){
+      %p = new GrenadeProjectile() {
+         dataBlock        = vocBlastBigExplosionProj;
+         initialDirection = "0 0 -1";
+         initialPosition  = vectorAdd(%pos,"0 0 2000");
+         sourceObject     = -1; 
+         sourceSlot       = 0;
+         vehicleObject    = 0;
+      };
+      MissionCleanup.add(%p);
+      %p.setScopeAlways();
+}
+
+
+datablock ParticleData(vocAshSmokeParticle) {
+   dragCoefficient = "0";
+   windCoefficient = "0";
+   gravityCoefficient = "0";
+   inheritedVelFactor = "0";
+   constantAcceleration = "0";
+   lifetimeMS = "6000";
+   lifetimeVarianceMS = "0";
+   spinSpeed = "0.083";
+   spinRandomMin = "-10";
+   spinRandomMax = "10";
+   useInvAlpha = "1";
+   animateTexture = "0";
+   framesPerSec = "1";
+   textureCoords[0] = "0 0";
+   textureCoords[1] = "0 1";
+   textureCoords[2] = "1 1";
+   textureCoords[3] = "1 0";
+   animTexTiling = "0 0";
+   textureName = "smoke02";
+   colors[0] = "0.11 0.11 0.11 1.0";
+   colors[1] = "0.14 0.14 0.14 0.8";
+   colors[2] = "0.167 0.16 0.16 0.7";
+   colors[3] = "0.102 0.102 0.198 0.1";
+   sizes[0] = "150";
+   sizes[1] = "150";
+   sizes[2] = "150";
+   sizes[3] = "150";
+   times[0] = "0.01";
+   times[1] = "0.229167";
+   times[2] = "0.8875";
+   times[3] = "1";
+};
+
+datablock ParticleEmitterData(vocAshSmokeEmitter) {
+   ejectionPeriodMS = "5";
+   periodVarianceMS = "0";
+   ejectionVelocity = "100";
+   velocityVariance = "50.83";
+   ejectionOffset = "50";
+   ejectionOffsetVariance = "40";
+   thetaMin = "0";
+   thetaMax = "30";
+   phiReferenceVel = "0";
+   phiVariance = "360";
+   softnessDistance = "0.0001";
+   ambientFactor = "0";
+   overrideAdvance = "0";
+   orientParticles = "0";
+   orientOnVelocity = "1";
+   particles = "vocAshSmokeParticle";
+   
+};
+
+
+
+//--- OBJECT WRITE BEGIN ---
+new SimGroup(MissionGroup) {
+
+	musicTrack = "lava";
+	CTF_timeLimit = "25";
+	CTF_scoreLimit = "8";
+	powerCount = "0";
+	cdTrack = "2";
+
+	new MissionArea(MissionArea) {
+		area = "-864 -904 1744 1744";
+		flightCeiling = "550";
+		flightCeilingRange = "50";
+
+		locked = "true";
+	};
+	new TerrainBlock(Terrain) {
+		rotation = "1 0 0 0";
+		scale = "1 1 1";
+		terrainFile = "infernosroar.ter";
+		squareSize = "8";
+		emptySquares = "423228 489019 489275 489531 424252 424508 490299 490555 425276 163389 98752 426686 426942 427198 165312 165568 427966 428222 428478 428734";
+
+		position = "-1024 -1024 0";
+		visibleDistance = "700";
+		locked = "true";
+	};
+	new Sun() {
+		position = "-1216 -848 -48.6";
+		rotation = "1 0 0 0";
+		scale = "1 1 1";
+		direction = "0.57735 0.57735 -0.57735";
+		color = "0.210000 0.210000 0.210000 1.000000";
+		ambient = "0.350000 0.250000 0.250000 1.000000";
+		texture[0] = "special/sunFlare";
+		texture[1] = "special/sunFlare02";
+		texture[2] = "special/LensFlare/flare01";
+		texture[3] = "special/LensFlare/flare02";
+		texture[4] = "special/LensFlare/flare03";
+		lensFlareScale = "0.7";
+		lensFlareIntensity = "1";
+		frontFlareSize = "300";
+		backFlareSize = "450";
+		flareColor = "1.000000 1.000000 1.000000 1.000000";
+
+		locked = "true";
+	};
+	new SimGroup(ObserverDropPoints) {
+
+		powerCount = "0";
+
+		new Camera() {
+			position = "-498.045 -53.5755 112.893";
+			rotation = "0.00945514 0.0690669 0.997567 195.553";
+			scale = "1 1 1";
+			dataBlock = "Observer";
+			lockCount = "0";
+			homingCount = "0";
+
+			locked = "true";
+		};
+		new Camera() {
+			position = "-340.586 0.052402 79.608";
+			rotation = "0.0868391 0.0903727 -0.992115 92.7378";
+			scale = "1 1 1";
+			dataBlock = "Observer";
+			lockCount = "0";
+			homingCount = "0";
+
+			locked = "true";
+		};
+		new Camera() {
+			position = "283.372 3.19501 79.721";
+			rotation = "0.0169006 -0.0159601 0.99973 86.7367";
+			scale = "1 1 1";
+			dataBlock = "Observer";
+			lockCount = "0";
+			homingCount = "0";
+
+			locked = "true";
+		};
+		new Camera() {
+			position = "497.051 43.5119 108.912";
+			rotation = "-0.675602 0.0728276 0.733661 16.7173";
+			scale = "1 1 1";
+			dataBlock = "Observer";
+			lockCount = "0";
+			homingCount = "0";
+
+			locked = "true";
+		};
+		new Camera() {
+			position = "390.96 206.676 187.452";
+			rotation = "0.0532496 -0.277067 0.959374 159.106";
+			scale = "1 1 1";
+			dataBlock = "Observer";
+			lockCount = "0";
+			homingCount = "0";
+
+			locked = "true";
+		};
+		new Camera() {
+			position = "-409.303 -203.301 230.272";
+			rotation = "0.985958 0.0615174 -0.155252 43.789";
+			scale = "1 1 1";
+			dataBlock = "Observer";
+			lockCount = "0";
+			homingCount = "0";
+
+			locked = "true";
+		};
+	};
+	new NavigationGraph(navGraph) {
+		conjoinAngleDev = "45";
+		cullDensity = "0.3";
+		customArea = "0 0 0 0";
+
+		position = "0 0 0 1";
+		YDimOverSize = "0";
+		conjoinBowlDev = "20";
+		GraphFile = "MissionBlank.nav";
+		rotation = "0 0 0 0";
+		coverage = "0";
+		scale = "1 1 1";
+		XDimOverSize = "0";
+		locked = "true";
+	};
+	new Sky(Sky) {
+		position = "-1024 -1024 0";
+		rotation = "1 0 0 0";
+		scale = "1 1 1";
+		cloudHeightPer[0] = "0.349971";
+		cloudHeightPer[1] = "0.25";
+		cloudHeightPer[2] = "0.199973";
+		cloudSpeed1 = "0.005";
+		cloudSpeed2 = "0.002";
+		cloudSpeed3 = "0.001";
+		visibleDistance = "700";
+		useSkyTextures = "0";
+		renderBottomTexture = "0";
+		SkySolidColor = "0.008000 0.005000 0.050000 1.000000";
+		fogDistance = "650";
+		fogColor = "0.640000 0.050000 0.050000 1.000000";
+		fogVolume1 = "30 660 0";
+		fogVolume2 = "35 22 36";
+		fogVolume3 = "0 0 0";
+		materialList = "sky_badlands_cloudy.dml";
+		windVelocity = "1 0 0";
+		windEffectPrecipitation = "0";
+		fogVolumeColor1 = "128.000000 128.000000 128.000000 0.000000";
+		fogVolumeColor2 = "128.000000 128.000000 128.000000 0.000000";
+		fogVolumeColor3 = "128.000000 128.000000 128.000000 0.000000";
+		high_visibleDistance = "-1";
+		high_fogDistance = "-1";
+		high_fogVolume1 = "-1 8.11537e+34 5.01604e+17";
+		high_fogVolume2 = "-1 -4.66231e+32 -1.02491e-35";
+		high_fogVolume3 = "-1 8.4616e+12 -1.23668e+13";
+
+		cloudSpeed0 = "0.000500 0.005000";
+		locked = "true";
+	};
+	new WaterBlock(lavablock) {
+		position = "0 0 -71.9934";
+		rotation = "1 0 0 0";
+		scale = "2048 2048 100";
+		liquidType = "CrustyLava";
+		density = "1";
+		viscosity = "3";
+		waveMagnitude = "0";
+		surfaceTexture = "LiquidTiles/Lava";
+		surfaceOpacity = "1";
+		envMapTexture = "desert/skies/d_n_move1";
+		envMapIntensity = "0.5";
+		submergeTexture[0] = "special/lavadeath_1";
+		submergeTexture[1] = "special/lavadeath_2";
+		removeWetEdges = "0";
+
+		he = "0.133334";
+		simSec = "8";
+		locked = "true";
+	};
+	new SimGroup(audio) {
+
+		powerCount = "0";
+
+		new AudioEmitter() {
+			position = "-42.5327 -2.63959 74.082";
+			rotation = "1 0 0 0";
+			scale = "1 1 1";
+			fileName = "drywindlong.wav";
+			useProfileDescription = "0";
+			outsideAmbient = "1";
+			volume = "1";
+			isLooping = "1";
+			is3D = "0";
+			minDistance = "20";
+			maxDistance = "1000";
+			coneInsideAngle = "360";
+			coneOutsideAngle = "360";
+			coneOutsideVolume = "1";
+			coneVector = "0 0 1";
+			loopCount = "-1";
+			minLoopGap = "0";
+			maxLoopGap = "0";
+			type = "EffectAudioType";
+
+			locked = "true";
+		};
+		new AudioEmitter() {
+			position = "-326.172 -17.0636 27.6282";
+			rotation = "1 0 0 0";
+			scale = "1 1 1";
+			fileName = "fx/environment/lavahiss.wav";
+			useProfileDescription = "0";
+			outsideAmbient = "1";
+			volume = "0.35";
+			isLooping = "1";
+			is3D = "1";
+			minDistance = "50";
+			maxDistance = "200";
+			coneInsideAngle = "360";
+			coneOutsideAngle = "360";
+			coneOutsideVolume = "1";
+			coneVector = "0 0 1";
+			loopCount = "-1";
+			minLoopGap = "0";
+			maxLoopGap = "0";
+			type = "EffectAudioType";
+
+			locked = "true";
+		};
+		new AudioEmitter() {
+			position = "335.476 -11.0676 25.5064";
+			rotation = "1 0 0 0";
+			scale = "1 1 1";
+			fileName = "fx/environment/lavahiss.wav";
+			useProfileDescription = "0";
+			outsideAmbient = "1";
+			volume = "0.35";
+			isLooping = "1";
+			is3D = "1";
+			minDistance = "50";
+			maxDistance = "200";
+			coneInsideAngle = "360";
+			coneOutsideAngle = "360";
+			coneOutsideVolume = "1";
+			coneVector = "0 0 1";
+			loopCount = "-1";
+			minLoopGap = "0";
+			maxLoopGap = "0";
+			type = "EffectAudioType";
+
+			locked = "true";
+		};
+	};
+	new SimGroup(Teams) {
+
+		powerCount = "0";
+
+		new SimGroup(Team1) {
+
+			powerCount = "2";
+
+			new SimGroup(spawnspheres) {
+
+				powerCount = "2";
+
+				new SpawnSphere() {
+					position = "-519.718 -51.4759 94.873";
+					rotation = "1 0 0 0";
+					scale = "1 1 1";
+					dataBlock = "SpawnSphereMarker";
+					lockCount = "0";
+					homingCount = "0";
+					radius = "100";
+					sphereWeight = "100";
+					indoorWeight = "100";
+					outdoorWeight = "100";
+
+					locked = "true";
+				};
+			};
+			new Item() {
+				position = "-384.844 0.1881 68.474";
+				rotation = "0 0 1 90.5273";
+				scale = "1 1 1";
+				nameTag = "Flag";
+				dataBlock = "flag";
+				lockCount = "0";
+				homingCount = "0";
+				collideable = "0";
+				static = "1";
+				rotate = "0";
+
+				isHome = "1";
+				team = "1";
+				WayPoint = "7138";
+				Trigger = "7139";
+				Target = "33";
+				locked = "true";
+				originalPosition = "-384.844 0.1881 68.474 0 0 1 1.58";
+			};
+			new InteriorInstance() {
+				position = "-384.743 0.190301 70.492";
+				rotation = "1 0 0 0";
+				scale = "1 1 1";
+				interiorFile = "vocstand.dif";
+				showTerrainInside = "0";
+
+				team = "1";
+				locked = "true";
+			};
+			new InteriorInstance(InteriorInstance) {
+				position = "-537.513 -76.6318 101.857";
+				rotation = "-0 0 -1 89.9543";
+				scale = "1 1 1";
+				interiorFile = "infbutch_blackbase5618_final.dif";
+				showTerrainInside = "0";
+
+				team = "1";
+				locked = "true";
+			};
+			new Trigger() {
+				position = "-542.271 -28.7929 92.797";
+				rotation = "-0 0 -1 89.3814";
+				scale = "1 1 1";
+				dataBlock = "stationTrigger";
+				lockCount = "0";
+				homingCount = "0";
+				polyhedron = "-0.7500000 0.7500000 0.1000000 1.5000000 0.0000000 0.0000000 -0.0000000 -1.5000000 -0.0000000 -0.0000000 -0.0000000 2.3000000";
+
+				disableObj = "36113";
+				station = "36113";
+				team = "1";
+				mainObj = "36113";
+				locked = "true";
+			};
+			new StaticShape() {
+				position = "-542.343 -74.5929 92.797";
+				rotation = "-0 0 -1 89.3814";
+				scale = "1 1 1";
+				nameTag = "Inventory";
+				dataBlock = "StationInventory";
+				lockCount = "0";
+				homingCount = "0";
+
+				Trigger = "7054";
+				team = "1";
+				notReady = "1";
+				inUse = "Down";
+				Target = "34";
+				locked = "true";
+			};
+			new StaticShape() {
+				position = "-502.652 -74.6347 92.84";
+				rotation = "0 0 1 90.1369";
+				scale = "1 1 1";
+				nameTag = "Inventory";
+				dataBlock = "StationInventory";
+				lockCount = "0";
+				homingCount = "0";
+
+				Trigger = "7056";
+				team = "1";
+				notReady = "1";
+				inUse = "Down";
+				Target = "35";
+				locked = "true";
+			};
+			new Turret() {
+				position = "-522.571 -51.6411 102.898";
+				rotation = "0 0 1 180.091";
+				scale = "1 1 1";
+				nameTag = "Sentry";
+				dataBlock = "SentryTurret";
+				lockCount = "0";
+				homingCount = "0";
+				initialBarrel = "SentryTurretBarrel";
+
+				team = "1";
+				Target = "36";
+				locked = "true";
+			};
+			new Turret() {
+				position = "-522.571 -51.6411 79.898";
+				rotation = "0 0 1 180.091";
+				scale = "1 1 1";
+				nameTag = "Sentry";
+				dataBlock = "SentryTurret";
+				lockCount = "0";
+				homingCount = "0";
+				initialBarrel = "SentryTurretBarrel";
+
+				team = "1";
+				Target = "37";
+				locked = "true";
+			};
+			new Turret() {
+				position = "-522.571 -51.6411 89.698";
+				rotation = "0 0 1 180.091";
+				scale = "1 1 1";
+				nameTag = "Sentry";
+				dataBlock = "SentryTurret";
+				lockCount = "0";
+				homingCount = "0";
+				initialBarrel = "SentryTurretBarrel";
+
+				team = "1";
+				Target = "38";
+				locked = "true";
+			};
+			new StaticShape() {
+				position = "-522.659 -74.3533 111.282";
+				rotation = "0 0 1 90.1369";
+				scale = "1 1 1";
+				nameTag = "Large";
+				dataBlock = "SensorLargePulse";
+				lockCount = "0";
+				homingCount = "0";
+
+				team = "1";
+				Target = "39";
+				locked = "true";
+			};
+			new StaticShape() {
+				position = "-537.237 -83.7746 80.826";
+				rotation = "0 0 1 180.091";
+				scale = "1 1 1";
+				nameTag = "Inventory";
+				dataBlock = "StationInventory";
+				lockCount = "0";
+				homingCount = "0";
+
+				Trigger = "7062";
+				team = "1";
+				Target = "40";
+				locked = "true";
+			};
+			new InteriorInstance() {
+				position = "-456.761 -51.7298 123.525";
+				rotation = "0 0 1 180.091";
+				scale = "1 1 6.78875";
+				interiorFile = "infbutch_blackturret8.dif";
+				showTerrainInside = "0";
+
+				team = "1";
+				locked = "true";
+			};
+			new StaticShape() {
+				position = "-507.656 -19.8074 80.796";
+				rotation = "1 0 0 0";
+				scale = "1 1 1";
+				nameTag = "Inventory";
+				dataBlock = "StationInventory";
+				lockCount = "0";
+				homingCount = "0";
+
+				Trigger = "7065";
+				team = "1";
+				Target = "41";
+				locked = "true";
+			};
+			new StaticShape() {
+				position = "-537.298 -19.657 80.792";
+				rotation = "1 0 0 0";
+				scale = "1 1 1";
+				nameTag = "Inventory";
+				dataBlock = "StationInventory";
+				lockCount = "0";
+				homingCount = "0";
+
+				Trigger = "7067";
+				team = "1";
+				Target = "42";
+				locked = "true";
+			};
+			new StaticShape() {
+				position = "-507.803 -83.4909 80.847";
+				rotation = "0 0 1 180.091";
+				scale = "1 1 1";
+				nameTag = "Inventory";
+				dataBlock = "StationInventory";
+				lockCount = "0";
+				homingCount = "0";
+
+				Trigger = "7069";
+				team = "1";
+				Target = "43";
+				locked = "true";
+			};
+			new Item() {
+				position = "-522.557 -51.5886 93.84";
+				rotation = "0 0 -1 90.5273";
+				scale = "1 1 1";
+				dataBlock = "RepairPack";
+				lockCount = "0";
+				homingCount = "0";
+				collideable = "0";
+				static = "1";
+				rotate = "0";
+
+				team = "1";
+				Target = "-1";
+				locked = "true";
+			};
+			new StaticShape() {
+				position = "-542.271 -28.7929 92.797";
+				rotation = "-0 0 -1 89.3814";
+				scale = "1 1 1";
+				nameTag = "Inventory";
+				dataBlock = "StationInventory";
+				lockCount = "0";
+				homingCount = "0";
+
+				Trigger = "7072";
+				team = "1";
+				Target = "44";
+				locked = "true";
+			};
+			new StaticShape() {
+				position = "-502.578 -28.6347 92.84";
+				rotation = "0 0 1 90.1369";
+				scale = "1 1 1";
+				nameTag = "Inventory";
+				dataBlock = "StationInventory";
+				lockCount = "0";
+				homingCount = "0";
+
+				Trigger = "7074";
+				team = "1";
+				Target = "45";
+				locked = "true";
+			};
+			new StaticShape() {
+				position = "-544.512 -128.571 94.62";
+				rotation = "0 0 1 0.573347";
+				scale = "1 1 1";
+				nameTag = "Inventory";
+				dataBlock = "StationInventory";
+				lockCount = "0";
+				homingCount = "0";
+
+				Trigger = "7076";
+				team = "1";
+				Target = "46";
+				locked = "true";
+			};
+			new StaticShape() {
+				position = "-544.372 -145.726 94.643";
+				rotation = "0 0 1 180.091";
+				scale = "1 1 1";
+				nameTag = "Inventory";
+				dataBlock = "StationInventory";
+				lockCount = "0";
+				homingCount = "0";
+
+				Trigger = "7078";
+				team = "1";
+				notReady = "1";
+				inUse = "Down";
+				Target = "47";
+				locked = "true";
+			};
+			new InteriorInstance() {
+				position = "-514.218 -137.451 91.436";
+				rotation = "0 0 1 180.091";
+				scale = "1 1 1";
+				interiorFile = "infbutch_blackairinv13.dif";
+				showTerrainInside = "0";
+
+				team = "1";
+				locked = "true";
+			};
+			new StaticShape() {
+				position = "-510.375 -136.901 90.638";
+				rotation = "-0 0 -1 89.9543";
+				scale = "1 1 1";
+				nameTag = "Base";
+				dataBlock = "StationVehiclePad";
+				lockCount = "0";
+				homingCount = "0";
+
+				AssaultVehicle = "removed";
+				station = "7155";
+				team = "1";
+				mobileBaseVehicle = "removed";
+				Target = "48";
+				Ready = "1";
+				ScoutVehicle = "removed";
+				locked = "true";
+			};
+			new StaticShape() {
+				position = "-522.497 -58.0385 65.843";
+				rotation = "0 0 1 180.091";
+				scale = "1 1 1";
+				nameTag = "Base";
+				dataBlock = "GeneratorLarge";
+				lockCount = "0";
+				homingCount = "0";
+
+				team = "1";
+				Target = "49";
+				locked = "true";
+			};
+			new StaticShape() {
+				position = "-522.519 -44.8465 65.874";
+				rotation = "-0 0 -1 0.573347";
+				scale = "1 1 1";
+				nameTag = "Base";
+				dataBlock = "GeneratorLarge";
+				lockCount = "0";
+				homingCount = "0";
+
+				team = "1";
+				Target = "50";
+				locked = "true";
+			};
+			new Turret() {
+				position = "-465.23 -51.7183 92.872";
+				rotation = "0 0 1 90.1369";
+				scale = "1 1 1";
+				nameTag = "Base";
+				dataBlock = "TurretBaseLarge";
+				lockCount = "0";
+				homingCount = "0";
+				initialBarrel = "MissileBarrelLarge";
+
+				team = "1";
+				Target = "51";
+				locked = "true";
+			};
+		};
+		new SimGroup(Team0) {
+
+			powerCount = "0";
+		};
+		new SimGroup(Team2) {
+
+			powerCount = "2";
+
+			new Item() {
+				position = "374.69 4.47623 69.084";
+				rotation = "0 0 -1 90.5273";
+				scale = "1 1 1";
+				nameTag = "Flag";
+				dataBlock = "flag";
+				lockCount = "0";
+				homingCount = "0";
+				collideable = "0";
+				static = "1";
+				rotate = "0";
+
+				isHome = "1";
+				team = "2";
+				WayPoint = "7140";
+				Trigger = "7141";
+				searchSchedule = "116997";
+				Target = "52";
+				className = "FlagObj";
+				locked = "true";
+				originalPosition = "374.69 4.47623 69.084 0 0 -1 1.58";
+			};
+			new SimGroup(spawnspheres) {
+
+				powerCount = "2";
+
+				new SpawnSphere() {
+					position = "519.472 49.7359 98.503";
+					rotation = "1 0 0 0";
+					scale = "1 1 1";
+					dataBlock = "SpawnSphereMarker";
+					lockCount = "0";
+					homingCount = "0";
+					radius = "100";
+					sphereWeight = "100";
+					indoorWeight = "100";
+					outdoorWeight = "100";
+
+					locked = "true";
+				};
+			};
+			new InteriorInstance() {
+				position = "512.202 136.749 91.436";
+				rotation = "1 0 0 0";
+				scale = "1 1 1";
+				interiorFile = "infbutch_blackairinv13.dif";
+				showTerrainInside = "0";
+
+				team = "2";
+				locked = "true";
+			};
+			new InteriorInstance(InteriorInstance) {
+				position = "535.593 75.9669 101.857";
+				rotation = "0 0 1 89.9544";
+				scale = "1 1 1";
+				interiorFile = "infbutch_blackbase5618_final.dif";
+				showTerrainInside = "0";
+
+				team = "2";
+				locked = "true";
+			};
+			new StaticShape() {
+				position = "520.743 73.6649 111.282";
+				rotation = "0 0 -1 89.9544";
+				scale = "1 1 1";
+				nameTag = "Large";
+				dataBlock = "SensorLargePulse";
+				lockCount = "0";
+				homingCount = "0";
+
+				team = "2";
+				Target = "53";
+				locked = "true";
+			};
+			new InteriorInstance() {
+				position = "454.881 50.9276 123.525";
+				rotation = "1 0 0 0";
+				scale = "1 1 6.78875";
+				interiorFile = "infbutch_blackturret8.dif";
+				showTerrainInside = "0";
+
+				team = "2";
+				locked = "true";
+			};
+			new Turret() {
+				position = "463.35 50.9296 92.872";
+				rotation = "0 0 -1 89.9544";
+				scale = "1 1 1";
+				nameTag = "Base";
+				dataBlock = "TurretBaseLarge";
+				lockCount = "0";
+				homingCount = "0";
+				initialBarrel = "MissileBarrelLarge";
+
+				team = "2";
+				Target = "54";
+				locked = "true";
+			};
+			new StaticShape() {
+				position = "520.65 44.1581 65.874";
+				rotation = "0 0 1 179.336";
+				scale = "1 1 1";
+				nameTag = "Base";
+				dataBlock = "GeneratorLarge";
+				lockCount = "0";
+				homingCount = "0";
+
+				team = "2";
+				Target = "55";
+				locked = "true";
+			};
+			new StaticShape() {
+				position = "520.607 57.35 65.843";
+				rotation = "1 0 0 0";
+				scale = "1 1 1";
+				nameTag = "Base";
+				dataBlock = "GeneratorLarge";
+				lockCount = "0";
+				homingCount = "0";
+
+				team = "2";
+				Target = "56";
+				locked = "true";
+			};
+			new StaticShape() {
+				position = "508.36 136.193 90.638";
+				rotation = "0 0 1 89.9544";
+				scale = "1 1 1";
+				nameTag = "Base";
+				dataBlock = "StationVehiclePad";
+				lockCount = "0";
+				homingCount = "0";
+
+				AssaultVehicle = "removed";
+				station = "7157";
+				team = "2";
+				mobileBaseVehicle = "removed";
+				Target = "57";
+				Ready = "1";
+				ScoutVehicle = "removed";
+				locked = "true";
+			};
+			new StaticShape() {
+				position = "542.343 145.072 94.643";
+				rotation = "1 0 0 0";
+				scale = "1 1 1";
+				nameTag = "Inventory";
+				dataBlock = "StationInventory";
+				lockCount = "0";
+				homingCount = "0";
+
+				Trigger = "7099";
+				team = "2";
+				Target = "58";
+				locked = "true";
+			};
+			new StaticShape() {
+				position = "542.51 127.917 94.62";
+				rotation = "0 0 1 180.482";
+				scale = "1 1 1";
+				nameTag = "Inventory";
+				dataBlock = "StationInventory";
+				lockCount = "0";
+				homingCount = "0";
+
+				Trigger = "7101";
+				team = "2";
+				Target = "59";
+				locked = "true";
+			};
+			new StaticShape() {
+				position = "500.735 27.9145 92.84";
+				rotation = "0 0 -1 89.9544";
+				scale = "1 1 1";
+				nameTag = "Inventory";
+				dataBlock = "StationInventory";
+				lockCount = "0";
+				homingCount = "0";
+
+				Trigger = "7103";
+				team = "2";
+				notReady = "1";
+				inUse = "Down";
+				Target = "60";
+				locked = "true";
+			};
+			new StaticShape() {
+				position = "540.428 28.1359 92.797";
+				rotation = "0 0 1 90.5273";
+				scale = "1 1 1";
+				nameTag = "Inventory";
+				dataBlock = "StationInventory";
+				lockCount = "0";
+				homingCount = "0";
+
+				Trigger = "7105";
+				team = "2";
+				Target = "61";
+				locked = "true";
+			};
+			new Item() {
+				position = "520.677 50.9002 93.84";
+				rotation = "0 0 1 89.3814";
+				scale = "1 1 1";
+				dataBlock = "RepairPack";
+				lockCount = "0";
+				homingCount = "0";
+				collideable = "0";
+				static = "1";
+				rotate = "0";
+
+				team = "2";
+				Target = "-1";
+				locked = "true";
+			};
+			new StaticShape() {
+				position = "505.873 82.7787 80.847";
+				rotation = "1 0 0 0";
+				scale = "1 1 1";
+				nameTag = "Inventory";
+				dataBlock = "StationInventory";
+				lockCount = "0";
+				homingCount = "0";
+
+				Trigger = "7108";
+				team = "2";
+				Target = "62";
+				locked = "true";
+			};
+			new StaticShape() {
+				position = "535.47 18.9922 80.792";
+				rotation = "0 0 1 179.909";
+				scale = "1 1 1";
+				nameTag = "Inventory";
+				dataBlock = "StationInventory";
+				lockCount = "0";
+				homingCount = "0";
+
+				Trigger = "7110";
+				team = "2";
+				Target = "63";
+				locked = "true";
+			};
+			new StaticShape() {
+				position = "505.827 19.0953 80.796";
+				rotation = "0 0 1 179.909";
+				scale = "1 1 1";
+				nameTag = "Inventory";
+				dataBlock = "StationInventory";
+				lockCount = "0";
+				homingCount = "0";
+
+				Trigger = "7112";
+				team = "2";
+				Target = "64";
+				locked = "true";
+			};
+			new StaticShape() {
+				position = "535.306 83.1094 80.826";
+				rotation = "1 0 0 0";
+				scale = "1 1 1";
+				nameTag = "Inventory";
+				dataBlock = "StationInventory";
+				lockCount = "0";
+				homingCount = "0";
+
+				Trigger = "7114";
+				team = "2";
+				Target = "65";
+				locked = "true";
+			};
+			new Turret() {
+				position = "520.691 50.9526 89.698";
+				rotation = "1 0 0 0";
+				scale = "1 1 1";
+				nameTag = "Sentry";
+				dataBlock = "SentryTurret";
+				lockCount = "0";
+				homingCount = "0";
+				initialBarrel = "SentryTurretBarrel";
+
+				team = "2";
+				Target = "66";
+				locked = "true";
+			};
+			new Turret() {
+				position = "520.691 50.9526 79.898";
+				rotation = "1 0 0 0";
+				scale = "1 1 1";
+				nameTag = "Sentry";
+				dataBlock = "SentryTurret";
+				lockCount = "0";
+				homingCount = "0";
+				initialBarrel = "SentryTurretBarrel";
+
+				team = "2";
+				Target = "67";
+				locked = "true";
+			};
+			new Turret() {
+				position = "520.691 50.9526 102.898";
+				rotation = "1 0 0 0";
+				scale = "1 1 1";
+				nameTag = "Sentry";
+				dataBlock = "SentryTurret";
+				lockCount = "0";
+				homingCount = "0";
+				initialBarrel = "SentryTurretBarrel";
+
+				team = "2";
+				Target = "68";
+				locked = "true";
+			};
+			new StaticShape() {
+				position = "500.735 73.9145 92.84";
+				rotation = "0 0 -1 89.9544";
+				scale = "1 1 1";
+				nameTag = "Inventory";
+				dataBlock = "StationInventory";
+				lockCount = "0";
+				homingCount = "0";
+
+				Trigger = "7119";
+				team = "2";
+				Target = "69";
+				locked = "true";
+			};
+			new StaticShape() {
+				position = "540.427 73.9359 92.797";
+				rotation = "0 0 1 90.5273";
+				scale = "1 1 1";
+				nameTag = "Inventory";
+				dataBlock = "StationInventory";
+				lockCount = "0";
+				homingCount = "0";
+
+				Trigger = "7121";
+				team = "2";
+				Target = "70";
+				locked = "true";
+			};
+			new InteriorInstance() {
+				position = "374.782 4.45059 71.09";
+				rotation = "1 0 0 0";
+				scale = "1 1 1";
+				interiorFile = "vocstand.dif";
+				showTerrainInside = "0";
+
+				team = "2";
+				locked = "true";
+			};
+		};
+	};
+	new WaterBlock() {
+		position = "536 584 304.734";
+		rotation = "1 0 0 0";
+		scale = "128 128 100";
+		liquidType = "HotLava";
+		density = "1";
+		viscosity = "3";
+		waveMagnitude = "0";
+		surfaceTexture = "LiquidTiles/Lava";
+		surfaceOpacity = "1";
+		envMapTexture = "desert/skies/d_n_move1";
+		envMapIntensity = "0.5";
+		submergeTexture[0] = "special/lavadeath_1";
+		submergeTexture[1] = "special/lavadeath_2";
+		removeWetEdges = "1";
+
+		locked = "true";
+	};
+	new WaterBlock() {
+		position = "-672 -736 304.734";
+		rotation = "1 0 0 0";
+		scale = "128 128 100";
+		liquidType = "HotLava";
+		density = "1";
+		viscosity = "3";
+		waveMagnitude = "0";
+		surfaceTexture = "LiquidTiles/Lava";
+		surfaceOpacity = "1";
+		envMapTexture = "desert/skies/d_n_move1";
+		envMapIntensity = "0.5";
+		submergeTexture[0] = "special/lavadeath_1";
+		submergeTexture[1] = "special/lavadeath_2";
+		removeWetEdges = "1";
+
+		locked = "true";
+	};
+	new InteriorInstance(InteriorInstance) {
+		position = "548.316 -43.0665 86.3894";
+		rotation = "0 0 1 104.851";
+		scale = "1.5 1.5 1.5";
+		interiorFile = "dspir4.dif";
+		showTerrainInside = "0";
+	};
+	new InteriorInstance() {
+		position = "-9.28558 119.029 68.5291";
+		rotation = "1 0 0 9.74027";
+		scale = "1 1 1";
+		interiorFile = "dspir5.dif";
+		showTerrainInside = "0";
+	};
+	new InteriorInstance() {
+		position = "4.57018 -292.177 77.2318";
+		rotation = "-1 0 0 12.6051";
+		scale = "1 1 1";
+		interiorFile = "dspir5.dif";
+		showTerrainInside = "0";
+	};
+	new InteriorInstance() {
+		position = "-262.333 230.25 103.015";
+		rotation = "0 0 -1 45.2637";
+		scale = "1 1 1";
+		interiorFile = "dspir3.dif";
+		showTerrainInside = "0";
+	};
+	new InteriorInstance() {
+		position = "246.707 -207.036 109.305";
+		rotation = "0 0 -1 19.4806";
+		scale = "1 1 1";
+		interiorFile = "dspir3.dif";
+		showTerrainInside = "0";
+	};
+	new InteriorInstance() {
+		position = "-384.149 -35.8258 20.5378";
+		rotation = "1 0 0 0";
+		scale = "1 1 1";
+		interiorFile = "dspir5.dif";
+		showTerrainInside = "0";
+	};
+	new InteriorInstance() {
+		position = "374.414 38.4581 18.0766";
+		rotation = "0 0 -1 43.5448";
+		scale = "1 1 1";
+		interiorFile = "dspir5.dif";
+		showTerrainInside = "0";
+	};
+	new InteriorInstance(InteriorInstance) {
+		position = "-550.28 48.6182 85.264";
+		rotation = "0 0 1 32.0857";
+		scale = "1.5 1.5 1.5";
+		interiorFile = "dspir4.dif";
+		showTerrainInside = "0";
+	};
+	new InteriorInstance() {
+		position = "-543.852 -182.052 91.5634";
+		rotation = "0 0 -1 32.6586";
+		scale = "1 1 1";
+		interiorFile = "dspir1.dif";
+		showTerrainInside = "0";
+	};
+	new InteriorInstance() {
+		position = "541.241 176.737 91.9296";
+		rotation = "1 0 0 0";
+		scale = "1 1 1";
+		interiorFile = "dspir1.dif";
+		showTerrainInside = "0";
+	};
+};
+//--- OBJECT WRITE END ---
