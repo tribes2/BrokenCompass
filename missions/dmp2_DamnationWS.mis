@@ -24,7 +24,7 @@ datablock TriggerData(wTrig){
 package wdSki{
   function Armor::onTrigger(%data, %player, %triggerNum, %val){
       parent::onTrigger(%data, %player, %triggerNum, %val);
-      if(%triggerNum == 2 && ($MissionName $= "S5_DamnationWS")){
+      if(%triggerNum == 2 && ($MissionName $= "dmp2_DamnationWS")){
          %player.isKeySki = %val;
 	  }
   }   

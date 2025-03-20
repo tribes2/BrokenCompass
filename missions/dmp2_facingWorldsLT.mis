@@ -48,7 +48,7 @@ function faceFlagReset(){
 				Game.flagReturn($TeamFlag[2]);
 			}
 		}
-		if($missionName $= "facingWorldsLCTF"){
+		if($missionName $= "dmp2_facingWorldsLT"){
 			$faceEvent = schedule(1000, 0, "faceFlagReset");
 		}
 	}
