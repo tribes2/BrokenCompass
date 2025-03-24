@@ -15,11 +15,11 @@
 //--- OBJECT WRITE BEGIN ---
 new SimGroup(MissionGroup) {
 
-	cdTrack = "2";
-	powerCount = "0";
-	CTF_timeLimit = "25";
-	CTF_scoreLimit = "8";
 	musicTrack = "lush";
+	powerCount = "0";
+	cdTrack = "2";
+	CTF_scoreLimit = "8";
+	CTF_timeLimit = "25";
 
 	new MissionArea(MissionArea) {
 		area = "-512 -384 1040 1040";
@@ -48,32 +48,32 @@ new SimGroup(MissionGroup) {
 
 		locked = "true";
 	};
-	new TerrainBlock(terrain) {
+	new TerrainBlock(Terrain) {
 		rotation = "1 0 0 0";
 		scale = "1 1 1";
-		detailTexture = "details/desertdet2";
-		terrainFile = "BeggarsRun.ter";
+		detailTexture = "details/snowdet2";
+		terrainFile = "TWL-SubZero.ter";
 		squareSize = "8";
 
 		position = "-1024 -1024 0";
 		locked = "true";
-		hazeDistance = "250";
 		visibleDistance = "1200";
+		hazeDistance = "250";
 	};
 	new NavigationGraph(NavGraph) {
 		conjoinAngleDev = "45";
 		cullDensity = "0.3";
 		customArea = "0 0 0 0";
 
+		YDimOverSize = "0";
 		position = "0 0 0 1";
-		GraphFile = "MoonwalkLT.nav";
-		coverage = "0";
 		locked = "true";
 		rotation = "0 0 0 0";
-		XDimOverSize = "0";
-		scale = "1 1 1";
-		YDimOverSize = "0";
 		conjoinBowlDev = "20";
+		GraphFile = "MoonwalkLT.nav";
+		scale = "1 1 1";
+		coverage = "0";
+		XDimOverSize = "0";
 	};
 	new Sky(Sky) {
 		position = "-1216 -848 0";
@@ -118,9 +118,9 @@ new SimGroup(MissionGroup) {
 			powerCount = "0";
 
 			new InteriorInstance(t1stand) {
-				position = "325.483 192.691 234.487";
+				position = "325.723 193.171 234.747";
 				rotation = "1 0 0 0";
-				scale = "0.04 0.04 0.04";
+				scale = "0.12 0.12 0.12";
 				interiorFile = "bplat3.dif";
 				showTerrainInside = "0";
 
@@ -140,8 +140,8 @@ new SimGroup(MissionGroup) {
 
 				team = "1";
 				locked = "false";
-				className = "FlagObj";
 				Target = "33";
+				className = "FlagObj";
 			};
 			new SimGroup(spawnspheres) {
 
@@ -182,9 +182,9 @@ new SimGroup(MissionGroup) {
 			powerCount = "0";
 
 			new InteriorInstance(t2stand) {
-				position = "325.472 144.367 234.487";
+				position = "325.722 144.817 234.747";
 				rotation = "1 0 0 0";
-				scale = "0.04 0.04 0.04";
+				scale = "0.12 0.12 0.12";
 				interiorFile = "bplat3.dif";
 				showTerrainInside = "0";
 
@@ -204,8 +204,8 @@ new SimGroup(MissionGroup) {
 
 				team = "2";
 				locked = "false";
-				className = "FlagObj";
 				Target = "34";
+				className = "FlagObj";
 			};
 			new SimGroup(spawnspheres) {
 
@@ -296,7 +296,7 @@ new SimGroup(MissionGroup) {
 				homingCount = "0";
 
 				team = "0";
-				Target = "39";
+				Target = "38";
 			};
 			new ForceFieldBare() {
 				position = "233.311 238.817 231.955";
@@ -307,7 +307,7 @@ new SimGroup(MissionGroup) {
 				homingCount = "0";
 
 				team = "0";
-				Target = "40";
+				Target = "39";
 			};
 			new PhysicalZone() {
 				position = "66.0073 -31.1887 98.5445";
@@ -315,7 +315,7 @@ new SimGroup(MissionGroup) {
 				scale = "486.474 419.211 303.207";
 				velocityMod = "0";
 				gravityMod = "0.37";
-				appliedForce = "0 0 0";
+				appliedForce = "0 0 -600";
 				polyhedron = "0.0000000 1.0000000 0.0000000 1.0000000 0.0000000 0.0000000 -0.0000000 -1.0000000 -0.0000000 -0.0000000 -0.0000000 1.0000000";
 
 				team = "0";
@@ -1055,7 +1055,7 @@ new SimGroup(MissionGroup) {
 		lockCount = "0";
 		homingCount = "0";
 
-		Target = "41";
+		Target = "40";
 	};
 	new ForceFieldBare() {
 		position = "317.311 231.028 271.224";
@@ -1065,7 +1065,7 @@ new SimGroup(MissionGroup) {
 		lockCount = "0";
 		homingCount = "0";
 
-		Target = "42";
+		Target = "41";
 	};
 	new ForceFieldBare() {
 		position = "233.311 238.817 231.955";
@@ -1076,7 +1076,7 @@ new SimGroup(MissionGroup) {
 		homingCount = "0";
 
 		team = "0";
-		Target = "43";
+		Target = "42";
 	};
 	new ForceFieldBare() {
 		position = "348.511 238.817 231.955";
@@ -1087,7 +1087,7 @@ new SimGroup(MissionGroup) {
 		homingCount = "0";
 
 		team = "0";
-		Target = "44";
+		Target = "43";
 	};
 	new InteriorInstance() {
 		position = "330.158 104.424 266.178";
@@ -1125,7 +1125,7 @@ new SimGroup(MissionGroup) {
 		homingCount = "0";
 
 		team = "0";
-		Target = "45";
+		Target = "44";
 	};
 };
 //--- OBJECT WRITE END ---
