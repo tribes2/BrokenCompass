@@ -17,9 +17,6 @@
 
 
 memPatch("604358","0C");// item collison fix 
-datablock TriggerData(wTrig){
-   tickPeriodMS =  32;
-};
 
 package wdSki{
   function Armor::onTrigger(%data, %player, %triggerNum, %val){
