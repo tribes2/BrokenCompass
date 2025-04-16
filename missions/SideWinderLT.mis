@@ -19,11 +19,11 @@
 //--- OBJECT WRITE BEGIN ---
 new SimGroup(missionGroup) {
 
+	musicTrack = "desert";
 	powerCount = "0";
 	cdTrack = "6";
-	musicTrack = "desert";
-	CTF_scoreLimit = "5";
 	CTF_timeLimit = "25";
+	CTF_scoreLimit = "5";
 
 	new MissionArea(MissionArea) {
 		area = "-440 -824 960 1360";
@@ -61,8 +61,8 @@ new SimGroup(missionGroup) {
 		emptySquares = "86360 87640 87896 88152 88408 88664 88920 89176 89432 97712 97968 98224 98480 98736 98992 99248 99504 100784";
 
 		visibleDistance = "1200";
-		position = "-1024 -1024 0";
 		hazeDistance = "275";
+		position = "-1024 -1024 0";
 		locked = "true";
 	};
 	new NavigationGraph(NavGraph) {
@@ -70,15 +70,15 @@ new SimGroup(missionGroup) {
 		cullDensity = "0.3";
 		customArea = "0 0 0 0";
 
-		scale = "1 1 1";
-		XDimOverSize = "0";
-		conjoinBowlDev = "20";
-		GraphFile = "SideWinder.nav";
-		coverage = "0";
-		position = "0 0 0 1";
-		locked = "true";
-		YDimOverSize = "0";
 		rotation = "0 0 0 0";
+		XDimOverSize = "0";
+		GraphFile = "SideWinder.nav";
+		scale = "1 1 1";
+		YDimOverSize = "0";
+		position = "0 0 0 1";
+		conjoinBowlDev = "20";
+		coverage = "0";
+		locked = "true";
 	};
 	new Sky(Sky) {
 		position = "-1216 -848 0";
@@ -137,10 +137,10 @@ new SimGroup(missionGroup) {
 					static = "1";
 					rotate = "0";
 
+					Target = "33";
 					className = "FlagObj";
 					originalPosition = "388.504 106.349 127.838 0 0 1 1.5708";
 					isHome = "1";
-					Target = "33";
 					team = "1";
 					WayPoint = "4983";
 				};
@@ -159,14 +159,26 @@ new SimGroup(missionGroup) {
 				powerCount = "0";
 
 				new SpawnSphere(DSSS1) {
-					position = "410.525 26.1032 119.267";
+					position = "425.125 32.5032 119.267";
 					rotation = "1 0 0 0";
 					scale = "1 1 1";
 					dataBlock = "SpawnSphereMarker";
 					lockCount = "0";
 					homingCount = "0";
-					radius = "70";
-					sphereWeight = "100";
+					radius = "30";
+					sphereWeight = "50";
+					indoorWeight = "0";
+					outdoorWeight = "100";
+				};
+				new SpawnSphere(DSSS2) {
+					position = "425.925 -20.4968 124.667";
+					rotation = "1 0 0 0";
+					scale = "1 1 1";
+					dataBlock = "SpawnSphereMarker";
+					lockCount = "0";
+					homingCount = "0";
+					radius = "30";
+					sphereWeight = "50";
 					indoorWeight = "0";
 					outdoorWeight = "100";
 				};
@@ -195,10 +207,10 @@ new SimGroup(missionGroup) {
 					static = "1";
 					rotate = "0";
 
+					Target = "34";
 					className = "FlagObj";
 					originalPosition = "-300.425 -210.749 127.638 0 0 1 1.5708";
 					isHome = "1";
-					Target = "34";
 					team = "2";
 					WayPoint = "4984";
 					locked = "false";
@@ -219,16 +231,30 @@ new SimGroup(missionGroup) {
 				powerCount = "0";
 
 				new SpawnSphere(BESS1) {
-					position = "-340.772 -329.24 95.6666";
+					position = "-349.372 -262.24 120.467";
 					rotation = "1 0 0 0";
 					scale = "1 1 1";
 					dataBlock = "SpawnSphereMarker";
 					lockCount = "0";
 					homingCount = "0";
-					radius = "70";
-					sphereWeight = "100";
-					indoorWeight = "35";
-					outdoorWeight = "65";
+					radius = "30";
+					sphereWeight = "50";
+					indoorWeight = "0";
+					outdoorWeight = "100";
+
+					locked = "false";
+				};
+				new SpawnSphere(BESS2) {
+					position = "-349.372 -320.04 120.467";
+					rotation = "1 0 0 0";
+					scale = "1 1 1";
+					dataBlock = "SpawnSphereMarker";
+					lockCount = "0";
+					homingCount = "0";
+					radius = "30";
+					sphereWeight = "50";
+					indoorWeight = "0";
+					outdoorWeight = "100";
 
 					locked = "false";
 				};
@@ -376,6 +402,20 @@ new SimGroup(missionGroup) {
 	};
 	new InteriorInstance() {
 		position = "384.348 27.8798 129.486";
+		rotation = "1 0 0 0";
+		scale = "1.79826 0.437515 0.999904";
+		interiorFile = "swall1.dif";
+		showTerrainInside = "0";
+	};
+	new InteriorInstance() {
+		position = "-318.912 -368.16 111.499";
+		rotation = "1 0 0 0";
+		scale = "1.79826 0.437515 0.999904";
+		interiorFile = "swall1.dif";
+		showTerrainInside = "0";
+	};
+	new InteriorInstance() {
+		position = "384.951 68.5927 111.727";
 		rotation = "1 0 0 0";
 		scale = "1.79826 0.437515 0.999904";
 		interiorFile = "swall1.dif";
