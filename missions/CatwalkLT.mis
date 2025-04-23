@@ -1,14 +1,13 @@
-// DisplayName = DMP2-Catwalk LT
+// DisplayName = DMP2-Catwalk LTA
 // MissionTypes = LCTF SCtF
 
 //--- MISSION QUOTE BEGIN ---
-//<quote here>
-//  -- <person quoted here>
+// 
 //--- MISSION QUOTE END ---
 
 //--- MISSION STRING BEGIN ---
-//[CTF]800 points to win
-//Original: DOX | Recreated by: EEor
+//800 points to win
+//<color:008B8B>Map by EEor
 //<spush><color:FFFF00><a:t2boogaloo.com/maps/>Click Here to Download This Map</a><spop>
 //--- MISSION STRING END ---
 

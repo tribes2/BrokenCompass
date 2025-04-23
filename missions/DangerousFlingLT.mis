@@ -3,11 +3,14 @@
 
 //--- MISSION QUOTE BEGIN ---
 //Two bases, each with one flag, separated by a large chasm. A lengthy bridge joins the two. A straight line may be the quickest route, but not necessarily the safest in this mission...
+// 
 //--- MISSION QUOTE END ---
 
 //--- MISSION STRING BEGIN ---
-//[CTF]800 points to win
+//800 points to win
 //Map by Nefilim (assisted: Sparky, z0dd)
+//<color:008B8B>Assets by EEor
+//<spush><color:FFFF00><a:t2boogaloo.com/maps/>Click Here to Download This Map</a><spop>
 //--- MISSION STRING END ---
 
 //--- OBJECT WRITE BEGIN ---

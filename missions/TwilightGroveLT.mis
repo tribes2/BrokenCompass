@@ -2,14 +2,13 @@
 // MissionTypes = SCtF LCTF
 
 //--- MISSION QUOTE BEGIN ---
-//<quote here>
-//  -- <person quoted here>
+// 
 //--- MISSION QUOTE END ---
 
 //--- MISSION STRING BEGIN ---
-//[CTF]<CTF-only mission info>
-//<mission info>
-//<mission info>
+//600 points to win
+//<color:008B8B>Map by EEor
+//<spush><color:FFFF00><a:t2boogaloo.com/maps/>Click Here to Download This Map</a><spop>
 //--- MISSION STRING END ---
 
 datablock ForceFieldBareData(TransferFieldForceFieldT2LOGO)
