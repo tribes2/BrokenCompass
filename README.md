@@ -1,2 +1,2 @@
-# DMP2
-Discord Map Pack 2 Repo
+# Broken Compass
+A Tribes 2 map pack
