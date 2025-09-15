@@ -1,4 +1,4 @@
-// DisplayName = DMP2-Nirvana LTA
+// DisplayName = DMP2-Nirvana LT
 // MissionTypes = LCTF SCtF
 
 //--- MISSION QUOTE BEGIN ---
@@ -8,17 +8,16 @@
 //--- MISSION STRING BEGIN ---
 //800 points to win
 //<color:008B8B>Map by EEor
-//<spush><color:FFFF00><a:t2boogaloo.com/maps/>Click Here to Download This Map</a><spop>
 //--- MISSION STRING END ---
 
 //--- OBJECT WRITE BEGIN ---
-new SimGroup(MissionGroup) {
+new SimGroup(missionGroup) {
 
 	cdTrack = "2";
-	musicTrack = "lush";
-	CTF_scoreLimit = "8";
 	CTF_timeLimit = "25";
+	musicTrack = "lush";
 	powerCount = "0";
+	CTF_scoreLimit = "8";
 
 	new MissionArea(MissionArea) {
 		area = "-512 -384 1040 1040";
@@ -54,25 +53,25 @@ new SimGroup(MissionGroup) {
 		terrainFile = "BeggarsRun.ter";
 		squareSize = "8";
 
-		position = "-1024 -1024 0";
+		visibleDistance = "1200";
 		locked = "true";
 		hazeDistance = "250";
-		visibleDistance = "1200";
+		position = "-1024 -1024 0";
 	};
 	new NavigationGraph(NavGraph) {
 		conjoinAngleDev = "45";
 		cullDensity = "0.3";
 		customArea = "0 0 0 0";
 
-		coverage = "0";
+		scale = "1 1 1";
 		GraphFile = "NirvanaLT.nav";
+		conjoinBowlDev = "20";
+		locked = "true";
+		coverage = "0";
 		XDimOverSize = "0";
 		position = "0 0 0 1";
-		locked = "true";
 		rotation = "0 0 0 0";
 		YDimOverSize = "0";
-		scale = "1 1 1";
-		conjoinBowlDev = "20";
 	};
 	new Sky(Sky) {
 		position = "-1216 -848 0";
@@ -110,9 +109,11 @@ new SimGroup(MissionGroup) {
 	};
 	new SimGroup(Teams) {
 
+		powerCount = "0";
 
 		new SimGroup(Team1) {
 
+			powerCount = "0";
 
 			new Item(t1f) {
 				position = "-83.7659 137.778 165.2";
@@ -125,13 +126,21 @@ new SimGroup(MissionGroup) {
 				static = "1";
 				rotate = "0";
 
+				isHome = "1";
+				Target = "33";
 				className = "FlagObj";
+				team = "1";
+				WayPoint = "5119";
+				Trigger = "5120";
+				originalPosition = "-83.7659 137.778 165.2 0 0 1 1.5708";
 			};
 			new SimGroup(Base0) {
 
+				powerCount = "0";
 			};
 			new SimGroup(spawnspheres) {
 
+				powerCount = "0";
 
 				new SpawnSphere() {
 					position = "-82.9734 120.771 194.321";
@@ -144,7 +153,6 @@ new SimGroup(MissionGroup) {
 					sphereWeight = "5";
 					indoorWeight = "100";
 					outdoorWeight = "0";
-
 				};
 				new SpawnSphere() {
 					position = "-83.8912 108.428 193.922";
@@ -157,7 +165,6 @@ new SimGroup(MissionGroup) {
 					sphereWeight = "5";
 					indoorWeight = "100";
 					outdoorWeight = "0";
-
 				};
 				new SpawnSphere() {
 					position = "-83.8167 154.767 194.527";
@@ -170,7 +177,6 @@ new SimGroup(MissionGroup) {
 					sphereWeight = "5";
 					indoorWeight = "100";
 					outdoorWeight = "0";
-
 				};
 				new SpawnSphere() {
 					position = "-82.8989 167.11 194.926";
@@ -183,7 +189,6 @@ new SimGroup(MissionGroup) {
 					sphereWeight = "5";
 					indoorWeight = "100";
 					outdoorWeight = "0";
-
 				};
 				new SpawnSphere() {
 					position = "-89.2763 155.128 210.589";
@@ -196,7 +201,6 @@ new SimGroup(MissionGroup) {
 					sphereWeight = "10";
 					indoorWeight = "100";
 					outdoorWeight = "0";
-
 				};
 				new SpawnSphere() {
 					position = "-88.3585 167.471 210.988";
@@ -209,7 +213,6 @@ new SimGroup(MissionGroup) {
 					sphereWeight = "10";
 					indoorWeight = "100";
 					outdoorWeight = "0";
-
 				};
 				new SpawnSphere() {
 					position = "-86.9381 168.433 157.559";
@@ -222,7 +225,6 @@ new SimGroup(MissionGroup) {
 					sphereWeight = "25";
 					indoorWeight = "100";
 					outdoorWeight = "0";
-
 				};
 				new SpawnSphere() {
 					position = "-88.026 120.401 210.818";
@@ -235,7 +237,6 @@ new SimGroup(MissionGroup) {
 					sphereWeight = "10";
 					indoorWeight = "100";
 					outdoorWeight = "0";
-
 				};
 				new SpawnSphere() {
 					position = "-86.9381 110.433 157.559";
@@ -248,12 +249,12 @@ new SimGroup(MissionGroup) {
 					sphereWeight = "25";
 					indoorWeight = "100";
 					outdoorWeight = "0";
-
 				};
 			};
 		};
 		new SimGroup(Team2) {
 
+			powerCount = "0";
 
 			new Item(t2f) {
 				position = "80.7951 137.726 165.207";
@@ -266,13 +267,21 @@ new SimGroup(MissionGroup) {
 				static = "1";
 				rotate = "0";
 
+				isHome = "1";
+				Target = "34";
 				className = "FlagObj";
+				team = "2";
+				WayPoint = "5121";
+				Trigger = "5122";
+				originalPosition = "80.7951 137.726 165.207 0 0 1 1.5708";
 			};
 			new SimGroup(Base0) {
 
+				powerCount = "0";
 			};
 			new SimGroup(spawnspheres) {
 
+				powerCount = "0";
 
 				new SpawnSphere() {
 					position = "87.0665 167.413 210.419";
@@ -285,7 +294,6 @@ new SimGroup(MissionGroup) {
 					sphereWeight = "5";
 					indoorWeight = "100";
 					outdoorWeight = "0";
-
 				};
 				new SpawnSphere() {
 					position = "86.4154 155.055 210.818";
@@ -298,7 +306,6 @@ new SimGroup(MissionGroup) {
 					sphereWeight = "10";
 					indoorWeight = "100";
 					outdoorWeight = "0";
-
 				};
 				new SpawnSphere() {
 					position = "85.5641 107.998 210.988";
@@ -311,7 +318,6 @@ new SimGroup(MissionGroup) {
 					sphereWeight = "5";
 					indoorWeight = "100";
 					outdoorWeight = "0";
-
 				};
 				new SpawnSphere() {
 					position = "81.2275 166.718 193.922";
@@ -324,7 +330,6 @@ new SimGroup(MissionGroup) {
 					sphereWeight = "10";
 					indoorWeight = "100";
 					outdoorWeight = "0";
-
 				};
 				new SpawnSphere() {
 					position = "80.5722 154.558 194.321";
@@ -337,7 +342,6 @@ new SimGroup(MissionGroup) {
 					sphereWeight = "5";
 					indoorWeight = "100";
 					outdoorWeight = "0";
-
 				};
 				new SpawnSphere() {
 					position = "86.1135 164.906 157.559";
@@ -350,7 +354,6 @@ new SimGroup(MissionGroup) {
 					sphereWeight = "25";
 					indoorWeight = "100";
 					outdoorWeight = "0";
-
 				};
 				new SpawnSphere() {
 					position = "81.1499 120.532 194.527";
@@ -363,7 +366,6 @@ new SimGroup(MissionGroup) {
 					sphereWeight = "5";
 					indoorWeight = "100";
 					outdoorWeight = "0";
-
 				};
 				new SpawnSphere() {
 					position = "80.4987 108.172 194.926";
@@ -376,7 +378,6 @@ new SimGroup(MissionGroup) {
 					sphereWeight = "5";
 					indoorWeight = "100";
 					outdoorWeight = "0";
-
 				};
 				new SpawnSphere() {
 					position = "87.3658 106.92 157.559";
@@ -389,7 +390,6 @@ new SimGroup(MissionGroup) {
 					sphereWeight = "25";
 					indoorWeight = "100";
 					outdoorWeight = "0";
-
 				};
 				new SpawnSphere() {
 					position = "86.2153 120.358 210.589";
@@ -402,20 +402,21 @@ new SimGroup(MissionGroup) {
 					sphereWeight = "5";
 					indoorWeight = "100";
 					outdoorWeight = "0";
-
 				};
 			};
 		};
 		new SimGroup(Team0) {
 
+			powerCount = "0";
 
 			new InteriorInstance() {
 				position = "-1.41873 137.759 149.191";
 				rotation = "1 0 0 0";
 				scale = "1 1 1";
-				interiorFile = "ee_nirvana_base.dif";
+				interiorFile = "ee_nirvana-base.dif";
 				showTerrainInside = "0";
 
+				team = "0";
 			};
 			new InteriorInstance() {
 				position = "-5.50733 139.923 232.344";
@@ -424,26 +425,29 @@ new SimGroup(MissionGroup) {
 				interiorFile = "dmisc_stonehenge2.dif";
 				showTerrainInside = "0";
 
+				team = "0";
 			};
-			new StaticShape() {
-				position = "9.24022 -12.3374 247.066";
+			new StaticShape(cpad1) {
+				position = "34.3493 137.807 158.305";
 				rotation = "1 0 0 0";
-				scale = "1 1 1";
-				nameTag = "Base";
+				scale = "1.3 1.3 1.3";
 				dataBlock = "CreativityPad";
 				lockCount = "0";
 				homingCount = "0";
 
 				minSpeed = "100";
 				jumpPower = "100";
+				team = "0";
 			};
 		};
 	};
 	new SimGroup(Ambiance) {
 
+		powerCount = "0";
 	};
 	new SimGroup(RandomOrganics) {
 
+		powerCount = "0";
 
 		new Item() {
 			position = "0 0 0";
@@ -456,15 +460,7 @@ new SimGroup(MissionGroup) {
 			static = "1";
 			rotate = "0";
 
-		};
-		new StaticShape() {
-			position = "-37.4507 137.807 158.305";
-			rotation = "1 0 0 0";
-			scale = "1.3 1.3 1.3";
-			dataBlock = "CreativityPad";
-			lockCount = "0";
-			homingCount = "0";
-
+			Target = "-1";
 		};
 		new SpawnSphere() {
 			position = "-88.026 108.401 210.818";
@@ -477,7 +473,6 @@ new SimGroup(MissionGroup) {
 			sphereWeight = "5";
 			indoorWeight = "100";
 			outdoorWeight = "0";
-
 		};
 		new Item() {
 			position = "-88.2091 215.539 213.091";
@@ -490,6 +485,7 @@ new SimGroup(MissionGroup) {
 			static = "1";
 			rotate = "0";
 
+			Target = "-1";
 		};
 		new Item() {
 			position = "83.4659 216.341 213.091";
@@ -502,6 +498,7 @@ new SimGroup(MissionGroup) {
 			static = "1";
 			rotate = "0";
 
+			Target = "-1";
 		};
 		new Item() {
 			position = "84.6194 59.9332 213.091";
@@ -514,6 +511,7 @@ new SimGroup(MissionGroup) {
 			static = "1";
 			rotate = "0";
 
+			Target = "-1";
 		};
 		new Item() {
 			position = "-87.9784 58.6742 213.091";
@@ -526,6 +524,7 @@ new SimGroup(MissionGroup) {
 			static = "1";
 			rotate = "0";
 
+			Target = "-1";
 		};
 		new Item() {
 			position = "-1.4882 140.057 218.202";
@@ -538,6 +537,7 @@ new SimGroup(MissionGroup) {
 			static = "1";
 			rotate = "0";
 
+			Target = "-1";
 		};
 		new Item() {
 			position = "-10.5468 218.967 211.787";
@@ -550,6 +550,7 @@ new SimGroup(MissionGroup) {
 			static = "1";
 			rotate = "0";
 
+			Target = "-1";
 		};
 		new Item() {
 			position = "6.0532 218.967 211.787";
@@ -562,6 +563,7 @@ new SimGroup(MissionGroup) {
 			static = "1";
 			rotate = "0";
 
+			Target = "-1";
 		};
 		new Item() {
 			position = "-2.3468 218.967 211.787";
@@ -574,6 +576,7 @@ new SimGroup(MissionGroup) {
 			static = "1";
 			rotate = "0";
 
+			Target = "-1";
 		};
 		new Item() {
 			position = "-2.3468 55.567 211.787";
@@ -586,6 +589,7 @@ new SimGroup(MissionGroup) {
 			static = "1";
 			rotate = "0";
 
+			Target = "-1";
 		};
 		new Item() {
 			position = "6.0532 55.567 211.787";
@@ -598,6 +602,7 @@ new SimGroup(MissionGroup) {
 			static = "1";
 			rotate = "0";
 
+			Target = "-1";
 		};
 		new Item() {
 			position = "-10.5468 55.567 211.787";
@@ -610,6 +615,7 @@ new SimGroup(MissionGroup) {
 			static = "1";
 			rotate = "0";
 
+			Target = "-1";
 		};
 		new InteriorInstance() {
 			position = "-37.4288 141.12 148.81";
@@ -617,7 +623,6 @@ new SimGroup(MissionGroup) {
 			scale = "0.149233 0.431261 0.296246";
 			interiorFile = "dbunk5.dif";
 			showTerrainInside = "0";
-
 		};
 		new InteriorInstance() {
 			position = "34.3712 141.12 148.81";
@@ -625,18 +630,17 @@ new SimGroup(MissionGroup) {
 			scale = "0.149233 0.431261 0.296246";
 			interiorFile = "dbunk5.dif";
 			showTerrainInside = "0";
-
 		};
 		new TSStatic() {
 			position = "-1.37478 140.025 229.202";
 			rotation = "0.926798 -0.375559 -0.000299097 180.085";
 			scale = "0.700411 0.772599 0.33777";
 			shapeName = "borg16.dts";
-
 		};
 	};
 	new SimGroup(ObserverDropPoints) {
 
+		powerCount = "0";
 
 		new Camera() {
 			position = "80.8997 122.208 209.858";
@@ -645,7 +649,6 @@ new SimGroup(MissionGroup) {
 			dataBlock = "Observer";
 			lockCount = "0";
 			homingCount = "0";
-
 		};
 		new Camera() {
 			position = "-55.7382 56.7952 201.479";
@@ -654,7 +657,6 @@ new SimGroup(MissionGroup) {
 			dataBlock = "Observer";
 			lockCount = "0";
 			homingCount = "0";
-
 		};
 		new Camera() {
 			position = "-46.7841 157.86 218.403";
@@ -663,7 +665,6 @@ new SimGroup(MissionGroup) {
 			dataBlock = "Observer";
 			lockCount = "0";
 			homingCount = "0";
-
 		};
 		new Camera() {
 			position = "85.0152 57.6875 188.09";
@@ -672,7 +673,6 @@ new SimGroup(MissionGroup) {
 			dataBlock = "Observer";
 			lockCount = "0";
 			homingCount = "0";
-
 		};
 		new Camera() {
 			position = "-92.1614 215.306 220.689";
@@ -681,8 +681,19 @@ new SimGroup(MissionGroup) {
 			dataBlock = "Observer";
 			lockCount = "0";
 			homingCount = "0";
-
 		};
+	};
+	new StaticShape(cpad2) {
+		position = "-37.2507 137.807 158.305";
+		rotation = "1 0 0 0";
+		scale = "1.3 1.3 1.3";
+		dataBlock = "CreativityPad";
+		lockCount = "0";
+		homingCount = "0";
+
+		minSpeed = "100";
+		jumpPower = "100";
+		team = "0";
 	};
 };
 //--- OBJECT WRITE END ---

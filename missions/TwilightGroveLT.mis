@@ -8,7 +8,6 @@
 //--- MISSION STRING BEGIN ---
 //600 points to win
 //<color:008B8B>Map by EEor
-//<spush><color:FFFF00><a:t2boogaloo.com/maps/>Click Here to Download This Map</a><spop>
 //--- MISSION STRING END ---
 
 datablock ForceFieldBareData(TransferFieldForceFieldT2LOGO)
@@ -276,7 +275,7 @@ new SimGroup(missionGroup) {
 				position = "178.475 294.764 114.479";
 				rotation = "0 0 1 0.481325";
 				scale = "1 1 1";
-				interiorFile = "ee_tg_base.dif";
+				interiorFile = "ee_tg-base.dif";
 				showTerrainInside = "0";
 
 				team = "1";
@@ -291,7 +290,7 @@ new SimGroup(missionGroup) {
 				homingCount = "0";
 				collideable = "0";
 				static = "1";
-				rotate = "0";
+				rotate = "1";
 
 				originalPosition = "178.449 310.759 116.484 0 0 1 1.5792";
 				team = "1";
@@ -367,7 +366,7 @@ new SimGroup(missionGroup) {
 				homingCount = "0";
 				collideable = "0";
 				static = "1";
-				rotate = "0";
+				rotate = "1";
 
 				originalPosition = "-81.0344 -430.598 116.484 0 0 -1 1.5708";
 				team = "2";
@@ -382,7 +381,7 @@ new SimGroup(missionGroup) {
 				position = "-81.2154 -414.604 114.479";
 				rotation = "0 0 1 180";
 				scale = "1 1 1";
-				interiorFile = "ee_tg_base.dif";
+				interiorFile = "ee_tg-base.dif";
 				showTerrainInside = "0";
 
 				team = "2";

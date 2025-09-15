@@ -2,13 +2,27 @@
 // MissionTypes = CTF
 
 //--- MISSION QUOTE BEGIN ---
-//In space, no one can hear you scream. But they can hear ‘HEADSHOT’ at max volume.
+//There is nothing noble in being superior to your fellow man. 
+//True nobility lies in being superior to your former self.
+//-- Ernest Hemingway
 //--- MISSION QUOTE END ---
 
 //--- MISSION STRING BEGIN ---
-//800 points to win
-//<color:008B8B>Map by DarkTiger
+//[Cluster]800 points to win
+//<color:008B8B>Map by ChocoTaco
+//<color:008B8B>Moded by DarkTiger
 //--- MISSION STRING END ---
+
+datablock StaticShapeData(faceBox){
+   catagory = "MISC";
+   shapeFile = "faceBox.dts";
+   alwaysAmbient = true;
+   isInvincible = true;
+};
+
+datablock TriggerData(faceDeathTrigger){
+   tickPeriodMS =  1000;
+};
 
 function faceDeathTrigger::onEnterTrigger(%data, %trigger, %player){
 	%player.damage(0, %player.getPosition(), 100, $DamageType::Suicide);
