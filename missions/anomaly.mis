@@ -549,26 +549,6 @@ new SimGroup(MissionGroup) {
 					team = "1";
 					Target = "51";
 				};
-				new StaticShape() {
-					position = "-928.59 17.5306 367.993";
-					rotation = "0 0 1 179.909";
-					scale = "1 1 1";
-					nameTag = "Inventory";
-					dataBlock = "weaponBuilder";
-					lockCount = "0";
-					homingCount = "0";
-
-					locked = "true";
-					invincible = "1";
-					lastDamagedByTeam = "1";
-					Trigger = "4325";
-					team = "1";
-					init = "0";
-					damageTimeMS = "750270";
-					lastDamagedBy = "4263";
-					Target = "52";
-					pwrTrigger = "4325";
-				};
 				new Item() {
 					position = "-914.027 -4.06103 368.072";
 					rotation = "0 0 -1 90.7086";
@@ -583,23 +563,6 @@ new SimGroup(MissionGroup) {
 					locked = "true";
 					team = "1";
 					Target = "-1";
-				};
-				new StaticShape() {
-					position = "-928.773 -25.7527 367.922";
-					rotation = "0 0 -1 0.163129";
-					scale = "1 1 1";
-					nameTag = "Inventory";
-					dataBlock = "weaponBuilder";
-					lockCount = "0";
-					homingCount = "0";
-
-					locked = "true";
-					invincible = "1";
-					Trigger = "4328";
-					team = "1";
-					init = "0";
-					Target = "53";
-					pwrTrigger = "4328";
 				};
 				new StaticShape() {
 					position = "-910.271 7.79211 368.041";
@@ -2605,40 +2568,6 @@ new SimGroup(MissionGroup) {
 					team = "2";
 					Target = "114";
 				};
-				new StaticShape() {
-					position = "920.784 -25.9425 367.978";
-					rotation = "1 0 0 0";
-					scale = "1 1 1";
-					nameTag = "Inventory";
-					dataBlock = "weaponBuilder";
-					lockCount = "0";
-					homingCount = "0";
-
-					locked = "true";
-					invincible = "1";
-					Trigger = "4516";
-					team = "2";
-					init = "0";
-					Target = "115";
-					pwrTrigger = "4516";
-				};
-				new StaticShape() {
-					position = "920.91 17.6184 368.012";
-					rotation = "0 0 1 179.909";
-					scale = "1 1 1";
-					nameTag = "Inventory";
-					dataBlock = "weaponBuilder";
-					lockCount = "0";
-					homingCount = "0";
-
-					locked = "true";
-					invincible = "1";
-					Trigger = "4518";
-					team = "2";
-					init = "0";
-					Target = "116";
-					pwrTrigger = "4518";
-				};
 				new SimGroup(t2trigs) {
 
 					powerCount = "2";
@@ -3419,25 +3348,6 @@ new SimGroup(MissionGroup) {
 				locked = "true";
 				team = "0";
 				Target = "-1";
-			};
-			new StaticShape() {
-				position = "-20.4755 -16.1418 192.14";
-				rotation = "0 0 1 89.9543";
-				scale = "1 1 1";
-				nameTag = "Inventory";
-				dataBlock = "weaponBuilder";
-				lockCount = "0";
-				homingCount = "0";
-
-				invincible = "1";
-				lastDamagedByTeam = "1";
-				Trigger = "4587";
-				team = "0";
-				init = "0";
-				damageTimeMS = "4655161";
-				lastDamagedBy = "4265";
-				Target = "125";
-				pwrTrigger = "4587";
 			};
 			new StaticShape() {
 				position = "22.2423 -16.1307 192.157";

@@ -1,6 +1,7 @@
-autoExec("scripts/twinDrakesGame.cs",0,0);
+//autoExec("scripts/twinDrakesGame.cs",0,0);
 
 $dragon::fireTime = 1000 * 20;
+$dragon::burn = 0;
 datablock ParticleData(midMapSmokeParticle) {
    dragCoefficient = "0";
    windCoefficient = "0";
@@ -55,6 +56,30 @@ datablock TriggerData(DragonFireTrig){
    tickPeriodMS =  32;
 };
 
+datablock StaticShapeData(fireFireSwitch)
+{
+   catagory = "misc";
+   shapefile = "switch.dts";
+   isInvincible = true;
+   alwaysAmbient = true;
+   needsNoPower = true;
+   emap = true;
+};
+function fireFireSwitch::onCollision(%data,%obj,%col)
+{
+   if (%col.getDataBlock().className $= Armor && (!game.burnTrigTime || (getSimTime() - game.burnTrigTime) > (60000 * 5))){
+      burnStart();   
+      game.burnTrigTime = getSimTime();
+      game.dragonTrigPlr = %col;
+   }
+   else{
+      %timeMS = (60000 * 5) - (getSimTime() - game.burnTrigTime);
+      if(%timeMS > 0){
+         messageClient(%col.client, 'MsgClient', '\c0Dragon fire ready in %1.~wfx/powered/station_denied.wav', game.formatTime(%timeMS));
+      }
+   }
+
+}
 package tdSki{
   function Armor::onTrigger(%data, %player, %triggerNum, %val){
       parent::onTrigger(%data, %player, %triggerNum, %val);
@@ -127,6 +152,10 @@ function DragonFireTrig::onEnterTrigger(%data, %trigger, %player){
          }
       }
       if(%strike){
+         %minLeft =  mFloor((((60000) * 15) - (getSimTime() - game.firstTrig)) / 1000 / 60);
+         if(%minLeft > 0){
+            messageClient(%player.client, 'MsgClient', '\c0The dark weapon unlocks in %1 minutes.~wfx/powered/station_denied.wav', %minLeft);
+         }
 
          %pos = "201.062 -22.3359 315.09";
          %p = new (SniperProjectile)() {
@@ -178,18 +207,14 @@ function DragonFireTrig::onEnterTrigger(%data, %trigger, %player){
       }
    }
    else{
-      %flag = %player.holdingflag;
-      if(%flag > 0){
-         burnStart();   
-      }
       %player.burnZone = 1;
       if($dragon::burn && (getSimTime() - $dragon::burn) < $dragon::fireTime){
          if(!%player.isBurning){
-            schedule(3000, 0, "burnObjectD", %player, %player);
+            %source = isObject(game.dragonTrigPlr) == 1 ? game.dragonTrigPlr : %player;
+            burnObjectD(%player, %source);
          }
       }
    }
-
 }
 
 function DragonFireTrig::onTriggerTick(%this, %triggerId){
@@ -436,45 +461,14 @@ datablock ParticleEmitterData(BurnEmitterD)
    particles = "BurnParticleD";
 };
 
-datablock ShapeBaseImageData(burnImgD)
-{
 
-   shapeFile = "turret_muzzlepoint.dts";
-   emap = true;
-   correctMuzzleVector = true; 
-   
-   stateName[0] = "Activate";
-   stateTransitionOnTimeout[0] = "ActivateReady";
-   stateTimeoutValue[0] = 0.001;
-   stateSequence[0] = "Activate";
-
-   stateName[1] = "ActivateReady";
-   stateTransitionOnLoaded[1] = "Ready";
-
-   stateName[2] = "Ready";
-   stateEmitter[2] = "BurnEmitterD";
-   stateEmitterNode[2] = "muzzlepoint1";
-   stateEmitterTime[2] = 30000;
-   
-   offset = "-0.20 -0.31 -0.3";
-   rotation = "1 0 0 -90";
-};
-
-function burnObjectD(%obj, %source){
-   %burnloop = 512;
+function burnObjectD(%obj, %source, %part){
+   %burnloop = 128;
    %damageMasks = $TypeMasks::PlayerObjectType | $TypeMasks::StationObjectType | $TypeMasks::GeneratorObjectType |
                   $TypeMasks::SensorObjectType | $TypeMasks::TurretObjectType | $TypeMasks::CorpseObjectType;
    if(isObject(%obj) && (%obj.getType() & %damageMasks) && !isObject(%obj.holdingflag)){
-      %obj.isBurning = 1;
       %pos = %obj.getPosition(); 
-      if((%obj.getType() & ($TypeMasks::PlayerObjectType | $TypeMasks::CorpseObjectType))){
-         if(!%obj.getMountedImage(1)){
-            %obj.mountImage(burnImgD, 1);
-            %obj.burnCount = 0;
-            %obj.fireDmg =  %obj.getDamagePercent();
-         } 
-      }
-      else if(!isObject(%obj.BurnEmitter)){
+      if(!isObject(%part)){
          %part = new ParticleEmissionDummy() {
             position =  %pos;
             rotation = "1 0 0 0";
@@ -484,32 +478,46 @@ function burnObjectD(%obj, %source){
             velocity = "1";
          };  
          MissionCleanup.add(%part);  
-         %obj.BurnEmitter = %part;
          %obj.burnCount = 0;
          %obj.fireDmg =  %obj.getDamagePercent();
+
+         if(!%obj.isBurning && (%obj.getType() & $TypeMasks::PlayerObjectType)){
+            messageClient(%obj.client, 'MsgClient', '\c1You are on fire, find water or use health pack!~wfx/misc/warning_beep.wav');
+         }
       }
+      else if(isObject(%part) &&(%obj.getType() & ($TypeMasks::PlayerObjectType | $TypeMasks::CorpseObjectType))){
+          %part.delete();
+          %part = new ParticleEmissionDummy() {
+            position =  %pos;
+            rotation = "1 0 0 0";
+            scale = "1 1 1";
+            dataBlock = defaultEmissionDummy;
+            emitter = "BurnEmitterD";
+            velocity = "1";
+         };  
+         MissionCleanup.add(%part); 
+      }
+      %obj.isBurning = 1;
       %hit = ContainerRayCast(vectorAdd(%pos,"0 0 1000"), %pos, $TypeMasks::WaterObjectType, %obj);
       if(%hit)
          %wet  = (getWord(%hit,3) - getWord(%pos,2)) > 0.5; 
       else
          %wet = 0;  
-      //error((%obj.getDamagePercent()+0.001) - %obj.fireDmg SPC  %obj.getDamagePercent() SPC %obj.fireDmg );
       if(%obj.burnCount < 10000 && !%wet && ((%obj.getDamagePercent()+0.001) - %obj.fireDmg) >= 0){
-         //%obj.getDatablock().damageObject(%obj, %source, %pos, 0.1, $DamageType:Dark);
-         %obj.damage(%source, %pos, 0.04, $DamageType::Plasma);
-         %obj.burnEvent = schedule(%burnloop, 0, "burnObjectD", %obj, %source); 
+         %obj.damage(%source, %pos, 0.005, $DamageType::Plasma);
+         %obj.burnEvent = schedule(%burnloop, 0, "burnObjectD", %obj, %source, %part); 
       }
       else{
-         if((%obj.getType() & ($TypeMasks::PlayerObjectType | $TypeMasks::CorpseObjectType))){
-            %obj.unmountImage(1);
-         }
-         else if(isObject(%obj.BurnEmitter)){
-            %obj.BurnEmitter.delete();
+         if(isObject(%part)){
+            %part.delete();
          }
          %obj.isBurning = 0;
       }
       %obj.fireDmg =  %obj.getDamagePercent();
       %obj.burnCount += %burnloop;
+   }
+   else if(isObject(%part)){//obj is no more
+      %part.delete();
    }
 }
 
@@ -1652,7 +1660,9 @@ function SEShot::onExplode(%data, %proj, %pos, %mod){
    %obj =  %proj.sourceObject;
    InitContainerRadiusSearch(%pos, 350, $TypeMasks::PlayerObjectType | $TypeMasks::TurretObjectType | $TypeMasks::SensorObjectType);
    while ((%burnObj = containerSearchNext()) != 0){
-      burnObjectD(%burnObj, %obj);
+      if(!%burnObj.isBurning){
+         burnObjectD(%burnObj, %obj);
+      }
    }
    for(%i = 0; %i < %burstCount; %i++){
       %cycPos = tubeDK(%i+50, 32, %pos, vectorAdd(%pos,"0 0 1"), %i % 32);

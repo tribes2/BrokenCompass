@@ -11,6 +11,77 @@ function T1StartObj::onAdd(%this, %obj){
       %obj.setName("StarsiegeTribesMap");
    }
 }
+
+
+function T1WeaponImage::onMount(%this,%obj,%slot)
+{
+   //MES -- is call below useful at all?
+   //Parent::onMount(%this, %obj, %slot);
+   if(%obj.getClassName() !$= "Player")
+      return;
+
+   //messageClient(%obj.client, 'MsgWeaponMount', "", %this, %obj, %slot);
+   // Looks arm position
+   if (%this.armthread $= "")
+   {
+      %obj.setArmThread(look);
+   }
+   else
+   {
+      %obj.setArmThread(%this.armThread);
+   }
+   
+   // Initial ammo state
+   if(%obj.getMountedImage($WeaponSlot).ammo !$= "")
+      if (%obj.getInventory(%this.ammo))
+         %obj.setImageAmmo(%slot,true);
+
+   %shape = %this.shapeFile;
+   switch$(%shape){//    t1RepairPackGun.dts
+      case "t1plasma.dts":
+         %obj.client.setWeaponsHudActive("Blaster");
+      case "t1Chaingun.dts":
+         %obj.client.setWeaponsHudActive("Chaingun");
+      case "t1disc.dts":
+         %obj.client.setWeaponsHudActive("Disc");
+      case "T1ELF.dts":
+         %obj.client.setWeaponsHudActive("ELFGun");
+      case "t1GrenadeLauncher.dts":
+         %obj.client.setWeaponsHudActive("GrenadeLauncher");
+      case "t1mortar.dts":
+         %obj.client.setWeaponsHudActive("Mortar");
+      case "t1plasma.dts":
+         %obj.client.setWeaponsHudActive("Plasma");
+      case "t1sniper.dts":
+         %obj.client.setWeaponsHudActive("SniperRifle");
+      case "t1TargetLaser.dts":
+         %obj.client.setWeaponsHudActive("TargetingLaser");
+      default:
+         %obj.client.setWeaponsHudActive("Blaster");
+   }
+   if(%obj.getMountedImage($WeaponSlot).ammo !$= "")
+      %obj.client.setAmmoHudCount(%obj.getInventory(%this.ammo));
+   else
+      %obj.client.setAmmoHudCount(-1);
+}
+
+function T1WeaponImage::onUnmount(%this,%obj,%slot)
+{
+   %obj.client.setWeaponsHudActive(%this.item, 1);
+   %obj.client.setAmmoHudCount(-1);
+   commandToClient(%obj.client,'removeReticle');
+   // try to avoid running around with sniper/missile arm thread and no weapon
+   %obj.setArmThread(look);
+   Parent::onUnmount(%this, %obj, %slot);
+}
+
+function giveDisc(){
+   %player = LocalClientConnection.player; 
+   %player.setInventory("T1Disc", 1, true);
+   %player.setInventory("DiscAmmo", 15, true);
+}
+
+
 datablock AudioProfile(T1RainSfx)
 {
    filename    = "t1sounds/rain.wav";
@@ -172,7 +243,7 @@ datablock ItemData(T1DiscAmmo)
 
 
 datablock ShapeBaseImageData(T1DiscImage){   
-   className = WeaponImage;
+   className = T1WeaponImage;
    shapeFile = "t1disc.dts";
    item = T1Disc;
    ammo = T1DiscAmmo;
@@ -239,11 +310,6 @@ function T1DiscImage::onUnmount(%this,%obj,%slot){
 
 }
 
-function giveDisc(){
-   %player = LocalClientConnection.player; 
-   %player.setInventory("T1Disc", 1, true);
-   %player.setInventory("DiscAmmo", 15, true);
-}
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -299,7 +365,7 @@ datablock TargetProjectileData(t1BasicTargeter)
 
 datablock ShapeBaseImageData(T1TargetingLaserImage)
 {
-   className = WeaponImage;
+   className = T1WeaponImage;
 
    shapeFile = "t1TargetLaser.dts";
    item = TargetingLaser;
@@ -432,7 +498,7 @@ datablock ELFProjectileData(T1BasicELF)
 };
 
 datablock ShapeBaseImageData(T1ELFImage){   
-   className = WeaponImage;
+   className = T1WeaponImage;
    shapeFile = "T1ELF.dts";
    item = T1ELF;
    offset = "0 0 0";
@@ -603,7 +669,7 @@ datablock ItemData(T1Sniper){
 };
 
 datablock ShapeBaseImageData(T1SniperImage){   
-   className = WeaponImage;
+   className = T1WeaponImage;
    shapeFile = "t1sniper.dts";
    item = T1Sniper;
    //ammo = PlasmaAmmo;
@@ -795,7 +861,7 @@ datablock ItemData(T1Blaster){
 };
 
 datablock ShapeBaseImageData(T1BlasterImage){   
-   className = WeaponImage;
+   className = T1WeaponImage;
    shapeFile = "t1blaster.dts";
    item = T1Blaster;
    //ammo = PlasmaAmmo;
@@ -977,7 +1043,7 @@ datablock ItemData(T1PlasmaAmmo)
 };
 
 datablock ShapeBaseImageData(T1PlasmaImage){   
-   className = WeaponImage;
+   className = T1WeaponImage;
    shapeFile = "t1plasma.dts";
    item = T1Plasma;
    ammo = T1PlasmaAmmo;
@@ -1087,7 +1153,7 @@ datablock AudioProfile(T1MortarIdleSound)
 datablock ItemData(T1Mortar){
    className = Weapon;
    catagory = "Spawn Items";
-   shapeFile = "t1mortar.dts";
+   shapeFile = "t1mortar.dts"; 
    image = T1MortarImage;
    mass = 1;
    elasticity = 0.2;
@@ -1181,7 +1247,7 @@ datablock GrenadeProjectileData(T1MortarShot)
 };
 
 datablock ShapeBaseImageData(T1MortarImage){   
-   className = WeaponImage;
+   className = T1WeaponImage;
    shapeFile = "t1mortar.dts";
    item = T1Mortar;
    ammo = T1MortarAmmo;
@@ -1333,7 +1399,7 @@ datablock GrenadeProjectileData(T1BasicGrenade)
 datablock ItemData(T1GL){
    className = Weapon;
    catagory = "Spawn Items";
-   shapeFile = "t1GrenadeLauncher.dts";
+   shapeFile = "t1GrenadeLauncher.dts"; 
    image = T1GLImage;
    mass = 1;
    elasticity = 0.2;
@@ -1359,7 +1425,7 @@ datablock ItemData(T1GrenadeLauncherAmmo)
 
 
 datablock ShapeBaseImageData(T1GLImage){   
-   className = WeaponImage;
+   className = T1WeaponImage;
    shapeFile = "t1GrenadeLauncher.dts";
    item = T1GL;
    ammo = T1GrenadeLauncherAmmo;
@@ -1542,7 +1608,7 @@ datablock TracerProjectileData(t1ChaingunBullet3) : t1ChaingunBullet1 {
 datablock ItemData(T1ChainGun){
    className = Weapon;
    catagory = "Spawn Items";
-   shapeFile = "t1Chaingun.dts";
+   shapeFile = "t1Chaingun.dts"; 
    image = T1ChainGunImage;
    mass = 1;
    elasticity = 0.2;
@@ -1568,7 +1634,7 @@ datablock ItemData(T1ChaingunAmmo)
 
 
 datablock ShapeBaseImageData(T1ChainGunImage){   
-   className = WeaponImage;
+   className = T1WeaponImage;
    shapeFile = "t1Chaingun.dts";
 
    item = T1ChainGun;

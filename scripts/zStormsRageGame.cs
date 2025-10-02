@@ -42,7 +42,7 @@ $tickCountZap = 0;
 
 function stormragesim(){
    if(($MatchStarted + $missionRunning) == 2 && isObject(floodblock) && ($HostGamePlayerCount - $HostGameBotCount > 0) && !$testcheats){
-		if($tickCountZap > (60 * 10)){
+		if($tickCountZap > (60 * 5)){
 			%amount = $zapFloodAmount / $zapTimeSec;
 			if(floodblock.he  < $zapFloodAmount){
 				floodblock.he += %amount;
@@ -64,9 +64,11 @@ function stormragesim(){
 		  %obj = zapTowers.getObject(getRandom(0,zapTowers.getCount()-1));
 		  zapTarget(%obj,1);
 	   }
-	   if($tickCountZap == (60 * 15)){
-		  setupTR(32,32,6,70,15,2,4,90,60000*5);
-		  addRainMist();  
+      if($tickCountZap == (60 * 10)){
+         addRainMist(); 
+      }
+	   if($tickCountZap == (60 * 12)){
+		  setupTR(32,32,6,70,15,2,4,90,60000*3); 
 	   }
 		for(%i = 0; %i < ClientGroup.getCount(); %i++){
 			%client = ClientGroup.getObject(%i);
@@ -76,13 +78,17 @@ function stormragesim(){
 				 %x = getWord(%pos,0);
 				 %y = getWord(%pos,1);
 				 %z = getWord(%pos,2);
-				if(%x > 280  || %x < -280 || %y > 1000  || %y < -1000 || %z > 350){
+				if(%x > 280  || %x < -280 || %y > 900  || %y < -900 || %z > 350){
 					if(%player.zapSafe){
 						messageClient(%player.client, 'safeArea', '\c1You are leaving the safe area.~wfx/misc/warning_beep.wav'); 
 						%player.zapSafe = 0;
 					}
-					if(isObject(%player) && !%player.zapSafe && getRandom(1,20) == 1){
-						zapTarget(%player,50);       
+					if(isObject(%player) && !%player.zapSafe){
+                  if(%player.getState() !$= "Dead"){
+                     if(getRandom(1,20) == 1 || (%x > 300  || %x < -300 || %y > 1033  || %y < -1033 || %z > 400)){
+						      zapTarget(%player,50);       
+                     }
+                  }
 					}
 				}
 				else{

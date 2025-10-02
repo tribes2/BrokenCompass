@@ -1,6 +1,6 @@
 datablock StaticShapeData(faceBox){
    catagory = "MISC";
-   shapeFile = "faceBox.dts";
+   shapeFile = "faceSphere.dts";
    alwaysAmbient = true;
    isInvincible = true;
 };
