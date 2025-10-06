@@ -1,0 +1,23 @@
+name: Wrap up Broken Compass in a comfy .vl2 file
+
+on:
+  push:
+    tags:
+      - '*'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write 
+
+    steps:
+      - name: Build and release a vl2 using the vl2-builder action
+        uses: tribes2/vl2-builder@v1
+        with:
+          tag-name: ${{ github.ref_name }}
+          archive-prefix: 'z_DMP'
+          
+      - name: Report build success for the fun of it
+        run: |
+          echo "Successfully released asset: ${{ steps.release.outputs.asset_name }}"
