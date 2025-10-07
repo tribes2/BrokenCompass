@@ -636,3 +636,8 @@ function StormGameStart::onAdd(%this, %obj){
       $zapSimEvent = schedule(10000, 0, "stormragesim");// allow time in case we open the editor 
    }
 }
+
+function StormGameStart::onRemove(%this, %Obj){
+   Parent::onRemove();
+   cancel($zapSimEvent);// end the sim 
+}

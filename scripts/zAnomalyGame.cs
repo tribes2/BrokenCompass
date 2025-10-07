@@ -481,134 +481,131 @@ function aGameLoop(){
          %pos = "-4.41736 -3.32352 432.785";
          %exitPos = 1024*5 SPC 1024*5 SPC 250;
          aGameEffects(%pos, %exitPos);
-         InitContainerRadiusSearch(%pos,  400,  $TypeMasks::PlayerObjectType | $TypeMasks::VehicleObjectType | $TypeMasks::ProjectileObjectType | $TypeMasks::ItemObjectType);
+         InitContainerRadiusSearch(%pos,  200,  $TypeMasks::PlayerObjectType | $TypeMasks::VehicleObjectType | $TypeMasks::ProjectileObjectType | $TypeMasks::ItemObjectType);
          while ((%targetObject = containerSearchNext()) != 0){
             %tgtPos = %targetObject.getWorldBoxCenter();
             %dist = vectorDist(%pos,%tgtPos); 
             %zDist = getWord(%pos,2) - getWord(%tgtPos,2);
             %vec = VectorNormalize(VectorSub(%pos, %tgtPos));
-            %limit = (cbase.team == %targetObj.team) ? 180 : 200;
-            if(%zDist < %limit){
-               if((%targetObject.getType() & $TypeMasks::ProjectileObjectType)){
-                  if(%targetObject.getDatablock().getname() !$= "RedSpawnProj" && %targetObject.getDatablock().getname() !$= "BlueSpawnProj"){
-                     if(%targetObject.getClassName() $= "LinearFlareProjectile" ||  %targetObject.getClassName() $= "LinearProjectile" ||  %targetObject.getClassName() $= "TracerProjectile" || %targetObject.getClassName() $= "GrenadeProjectile"){
-                        %dis =  vectorDist(%targetObject.initialPosition,%targetObject.getPosition());
-                        //error(getSimTime() - %targetObject.lifeTimeMS); 
-                        if(%targetObject.lifeTimeMS && (getSimTime() - %targetObject.lifeTimeMS) > 60000){
-                           continue;
-                        }
-                        if(%dis > 0.1 && %dist > 50){
-                           %prec = 10;
-                           %targetDir = vectorScale (%vec,%prec);
-                           %projDir =  vectorScale(%targetObject.initialDirection,100-%prec);
-                           %vecAdd = vectorNormalize(vectorAdd(%targetDir,%projDir));
-                           %p = new (%targetObject.getClassName())() {
-                              dataBlock        = %targetObject.getDatablock().getName();
-                              initialDirection = %vecAdd;
-                              initialPosition  = %targetObject.getPosition();
-                              sourceObject     = -1;// needs to be -1 other wise rendering issues happen as it references source objects muzzle point
-                              sourceSlot       = 0;
-                              vehicleObject    = 0;
-                              sobj = (!%targetObject.sourceObject) ? -1 : %targetObject.sourceObject;
-                              lifeTimeMS =  (!%targetObject.lifeTimeMS) ? getSimTime() : %targetObject.lifeTimeMS;
-                           };
-                           MissionCleanup.add(%p);
-                           %targetObject.delete();
-                        }
-                        else{
-                           %p = new (%targetObject.getClassName())() {
-                              dataBlock        = %targetObject.getDatablock().getName();
-                              initialDirection = %targetObject.initialDirection;
-                              initialPosition  = vectorAdd(%exitPos,"0 0 198");
-                              sourceObject     = -1;
-                              sourceSlot       = 0;
-                              vehicleObject    = 0;
-                              sobj = (!%targetObject.sourceObject) ? -1 : %targetObject.sourceObject;
-                           };
-                           MissionCleanup.add(%p);
-                           %targetObject.delete();
-                        }
+            if((%targetObject.getType() & $TypeMasks::ProjectileObjectType)){
+               if(%targetObject.getDatablock().getname() !$= "RedSpawnProj" && %targetObject.getDatablock().getname() !$= "BlueSpawnProj"){
+                  if(%targetObject.getClassName() $= "LinearFlareProjectile" ||  %targetObject.getClassName() $= "LinearProjectile" ||  %targetObject.getClassName() $= "TracerProjectile" || %targetObject.getClassName() $= "GrenadeProjectile"){
+                     %dis =  vectorDist(%targetObject.initialPosition,%targetObject.getPosition());
+                     //error(getSimTime() - %targetObject.lifeTimeMS); 
+                     if(%targetObject.lifeTimeMS && (getSimTime() - %targetObject.lifeTimeMS) > 60000){
+                        continue;
+                     }
+                     if(%dis > 0.1 && %dist > 50){
+                        %prec = 10;
+                        %targetDir = vectorScale (%vec,%prec);
+                        %projDir =  vectorScale(%targetObject.initialDirection,100-%prec);
+                        %vecAdd = vectorNormalize(vectorAdd(%targetDir,%projDir));
+                        %p = new (%targetObject.getClassName())() {
+                           dataBlock        = %targetObject.getDatablock().getName();
+                           initialDirection = %vecAdd;
+                           initialPosition  = %targetObject.getPosition();
+                           sourceObject     = -1;// needs to be -1 other wise rendering issues happen as it references source objects muzzle point
+                           sourceSlot       = 0;
+                           vehicleObject    = 0;
+                           sobj = (!%targetObject.sourceObject) ? -1 : %targetObject.sourceObject;
+                           lifeTimeMS =  (!%targetObject.lifeTimeMS) ? getSimTime() : %targetObject.lifeTimeMS;
+                        };
+                        MissionCleanup.add(%p);
+                        %targetObject.delete();
+                     }
+                     else{
+                        %p = new (%targetObject.getClassName())() {
+                           dataBlock        = %targetObject.getDatablock().getName();
+                           initialDirection = %targetObject.initialDirection;
+                           initialPosition  = vectorAdd(%exitPos,"0 0 198");
+                           sourceObject     = -1;
+                           sourceSlot       = 0;
+                           vehicleObject    = 0;
+                           sobj = (!%targetObject.sourceObject) ? -1 : %targetObject.sourceObject;
+                        };
+                        MissionCleanup.add(%p);
+                        %targetObject.delete();
                      }
                   }
                }
-               else if((%targetObject.getType() & $TypeMasks::VehicleObjectType)){
-                  if(%targetObject.getClassName() $= "WheeledVehicle"){
-                     if(%dist < 60 && isEventPending(%targetObject.sch)){
-                        cancel(%targetObject.sch);
-                        %targetObject.delete(); 
-                     }
-                     else{
-                        %impulseVec = VectorScale(%vec, 2000);
-                        %targetObject.applyImpulse(vectorAdd(%targetObject.getPosition(),"0 0 0.01"), %impulseVec);
-                     }
+            }
+            else if((%targetObject.getType() & $TypeMasks::VehicleObjectType)){
+               if(%targetObject.getClassName() $= "WheeledVehicle"){
+                  if(%dist < 60 && isEventPending(%targetObject.sch)){
+                     cancel(%targetObject.sch);
+                     %targetObject.delete(); 
                   }
                   else{
-                     %ray = ContainerRayCast(%pos, %tgtPos, $TypeMasks::StaticTSObjectType | $TypeMasks::StaticShapeObjectType | $TypeMasks::InteriorObjectType | $TypeMasks::TerrainObjectType, 0);
-                     if(!%ray){
-                        %impulseVec = VectorScale(%vec, 2000);
-                        if(%dist < 60){
-                           %targetObject.getDatablock().damageObject(%targetObject, 0, "0 0 0", 5, $DamageType::Impact); 
-                        }
-                        else{
-                           %targetObject.applyImpulse(%targetObject.getPosition(), %impulseVec);
-                        }
-                     }
+                     %impulseVec = VectorScale(%vec, 2000);
+                     %targetObject.applyImpulse(vectorAdd(%targetObject.getPosition(),"0 0 0.01"), %impulseVec);
                   }
-               }    
-               else if((%targetObject.getType() & $TypeMasks::PlayerObjectType) && !%targetObject.isMounted()){
-                  //error(%zDist);
-                  %isSafe =  %targetObject.lastBoostTime && ((getSimTime() - %targetObject.lastBoostTime) < 10000);
-                  if(!%isSafe){
-                     if(%targetObject.holdingFlag){
-                        Game.dropFlag(%targetObject); 
-                     }
-                     if(%dist < 40){
-                        %targetObject.setPosition(vectorAdd(%exitPos,"0 0 198")); 
-                        %targetObject.setVelocity(vectorScale(%targetObject.getVelocity(),0.5));  
-                     }
-                     else{
-                        %timeDif = getSimTime() - %targetObject.lastPullTime;
-                        if(!%targetObject.lastPullTime || %timeDif > 3000){
-                           %targetObject.whcount = 0; 
-                           %targetObject.precAdd = 0;  
-                        }
-                        %targetObject.lastPullTime = getSimTime();   
-                        %targetObject.whcount++;
-                        if(%targetObject.whcount > 100){
-                           %targetObject.precAdd += 0.05;   
-                        }
-                        //error(%targetObject.whcount SPC %targetObject.precAdd);
-                        %prec = 10 + %targetObject.precAdd;
-                        %tvec = vectorNormalize(%targetObject.getVelocity());
-                        %speed = VectorLen(%targetObject.getVelocity());
-                        %speed  =  (%speed < 100) ? (%speed + 5) : %speed * 0.99;
-                        //error(%speed);
-                        %targetDir = vectorScale (%vec,%prec);
-                        %projDir =  vectorScale(%tvec ,100-%prec);
-                        %vecAdd = vectorNormalize(vectorAdd(%targetDir,%projDir));
-                        %targetObject.setVelocity(vectorScale(%vecAdd,%speed));
-                        //%targetObject.applyImpulse(%tgtPos,  VectorScale(%vec, 60));
-                     }
-                  }
-               } 
-               else if((%targetObject.getType() & $TypeMasks::ItemObjectType) && !%targetObject.static){
+               }
+               else{
                   %ray = ContainerRayCast(%pos, %tgtPos, $TypeMasks::StaticTSObjectType | $TypeMasks::StaticShapeObjectType | $TypeMasks::InteriorObjectType | $TypeMasks::TerrainObjectType, 0);
                   if(!%ray){
-                     if(%dist < 50 && %targetObject.getDatablock().getName() !$= "Flag"){
-                        %targetObject.setPosition(vectorAdd(%exitPos,"0 0 198"));  
+                     %impulseVec = VectorScale(%vec, 2000);
+                     if(%dist < 60){
+                        %targetObject.getDatablock().damageObject(%targetObject, 0, "0 0 0", 5, $DamageType::Impact); 
                      }
-                     else if(%targetObject.getDatablock().getName() !$= "Flag"){
-                        %prec = 10;
-                        %tvec = vectorNormalize(%targetObject.getVelocity());
-                        %speed = VectorLen(%targetObject.getVelocity());
-                        %speed  =  (%speed < 100) ? (%speed + 10) : 100;
-                        //error(%speed);
-                        %targetDir = vectorScale (%vec,%prec);
-                        %projDir =  vectorScale(%tvec ,100-%prec);
-                        %vecAdd = vectorNormalize(vectorAdd(%targetDir,%projDir));
-                        %targetObject.setVelocity(vectorScale(%vecAdd,%speed));
-                        //%targetObject.applyImpulse(%tgtPos,  VectorScale(%vec, 60));
+                     else{
+                        %targetObject.applyImpulse(%targetObject.getPosition(), %impulseVec);
                      }
+                  }
+               }
+            }    
+            else if((%targetObject.getType() & $TypeMasks::PlayerObjectType) && !%targetObject.isMounted()){
+               //error(%zDist);
+               %isSafe =  %targetObject.lastBoostTime && ((getSimTime() - %targetObject.lastBoostTime) < 10000);
+               if(!%isSafe){
+                  if(%targetObject.holdingFlag){
+                     Game.dropFlag(%targetObject); 
+                  }
+                  if(%dist < 40){
+                     %targetObject.setPosition(vectorAdd(%exitPos,"0 0 198")); 
+                     %targetObject.setVelocity(vectorScale(%targetObject.getVelocity(),0.5));  
+                  }
+                  else{
+                     %timeDif = getSimTime() - %targetObject.lastPullTime;
+                     if(!%targetObject.lastPullTime || %timeDif > 3000){
+                        %targetObject.whcount = 0; 
+                        %targetObject.precAdd = 0;  
+                     }
+                     %targetObject.lastPullTime = getSimTime();   
+                     %targetObject.whcount++;
+                     if(%targetObject.whcount > 100){
+                        %targetObject.precAdd += 0.05;   
+                     }
+                     //error(%targetObject.whcount SPC %targetObject.precAdd);
+                     %prec = 10 + %targetObject.precAdd;
+                     %tvec = vectorNormalize(%targetObject.getVelocity());
+                     %speed = VectorLen(%targetObject.getVelocity());
+                     %speed  =  (%speed < 100) ? (%speed + 5) : %speed * 0.99;
+                     //error(%speed);
+                     %targetDir = vectorScale (%vec,%prec);
+                     %projDir =  vectorScale(%tvec ,100-%prec);
+                     %vecAdd = vectorNormalize(vectorAdd(%targetDir,%projDir));
+                     %targetObject.setVelocity(vectorScale(%vecAdd,%speed));
+                     //%targetObject.applyImpulse(%tgtPos,  VectorScale(%vec, 60));
+                  }
+               }
+            } 
+            else if((%targetObject.getType() & $TypeMasks::ItemObjectType) && !%targetObject.static){
+               %ray = ContainerRayCast(%pos, %tgtPos, $TypeMasks::StaticTSObjectType | $TypeMasks::StaticShapeObjectType | $TypeMasks::InteriorObjectType | $TypeMasks::TerrainObjectType, 0);
+               if(!%ray){
+                  if(%dist < 50 && %targetObject.getDatablock().getName() !$= "Flag"){
+                     %targetObject.setPosition(vectorAdd(%exitPos,"0 0 198"));  
+                  }
+                  else if(%targetObject.getDatablock().getName() !$= "Flag"){
+                     %prec = 10;
+                     %tvec = vectorNormalize(%targetObject.getVelocity());
+                     %speed = VectorLen(%targetObject.getVelocity());
+                     %speed  =  (%speed < 100) ? (%speed + 10) : 100;
+                     //error(%speed);
+                     %targetDir = vectorScale (%vec,%prec);
+                     %projDir =  vectorScale(%tvec ,100-%prec);
+                     %vecAdd = vectorNormalize(vectorAdd(%targetDir,%projDir));
+                     %targetObject.setVelocity(vectorScale(%vecAdd,%speed));
+                     //%targetObject.applyImpulse(%tgtPos,  VectorScale(%vec, 60));
                   }
                }
             }
@@ -1274,347 +1271,9 @@ datablock WheeledVehicleData(tree19) : ShrikeDamageProfile{
    damageScale[$DamageType::Water] = 0;
 };
 
-function WeaponImage::dwOnMount(%this, %obj, %slot){
-   %shape = %this.shapeFile;
-   switch$(%shape){
-      case "weapon_energy.dts":
-         %obj.client.setWeaponsHudActive("Blaster");
-      case "weapon_chaingun.dts":
-         %obj.client.setWeaponsHudActive("Chaingun");
-      case "weapon_disc.dts":
-          %obj.client.setWeaponsHudActive("Disc");
-      case "weapon_elf.dts":
-          %obj.client.setWeaponsHudActive("ELFGun");
-      case "weapon_grenade_launcher.dts":
-          %obj.client.setWeaponsHudActive("GrenadeLauncher");
-      case "weapon_missile.dts":
-          %obj.client.setWeaponsHudActive("MissileLauncher");
-      case "weapon_mortar.dts":
-          %obj.client.setWeaponsHudActive("Mortar");
-      case "weapon_plasma.dts":
-          %obj.client.setWeaponsHudActive("Plasma");
-      case "weapon_shocklance.dts":
-          %obj.client.setWeaponsHudActive("ShockLance");
-      case "weapon_sniper.dts":
-         %obj.client.setWeaponsHudActive("SniperRifle");
-      case "weapon_targeting.dts":
-          %obj.client.setWeaponsHudActive("TargetingLaser");
-      default:
-         %obj.client.setWeaponsHudActive("Blaster");
-   } 
-   %obj.client.setWeaponsHudActive(%this.item);  
-}
-
-function WeaponImage::dwUnMount(%this, %obj, %slot){
-   %shape = %this.shapeFile;
-   switch$(%shape){
-      case "weapon_energy.dts":
-         %obj.client.setWeaponsHudActive("Blaster", 1);
-      case "weapon_chaingun.dts":
-         %obj.client.setWeaponsHudActive("Chaingun", 1);
-      case "weapon_disc.dts":
-          %obj.client.setWeaponsHudActive("Disc", 1);
-      case "weapon_elf.dts":
-          %obj.client.setWeaponsHudActive("ELFGun", 1);
-      case "weapon_grenade_launcher.dts":
-          %obj.client.setWeaponsHudActive("GrenadeLauncher", 1);
-      case "weapon_missile.dts":
-          %obj.client.setWeaponsHudActive("MissileLauncher", 1);
-      case "weapon_mortar.dts":
-          %obj.client.setWeaponsHudActive("Mortar", 1);
-      case "weapon_plasma.dts":
-          %obj.client.setWeaponsHudActive("Plasma", 1);
-      case "weapon_shocklance.dts":
-          %obj.client.setWeaponsHudActive("ShockLance", 1);
-      case "weapon_sniper.dts":
-         %obj.client.setWeaponsHudActive("SniperRifle", 1);
-      case "weapon_targeting.dts":
-          %obj.client.setWeaponsHudActive("TargetingLaser", 1);
-      default:
-         %obj.client.setWeaponsHudActive("Blaster", 1);
-   } 
-   %obj.client.setWeaponsHudActive(%this.item, 1);  
-}
-
-
 datablock TriggerData(anomalyTrig){
    tickPeriodMS =  32;
 };
-
-datablock StaticShapeData(T2AmmoDeployableObj) : StaticShapeDamageProfile
-{
-   className = Station;
-   shapeFile = "t2DepAmmo.dts";
-   maxDamage = 0.70;
-   destroyedLevel = 0.70;
-   disabledLevel = 0.42;
-   explosion      = DeployablesExplosion;
-   expDmgRadius = 8.0;
-   expDamage = 0.35;
-   expImpulse = 500.0;
-
-   dynamicType = $TypeMasks::StationObjectType;
-   isShielded = true;
-   energyPerDamagePoint = 110;
-   maxEnergy = 50;
-   rechargeRate = 0.20;
-   renderWhenDestroyed = false;
-   doesRepair = true;
-
-   deployedObject = true;
-
-   cmdCategory = "DSupport";
-   cmdIcon = CMDStationIcon;
-   cmdMiniIconName = "commander/MiniIcons/com_inventory_grey";
-   targetNameTag = 'Deployable';
-   targetTypeTag = 'Station';
-
-   debrisShapeName = "debris_generic_small.dts";
-   debris = DeployableDebris;
-   heatSignature = 0;
-};
-
-datablock ShapeBaseImageData(T2AmmoDeployableImage)
-{
-   mass = 12; // z0dd - ZOD, 7/17/02. large packs are too heavy enough with new physics. was 15
-   emap = true;
-
-   shapeFile = "t2DepAmmo_Pack.dts";
-   item = T2AmmoDeployable;
-   mountPoint = 1;
-   offset = "0 0 -0.5";
-   rotation = "0 0 1 180";
-   deployed = T2AmmoDeployableObj;
-   heatSignature = 0;
-
-   stateName[0] = "Idle";
-   stateTransitionOnTriggerDown[0] = "Activate";
-
-   stateName[1] = "Activate";
-   stateScript[1] = "onActivate";
-   stateTransitionOnTriggerUp[1] = "Idle";
-
-   isLarge = true;
-   maxDepSlope = 30;
-   deploySound = StationDeploySound;
-
-   flatMinDeployDis   = 2.0; // z0dd - ZOD, 5/18/03. Was 1.0, try to prevent it intersecting with plyr bb.
-   flatMaxDeployDis   = 5.0;
-
-   minDeployDis       = 3.0; // z0dd - ZOD, 5/18/03. Was 2.5, try to prevent it intersecting with plyr bb.
-   maxDeployDis       = 6.0;
-};
-
-$TeamDeployableMax[T2AmmoDeployable] = 6;
-$TeamDeployableMin[T2AmmoDeployable] = 6;
-
-datablock ItemData(T2AmmoDeployable)
-{
-   className = Pack;
-   catagory = "Deployables";
-   shapeFile = "t2DepAmmo_Pack.dts";
-   mass = 3.0;
-   elasticity = 0.2;
-   friction = 0.6;
-   pickupRadius = 1;
-   rotate = false;
-   image = "T2AmmoDeployableImage";
-   pickUpName = "an ammo station pack";
-   heatSignature = 0;
-
-   computeCRC = true;
-   emap = true;
-
-};
-
-function T2AmmoDeployableImage::getInitialRotation(%item, %plyr) {
-   %rot = rotFromTransform(%plyr.getTransform());
-   // Rotate 180 degrees around Z-axis (PI radians)
-   // Multiply original rotation by the 180-degree Z rotation
-   %newRot = MatrixMultiply("0 0 0" SPC %rot, "0 0 0" SPC "0 0 1" SPC 3.14159265359);
-   return getWords(rotFromTransform(%newRot), 0, 3);
-}
-
-function T2AmmoDeployableImage::onDeploy(%item, %plyr, %slot){
-   %obj = Parent::onDeploy(%item, %plyr, %slot);
-   %obj.init = 0;
-   %trigger = new Trigger()
-   { 
-      dataBlock = BuildTrigger;
-      polyhedron = "-0.125 0.0 0.1 0.25 0.0 0.0 0.0 -0.8 0.0 0.0 0.0 1.0";
-   };     
-
-   MissionCleanup.add(%trigger);
-
-   %trans = %obj.getTransform();
-   %vSPos = getWords(%trans,0,2);
-   %vRot =  getWords(%trans,3,5);
-   %vAngle = getWord(%trans,6);
-   %matrix = VectorOrthoBasis(%vRot @ " " @ %vAngle + 0.0);
-   %yRot = getWords(%matrix, 3, 5);
-   %pos = vectorAdd(%vSPos, vectorScale(%yRot, 1));
-
-   %trigger.setTransform(%pos @ " " @ %vRot @ " " @ %vAngle);
-
-   // associate the trigger with the station
-   %trigger.station =%obj;
-   %obj.trigger = %trigger;
-
-}
-function T2AmmoDeployable::onCollision(%data,%obj,%col){
-   if (%col.getDataBlock().className $= Armor && %col.getState() !$= "Dead" && %col.getMountedImage(2) == 0 && !%col.isMounted()){
-      if (%col.client){
-         messageClient(%col.client, 'MsgItemPickup', '\c0You picked up %1.', %data.pickUpName);
-         serverPlay3D(ItemPickupSound, %col.getTransform());
-      }
-      if (%obj.isStatic()){
-         %obj.respawn();
-      }
-      else{
-         %obj.delete();
-      }
-      %col.setInventory(T2AmmoDeployable, 1, true);
-      
-   }
-}
-
-function T2AmmoDeployableObj::onDestroyed(%this, %obj, %prevState){
-   Parent::onDestroyed(%this, %obj, %prevState);
-   $TeamDeployedCount[%obj.team, T2AmmoDeployable]--;
-   if(isObject(%obj.trigger)){   
-      %obj.trigger.delete();
-   }
-   %obj.schedule(500, "delete");
-}
-
-
-function BuildTrigger::onEnterTrigger(%data, %trigger, %player){
-   %station = %trigger.station;
-   %targetname = %station.getDataBlock().getName(); 
-   if(%trigger.powerTrig){
-      if(%station.isEnabled() &&  %station.isPowered() && (!%player.client.lastInvySfx || (getSimTime() - %player.client.lastInvySfx) > 10000)){
-         %player.client.play3D(invyPowerActivate, %trigger.getPosition());
-         %player.client.lastInvySfx = getSimTime();
-      }
-      return;
-   }
-
-   if((%station.team != %player.client.team) && (%station.team != 0)){
-         //%obj.station.playAudio(2, StationAccessDeniedSound);
-         messageClient(%player.client, 'msgStationDenied', '\c2Access Denied -- Wrong team.~wfx/powered/station_denied.wav');
-   }
-   else if(%station.isDisabled()){
-      messageClient(%player.client, 'msgStationDisabled', '\c2Station is disabled.');
-   }
-   else if(!%station.isPowered()){
-      messageClient(%player.client, 'msgStationNoPower', '\c2Station is not powered.');
-   }
-   else if(%station.notDeployed){
-      messageClient(%player.client, 'msgStationNotDeployed', '\c2Station is not deployed.');
-   }
-   else if(%station.isDestroyed){
-      messageClient(%player.client, 'msgStationDestroyed', '\c2Station is destroyed.');
-   }
-   else if(isObject(%station) && %station.isEnabled() &&  %station.isPowered()){
-      messageClient(%player.client, 'CloseHud', "", 'inventoryScreen');
-      commandToClient(%player.client, 'TogglePlayHuds', true);
-      if(%targetname $= "weaponBuilder"){
-         if(isObject(%player.client.hasDrkWep) && %player.hasInventory(%player.client.hasDrkWep)){
-            messageClient(%player.client, 'MsgClient', '\c0You already have a built weapon.~wfx/powered/station_denied.wav');
-            return;
-         }
-         commandToClient(%player.client, 'BuildWep', 1);
-         %player.client.wepStation = %station;
-      }
-      else if(%targetname $= "T2AmmoDeployableObj"){
-         %station.playAudio(2, DepInvActivateSound);
-         getAmmoStationLovin2(%player.client);
-         %player.setVelocity("0 0 0");
-         %oldRate = %player.getRepairRate();
-         %player.setRepairRate(%oldRate + 0.00625);
-         %station.playThread(2, "activate"); 
-      }
-   }
-   %trigger.lastObj = %player;
-}
-
-function getAmmoStationLovin2(%client)
-{
-   // z0dd - ZOD, 4/24/02. This function was quite a mess, needed rewrite
-   %cmt = $CurrentMissionType;
-
-   // weapons
-   for(%i = 0; %i < %client.player.weaponSlotCount; %i++)
-   {
-      %weapon = %client.player.weaponSlot[%i];
-      if(%weapon.image.ammo $= "DarkAmmo"){
-         if(!%weapon.isEx){
-            %ammo = getField($darkWep[%client.wt, %client.wc],1);
-            %bonusAmmo = ((%client.mod1 == 3) * mFloor(%ammo * 0.25)) + ((%client.mod2 == 3) * mFloor(%ammo * 0.5))  + ((%client.mod3 == 3) * mFloor(%ammo * 1));
-            %client.player.setInventory("DarkAmmo", mFloor(%ammo + %bonusAmmo),true); 
-         }
-      }
-      else if ( %weapon.image.ammo !$= "" ){
-         %client.player.setInventory( %weapon.image.ammo, 999 );
-      }
-   }
-
-   // grenades
-   for(%i = 0; $InvGrenade[%i] !$= ""; %i++) // z0dd - ZOD, 5/27/03. Clear them all in one pass
-        %client.player.setInventory($NameToInv[$InvGrenade[%i]], 0);
-
-   for ( %i = 0; %i < getFieldCount( %client.grenadeIndex ); %i++ )
-   {
-      %client.player.lastGrenade = $NameToInv[%client.favorites[getField( %client.grenadeIndex, %i )]];
-   }
-   %grenType = %client.player.lastGrenade;
-   if(%grenType $= "")
-   {
-      %grenType = Grenade;
-   } 
-   if ( !($InvBanList[%cmt, %grenType]) )
-      %client.player.setInventory( %grenType, 30 );
-
-   if(%grenType $= "Deployable Camera")
-   {
-      %maxDep = $TeamDeployableMax[DeployedCamera];
-      %depSoFar = $TeamDeployedCount[%client.player.team, DeployedCamera];
-      if(Game.numTeams > 1)
-         %msTxt = "Your team has "@%depSoFar@" of "@%maxDep@" Deployable Cameras placed.";
-      else
-         %msTxt = "You have placed "@%depSoFar@" of "@%maxDep@" Deployable Cameras.";
-      messageClient(%client, 'MsgTeamDepObjCount', %msTxt);
-   }
-
-   // Mines
-   for(%i = 0; $InvMine[%i] !$= ""; %i++) // z0dd - ZOD, 5/27/03. Clear them all in one pass
-        %client.player.setInventory($NameToInv[$InvMine[%i]], 0);
-
-   for ( %i = 0; %i < getFieldCount( %client.mineIndex ); %i++ )
-   {
-      %client.player.lastMine = $NameToInv[%client.favorites[getField( %client.mineIndex, %i )]];
-   }
-   %mineType = %client.player.lastMine;
-   if(%mineType $= "")
-   {
-      %mineType = Mine;
-   }
-   if ( !($InvBanList[%cmt, %mineType]) )
-      %client.player.setInventory( %mineType, 30 );
-
-   // miscellaneous stuff -- Repair Kit, Beacons, Targeting Laser
-   if ( !($InvBanList[%cmt, RepairKit]) )
-      %client.player.setInventory( RepairKit, 1 );
-
-   if ( !($InvBanList[%cmt, Beacon]) )
-      %client.player.setInventory( Beacon, 20 );
-
-   if ( !($InvBanList[%cmt, TargetingLaser]) )
-      %client.player.setInventory( TargetingLaser, 1 );
-
-   if( %client.player.getMountedImage($BackpackSlot) $= "AmmoPack" )
-      invAmmoPackPass(%client);
-}
 
 function SimObject::getUpVector(%obj){
    %rot = getWords(%obj.getTransform(), 3, 6);  
@@ -1774,7 +1433,7 @@ datablock SniperProjectileData(MOACShot){
 
 };
 
-function anomalyTrig::onTriggerTick(%this, %triggerId){
+function anomalyTrig::onTickTrigger(%this, %triggerId){
  // anti spam
 }
 function anomalyTrig::onleaveTrigger(%data, %trigger, %player){
@@ -2403,6 +2062,393 @@ datablock ItemData(DarkAmmo){
 	pickUpName = "a dark weapon ammo";
 };
 
+datablock ItemData(MagCan){
+   className = Weapon;
+   catagory = "Spawn Items";
+   shapeFile = "weapon_grenade_launcher.dts";
+   image = MagCanImage;
+   mass = 1;
+   elasticity = 0.2;
+   friction = 0.6;
+   pickupRadius = 2;
+	pickUpName = "a dark weapon";
+   computeCRC = false;
+   wepName = "Dark Magnetar";
+   description = "A powerful weapon that creates a powerful force to pull targets towards the point of impact";
+};
+
+function MagCan::onCollision(%data,%obj,%col){
+   if (%col.getDataBlock().className $= Armor && %col.getState() !$= "Dead" && !%col.isMounted()){
+      if (%col.client){
+         messageClient(%col.client, 'MsgItemPickup', '\c0You picked up %1.', %data.pickUpName);
+         serverPlay3D(ItemPickupSound, %col.getTransform());
+      }
+      if (%obj.isStatic()){
+         %obj.respawn();
+      }
+      else{
+         %obj.delete();
+      }
+      %col.setInventory(MagCan, 1, true);
+      %col.setInventory(DarkAmmo, 2, true);
+      %col.use(MagCan);
+   }
+}
+
+datablock ParticleData(MagCanExplosionParticle) {
+   dragCoefficient = "0";
+   windCoefficient = "0";
+   gravityCoefficient = "0";
+   inheritedVelFactor = "0";
+   constantAcceleration = "0";
+   lifetimeMS = "3000";
+   lifetimeVarianceMS = "0";
+   spinSpeed = "1";
+   spinRandomMin = "-360";
+   spinRandomMax = "720";
+   useInvAlpha = "0";
+   animateTexture = "0";
+   framesPerSec = "1";
+   textureCoords[0] = "0 0";
+   textureCoords[1] = "0 1";
+   textureCoords[2] = "1 1";
+   textureCoords[3] = "1 0";
+   animTexTiling = "0 0";
+   textureName = "special/BlueImpact";
+   colors[0] = "0.19 0 1 1";
+   colors[1] = "0.19 0 1 1";
+   colors[2] = "0.19 0 1 1";
+   colors[3] = "0.0 0 1 1";
+   sizes[0] = "1";
+   sizes[1] = "2";
+   sizes[2] = "5";
+   sizes[3] = "6";
+   times[0] = "0";
+   times[1] = "0.1875";
+   times[2] = "0.554167";
+   times[3] = "1";
+};
+
+datablock ParticleEmitterData(MagCanExplosionEmitter) {
+   ejectionPeriodMS = "60";
+   periodVarianceMS = "0";
+   ejectionVelocity = "0";
+   velocityVariance = "0";
+   ejectionOffset = "2";
+   ejectionOffsetVariance = "0";
+   thetaMin = "0";
+   thetaMax = "0";
+   phiReferenceVel = "0";
+   phiVariance = "0";
+   softnessDistance = "0.0001";
+   ambientFactor = "0";
+   overrideAdvance = "0";
+   orientParticles = "0";
+   orientOnVelocity = "1";
+   particles = "MagCanExplosionParticle";
+   lifetimeMS = "1";
+   lifetimeVarianceMS = "0";
+   
+   alignParticles = "0";
+   alignDirection = "0 1 0";
+   highResOnly = "1";
+   
+   Dampening = "0.8";
+   elasticity = "0.3";
+   
+};
+
+datablock ParticleData(MagCanShockwaveParticle) {
+   dragCoefficient = "0";
+   windCoefficient = "0";
+   gravityCoefficient = "0";
+   inheritedVelFactor = "0";
+   constantAcceleration = "0";
+   lifetimeMS = "500";
+   lifetimeVarianceMS = "100";
+   spinSpeed = "1";
+   spinRandomMin = "-1000";
+   spinRandomMax = "1000";
+   useInvAlpha = "0";
+   animateTexture = "0";
+   framesPerSec = "1";
+   textureCoords[0] = "0 0";
+   textureCoords[1] = "0 1";
+   textureCoords[2] = "1 1";
+   textureCoords[3] = "1 0";
+   animTexTiling = "0 0";
+   textureName = "special/shockLightning02";
+   colors[0] = "0.19 0 1 1";
+   colors[1] = "0.19 0 1 1";
+   colors[2] = "0 0 1 1";
+   colors[3] = "0 0 1 1";
+   sizes[0] = "0.494415";
+   sizes[1] = "0.796557";
+   sizes[2] = "0.997986";
+   sizes[3] = "1";
+   times[0] = "0";
+   times[1] = "0.0431373";
+   times[2] = "1";
+   times[3] = "1";
+};
+
+datablock ParticleEmitterData(MagCanShockwaveEmitter) {
+   ejectionPeriodMS = "1";
+   periodVarianceMS = "0";
+   ejectionVelocity = "4.167";
+   velocityVariance = "0";
+   ejectionOffset = "2.708";
+   ejectionOffsetVariance = "0";
+   thetaMin = "0";
+   thetaMax = "86.25";
+   phiReferenceVel = "0";
+   phiVariance = "360";
+   softnessDistance = "0.0001";
+   ambientFactor = "0";
+   overrideAdvance = "0";
+   orientParticles = "0";
+   orientOnVelocity = "1";
+   particles = "MagCanShockwaveParticle";
+   lifetimeMS = "0";
+   lifetimeVarianceMS = "0";
+   
+   
+   blendStyle = "ADDITIVE";
+   sortParticles = "1";
+   reverseOrder = "0";
+   alignParticles = "0";
+   alignDirection = "0 1 0";
+   highResOnly = "1";
+   
+   
+   
+   Dampening = "0.8";
+   elasticity = "0.3";
+   
+   
+   
+};
+
+datablock ParticleData(MagCanSmokeParticle) {
+   dragCoefficient = "2";
+   gravityCoefficient = 0.0;
+   inheritedVelFactor = "0";
+   windCoefficient = "0";
+   constantAcceleration = -30;
+   lifetimeMS = "650";
+   lifetimeVarianceMS = "0";
+   spinRandomMin = "-200";
+   spinRandomMax = "200";
+   useInvAlpha = "0";
+   
+   colors[0] = "0.204724 0.204724 0.204724 0";
+   colors[1] = "0.291339 0.291339 0.291339 0.199213";
+   colors[2] = "0.259843 0.259843 0.259843 0.188976";
+   colors[3] = "0.0787402 0.0787402 0.0787402 0.015748";
+      
+   sizes[0] = "10";
+   sizes[1] = "10";
+   sizes[2] = "10";
+   sizes[3] = "10";
+   
+   times[0] = "0.1";
+   times[1] = "0.8";
+   times[2] = "0.9";
+   times[3] = "1";
+   
+   spinSpeed = "1";
+   textureName = "particleTest";
+
+
+};
+
+datablock ParticleEmitterData(MagCanSmokeEmitter) {
+   ejectionPeriodMS = "5";
+   periodVarianceMS = "0";
+   ejectionVelocity = "10";
+   velocityVariance = "0";
+   ejectionOffset = "30";
+   thetaMin = "0";
+   thetaMax = "180";
+   phiReferenceVel = 0;
+   phiVariance = 360;
+   orientParticles = "0";
+   orientOnVelocity = true;
+   lifetimeMS = "2040";
+   blendStyle = "NORMAL";
+   alignDirection = "0 1 0";
+      
+   particles = "MagCanSmokeParticle";
+
+};
+
+datablock ExplosionData(MagCanExplosion)
+{
+   explosionShape = "disc_explosion.dts";
+   soundProfile   = PlasmaBarrelExpSound;
+   faceViewer           = true;
+
+   playSpeed = 1;
+
+   emitter[0] = MagCanExplosionEmitter;
+   emitter[1] = MagCanShockwaveEmitter;
+   emitter[2] = MagCanSmokeEmitter;
+      
+   sizes[0] = "1.0 1.0 1.0";
+   sizes[1] = "1.0 1.0 1.0";
+   times[0] = 0.0;
+   times[1] = 1.0;
+   shakeCamera = true;
+   camShakeFreq = "8.0 9.0 7.0";
+   camShakeAmp = "100.0 100.0 100.0";
+   camShakeDuration = 1.3;
+   camShakeRadius = 25.0;
+};
+
+datablock LinearFlareProjectileData(MagCanShot){
+   faceViewer          = true;
+   directDamage        = 0.0;
+   hasDamageRadius     = true;
+   indirectDamage      = 0.2;
+   damageRadius        = 8.5;
+   kickBackStrength    = 0.0;
+   radiusDamageType    = $DamageType::Disc;
+
+   explosion           = "MagCanExplosion";
+   splash              = PlasmaSplash;
+
+   dryVelocity       = 95.0;
+   wetVelocity       = -1;
+   velInheritFactor  = 0.8;
+   fizzleTimeMS      = 1500;
+   lifetimeMS        = 3000;
+   explodeOnDeath    = false;
+   reflectOnWaterImpactAngle = 0.0;
+   explodeOnWaterImpact      = true;
+   deflectionOnWaterImpact   = 0.0;
+   fizzleUnderwaterMS        = -1;
+
+   activateDelayMS = -1;
+
+   size[0]           = 0.6;
+   size[1]           = 0.5;
+   size[2]           = 0.4;
+
+
+   numFlares         = 80;
+   flareColor        = "0.2 0.0 1";
+   flareModTexture   = "flaremod";
+   flareBaseTexture  = "flarebase";
+   sound        = ChaingunProjectile;
+   
+   hasLight    = true;
+   lightRadius = 8.0;
+   lightColor  = "0.2 0.0 1";
+};
+
+datablock ShapeBaseImageData(MagCanImage){
+   className = WeaponImage;
+   shapeFile = "weapon_grenade_launcher.dts";
+   item = MagCan;
+   ammo = DarkAmmo;
+   offset = "0 0 0";
+   emap = true;
+   
+   projectile = MagCanShot;
+   projectileType = LinearFlareProjectile;
+
+   stateName[0] = "Activate";
+   stateTransitionOnTimeout[0] = "ActivateReady";
+   stateTimeoutValue[0] = 0.5;
+   stateSequence[0] = "Activate";
+   stateSound[0] = GrenadeSwitchSound;
+
+   stateName[1] = "ActivateReady";
+   stateTransitionOnLoaded[1] = "Ready";
+   stateTransitionOnNoAmmo[1] = "NoAmmo";
+
+   stateName[2] = "Ready";
+   stateTransitionOnNoAmmo[2] = "NoAmmo";
+   stateTransitionOnTriggerDown[2] = "Fire";
+
+   stateName[3] = "Fire";
+   stateTransitionOnTimeout[3] = "Reload";
+   stateTimeoutValue[3] = 1;
+   stateFire[3] = true;
+   stateRecoil[3] = LightRecoil;
+   stateAllowImageChange[3] = false;
+   stateSequence[3] = "Fire";
+   stateScript[3] = "onFire";
+   stateSound[3] = MBLFireSound;
+
+   stateName[4] = "Reload";
+   stateTransitionOnNoAmmo[4] = "NoAmmo";
+   stateTransitionOnTimeout[4] = "Ready";
+   stateTimeoutValue[4] = 0.5;
+   stateAllowImageChange[4] = false;
+   //stateSequence[4] = "Reload";
+   stateSound[4] = GrenadeReloadSound;
+
+   stateName[5] = "NoAmmo";
+   stateTransitionOnAmmo[5] = "Reload";
+   stateSequence[5] = "NoAmmo";
+   stateTransitionOnTriggerDown[5] = "DryFire";
+
+   stateName[6]       = "DryFire";
+   stateSound[6]      = GrenadeDryFireSound;
+   stateTimeoutValue[6]        = 1.5;
+   stateTransitionOnTimeout[6] = "NoAmmo";
+};
+
+datablock ShapeBaseImageData(MagCanImage2){
+   offset = "0 0.4 0.12";
+   rotation = "0 1 0 -180";
+   shapeFile = "weapon_targeting.dts";
+
+};
+
+datablock ShapeBaseImageData(MagCanImage3){
+   offset = "0 0.4 0.15";
+   rotation = "0 1 0 0";
+   shapeFile = "weapon_targeting.dts";
+};
+
+function MagCanImage::onMount(%this,%obj,%slot){
+   Parent::onMount(%this, %obj, %slot);
+   commandToClient( %obj.client, 'BottomPrint', %this.item.wepNameID SPC %this.item.wepName NL %this.item.description, 4, 3);
+   %obj.mountImage(MagCanImage2, 4);
+   %obj.mountImage(MagCanImage3, 5);
+   %obj.client.setWeaponsHudActive("Blaster");
+}
+
+function MagCanImage::onUnmount(%this,%obj,%slot){
+   Parent::onUnmount(%this, %obj, %slot);
+   %obj.unmountImage(4);
+   %obj.unmountImage(5);
+   %obj.client.setWeaponsHudActive("Blaster", 1);
+}
+
+function MagCanShot::onExplode(%data, %proj, %pos, %mod){
+   emMag(%pos, 2000);
+}
+
+function emMag(%pos,%time){
+  %force = 800;
+   InitContainerRadiusSearch(%pos,  30, $TypeMasks::PlayerObjectType); 
+   while ((%targetObject = containerSearchNext()) != 0){
+      %tgtPos = %targetObject.getWorldBoxCenter();
+      %vec = VectorNormalize(VectorSub(%pos, %tgtPos));
+      %impulseVec = VectorScale(%vec, %force);
+      %targetObject.applyImpulse(%pos, %impulseVec);
+    } 
+    if(%time > 0){
+       %time -= 100;
+      schedule(128,0,"emMag",%pos,%time);
+    }
+}
+
+
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2782,7 +2828,7 @@ function DarkWeaponXImage::onMount(%this,%obj,%slot){
    %obj.mountImage(DarkWeaponX4Image, 6);
    %obj.mountImage(DarkWeaponX5Image, 7);
    commandToClient( %obj.client, 'BottomPrint', "The Dark Weapon", 2, 3);
-   %this.dwOnMount(%obj, %slot);
+   %obj.client.setWeaponsHudActive("Blaster");
 }
 
 function DarkWeaponXImage::onUnmount(%this,%obj,%slot){
@@ -2791,7 +2837,7 @@ function DarkWeaponXImage::onUnmount(%this,%obj,%slot){
    %obj.unmountImage(5);
    %obj.unmountImage(6);
    %obj.unmountImage(7);
-   %this.dwUnMount(%obj, %slot);
+   %obj.client.setWeaponsHudActive("Blaster", 1);
 }
 
 
@@ -4106,1584 +4152,3 @@ function partboom(%position,%vec){
    %part.setScopeAlways();
    %part.schedule(10000, "delete");
 }
-
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-
-
-// datablock ItemData(ThetaStrike){
-//    className = Weapon;
-//    catagory = "Spawn Items";
-//    shapeFile = "weapon_grenade_launcher.dts";
-//    image = ThetaStrikeImage;
-//    mass = 1;
-//    elasticity = 0.2;
-//    friction = 0.6;
-//    pickupRadius = 2;
-// 	pickUpName = "a dark weapon";
-
-//    isEX = true; 
-	
-// 	wepClass = "EX";
-//    wepNameID = "TC-9001";
-//    wepName = "Theta Strike Cannon";
-//    light = 1;
-//    medium = 1;
-//    heavy = 1;
-//    description = "A super kinetic weapon that unleashes a devastating blast capable of killing all within its radius, regardless of cover";
-// };
- 
-// datablock ParticleData(thetaSExplosionParticle) {//fire
-//    dragCoefficient = "9";
-//    windCoefficient = "0";
-//    gravityCoefficient = "0";
-//    inheritedVelFactor = "0";
-//    constantAcceleration = "0";
-//    lifetimeMS = "3000";
-//    lifetimeVarianceMS = "0";
-//    spinSpeed = "0";
-//    spinRandomMin = "-360";
-//    spinRandomMax = "720";
-//    useInvAlpha = "0";
-//    textureName = "particleTest";
-//    colors[0] = "0.992 0.4 0 1";
-//    colors[1] = "0.992 0.301961 0.00784314 1";
-//    colors[2] = "0.996078 0.301961 0.00784314 0";
-//    colors[3] = "0.980392 0.301961 0.0156863 0";
-//    sizes[0] = "100";
-//    sizes[1] = "100";
-//    sizes[2] = "100";
-//    sizes[3] = "100";
-//    times[0] = "0";
-//    times[1] = "0.1";
-//    times[2] = "0.2";
-//    times[3] = "0.3";
-// };
-
-// datablock ParticleEmitterData(thetaSExplosionEmitter) {//fire
-//    ejectionPeriodMS = "1";
-//    periodVarianceMS = "0";
-//    ejectionVelocity = "655.35";
-//    velocityVariance = "0";
-//    ejectionOffset = "20";
-//    ejectionOffsetVariance = "0";
-//    thetaMin = "0";
-//    thetaMax = "180";
-//    phiReferenceVel = "0";
-//    phiVariance = "360";
-//    ambientFactor = "0";
-//    overrideAdvance = "0";
-//    orientParticles = "0";
-//    orientOnVelocity = "1";
-//    particles = "thetaSExplosionParticle";
-//    lifetimeMS = "500";
-//    lifetimeVarianceMS = "0";
-//    useInvAlpha = false;
-//    reverseOrder = "0";
-//    alignParticles = "0";
-//    alignDirection = "0 1 0";
-// };
-
-// datablock ParticleData(thetaSExplosionParticle2) {//smoke
-//    dragCoefficient = "7";
-//    windCoefficient = "0";
-//    gravityCoefficient = "0";
-//    inheritedVelFactor = "0";
-//    constantAcceleration = "0";
-//    lifetimeMS = "15000";
-//    lifetimeVarianceMS = "0";
-//    spinSpeed = "0.083";
-//    spinRandomMin = "-10";
-//    spinRandomMax = "10";
-//    useInvAlpha = "1";
-//    animateTexture = "0";
-//    framesPerSec = "1";
-//    textureCoords[0] = "0 0";
-//    textureCoords[1] = "0 1";
-//    textureCoords[2] = "1 1";
-//    textureCoords[3] = "1 0";
-//    animTexTiling = "0 0";
-//    textureName = "particleTest";
-//    colors[0] = "0.529412 0.533333 0.533333 0.295";
-//    colors[1] = "0.537 0.537 0.541 0.238";
-//    colors[2] = "0.568627 0.568627 0.564706 0.292";
-//    colors[3] = "0.502 0.502 0.498 0";
-//    sizes[0] = "150";
-//    sizes[1] = "150";
-//    sizes[2] = "150";
-//    sizes[3] = "150";
-//    times[0] = "0";
-//    times[1] = "0.229167";
-//    times[2] = "0.6875";
-//    times[3] = "1";
-// };
-
-// datablock ParticleEmitterData(thetaSExplosionEmitter2) {//smoke
-//    ejectionPeriodMS = "2";
-//    periodVarianceMS = "0";
-//    ejectionVelocity = "150";
-//    velocityVariance = "100.83";
-//    ejectionOffset = "0";
-//    ejectionOffsetVariance = "0";
-//    thetaMin = "0";
-//    thetaMax = "180";
-//    phiReferenceVel = "0";
-//    phiVariance = "360";
-//    softnessDistance = "0.0001";
-//    ambientFactor = "0";
-//    overrideAdvance = "0";
-//    orientParticles = "0";
-//    orientOnVelocity = "1";
-//    particles = "thetaSExplosionParticle2";
-//    lifetimeMS = "1000";
-//    lifetimeVarianceMS = "0";
-   
-   
-//    blendStyle = "NORMAL";
-//    sortParticles = "1";
-//    reverseOrder = "0";
-//    alignParticles = "0";
-//    alignDirection = "0 1 0";
-// };
-
-// datablock ParticleData(thetaSExplosionParticleS) {
-//    dragCoefficient = "1";
-//    windCoefficient = "0";
-//    gravityCoefficient = "0";
-//    inheritedVelFactor = "0";
-//    constantAcceleration = "1";
-//    lifetimeMS = "5376";
-//    lifetimeVarianceMS = "0";
-//    spinSpeed = "0";
-//    spinRandomMin = "-360";
-//    spinRandomMax = "720";
-//    useInvAlpha = "0";
-//    textureName = "particleTest";
-//    colors[0] = "0.984 0.992 0.992 0.1";
-//    colors[1] = "0.984 0.984 0.992 0.1";
-//    colors[2] = "0.996 0.996 0.992 0.1";
-//    colors[3] = "0.996 0.996 0.992 0";
-//    sizes[0] = "150";
-//    sizes[1] = "150";
-//    sizes[2] = "150";
-//    sizes[3] = "150";
-//    times[0] = "0";
-//    times[1] = "0.0416667";
-//    times[2] = "0.125";
-//    times[3] = "0.375";
-// };
-
-// datablock ParticleEmitterData(thetaSExplosionEmitterS) { //wave
-//    ejectionPeriodMS = "1";
-//    periodVarianceMS = "0";
-//    ejectionVelocity = "655.34";
-//    velocityVariance = "0";
-//    ejectionOffset = "100";
-//    ejectionOffsetVariance = "0";
-//    thetaMin = "0";
-//    thetaMax = "180";
-//    phiReferenceVel = "0";
-//    phiVariance = "360";
-//    softnessDistance = "0.0001";
-//    ambientFactor = "0";
-//    overrideAdvance = "0";
-//    orientParticles = "0";
-//    orientOnVelocity = "1";
-//    particles = "thetaSExplosionParticleS";
-//    lifetimeMS = "150";
-//    lifetimeVarianceMS = "0";
-   
-   
-//    useInvAlpha = false;
-//    sortParticles = "1";
-//    reverseOrder = "0";
-//    alignParticles = "0";
-//    alignDirection = "0 1 0";
-// };
-
-// datablock ExplosionData(thetaSStrikeExplosion2){
-//    emitter[0] = thetaSExplosionEmitterS;
-//    emitter[1] = thetaSExplosionEmitterS;
-//    emitter[2] = thetaSExplosionEmitterS;
-//    emitter[3] = thetaSExplosionEmitterS;
-//    emitter[4] = thetaSExplosionEmitterS;
-// };
-
-// datablock ExplosionData(thetaSStrikeExplosion){
-//    explosionShape = "effect_plasma_explosion.dts";
-//    soundProfile   = BombExplosionSound;
-//    faceViewer           = true;
-//    emitter[0] = thetaSExplosionEmitter;
-//    emitter[1] = thetaSExplosionEmitter2;
-//    subExplosion[0] = thetaSStrikeExplosion2;
-//    subExplosion[1] = thetaSStrikeExplosion2;
-//    subExplosion[2] = thetaSStrikeExplosion2;
-//    subExplosion[3] = thetaSStrikeExplosion2;
-//    subExplosion[4] = thetaSStrikeExplosion2;
-//    //emitter[2] = BlastRingEmitter;
-//    delayMS = 150;
-//    offset = 4.0;
-//    playSpeed = 0.8;
-
-//    sizes[0] = "70 70 70";
-//    sizes[1] = "70 70 70";
-//    times[0] = 0.0;
-//    times[1] = 1.0;
-//    shakeCamera = true;
-//    camShakeFreq = "8.0 9.0 7.0";
-//    camShakeAmp = "10.0 10.0 10.0";
-//    camShakeDuration = 2;
-//    camShakeRadius = 300.0;
-// };  
-       
-// datablock LinearFlareProjectileData(ThetaCShot){
-//    projectileShapeName = "plasmabolt.dts";
-//    scale               = "6 6 6";
-//    faceViewer          = true;
-//    directDamage        = 0.0;
-//    hasDamageRadius     = true;
-//    indirectDamage      = 100;
-//    damageRadius        = 150;
-//    kickBackStrength    = 10000.0;
-//    radiusDamageType    = $DamageType::Dark;
-//    Impulse = true;
-//    explosion           = "thetaSStrikeExplosion";
-//    underwaterExplosion = "UnderwaterMortarExplosion";
-//    splash              = PlasmaSplash;
-
-//    dryVelocity       = 900.0;
-//    wetVelocity       =  600;
-//    velInheritFactor  = 1;
-//    fizzleTimeMS      = 5000;
-//    lifetimeMS        = 5000;
-//    explodeOnDeath    = true;
-//    reflectOnWaterImpactAngle = 15.0;
-//    explodeOnWaterImpact      = true;
-//    deflectionOnWaterImpact   = 20.0; 
-//    fizzleUnderwaterMS        = -1;
-
-//    //activateDelayMS = 100;
-//    activateDelayMS = -1;
-
-//    size[0]           = 6;
-//    size[1]           = 6;
-//    size[2]           = 6;
-
-
-//    numFlares         = 35;
-//    flareColor        = "1 0.75 0.25";
-//    flareModTexture   = "flaremod";
-//    flareBaseTexture  = "flarebase";
-
-//    hasLight    = true;
-//    lightRadius = 3.0;
-//    lightColor  = "1 0.75 0.25";
-//    ignoreExEffects = 1;
-// };
-
-
-// datablock ShapeBaseImageData(ThetaStrikeImage){
-//    className = WeaponImage;
-//    shapeFile = "weapon_grenade_launcher.dts";
-//    item = ThetaStrike;
-//    ammo = DarkAmmo;
-//    offset = "0 0 0";
-   
-//    projectile = ThetaCShot;
-//    projectileType = LinearFlareProjectile;
-
-//    stateName[0] = "Activate";
-//    stateTransitionOnTimeout[0] = "ActivateReady";
-//    stateTimeoutValue[0] = 0.5;
-//    stateSequence[0] = "Activate";
-//    stateSound[0] = BomberBombDryFireSound;//ThetaStrikeSwitchSound;
-
-//    stateName[1] = "ActivateReady";
-//    stateTransitionOnLoaded[1] = "Ready";
-//    stateTransitionOnNoAmmo[1] = "NoAmmo";
-
-//    stateName[2] = "Ready";
-//    stateTransitionOnNoAmmo[2] = "NoAmmo";
-//    stateTransitionOnTriggerDown[2] = "CheckWet";
-
-//    stateName[3] = "Fire";
-//    stateTransitionOnTimeout[3] = "Reload";
-//    stateTimeoutValue[3] = 1.0;
-//    stateFire[3] = true;
-//    stateRecoil[3] = LightRecoil;
-//    stateAllowImageChange[3] = false;
-//    stateScript[3] = "onFire";
-//    stateEmitterTime[3] = 0.2;
-//    stateSound[3] = PlasmaBarrelExpSound;
-//    stateSequence[3] = "Fire";
-   
-//    stateName[4] = "Reload";
-//    stateTransitionOnNoAmmo[4] = "NoAmmo";
-//    stateTransitionOnTimeout[4] = "Ready";
-//    stateTimeoutValue[4] = 0.3;
-//    stateAllowImageChange[4] = false;
-//    //stateSequence[4] = "Reload";
-//    stateSound[4] = PlasmaReloadSound;
-
-//    stateName[5] = "NoAmmo";
-//    stateTransitionOnAmmo[5] = "Reload";
-//    stateSequence[5] = "NoAmmo";
-//    stateTransitionOnTriggerDown[5] = "DryFire";
-
-//    stateName[6]       = "DryFire";
-//    stateSound[6]      = PlasmaDryFireSound;
-//    stateTimeoutValue[6]        = 1.5;
-//    stateTransitionOnTimeout[6] = "NoAmmo";
-
-//    stateName[7]       = "WetFire";
-//    stateSound[7]      = PlasmaFireWetSound;
-//    stateTimeoutValue[7]        = 1.5;
-//    stateTransitionOnTimeout[7] = "Ready";
-
-//    stateName[8]               = "CheckWet";
-//    stateTransitionOnWet[8]    = "WetFire";
-//    stateTransitionOnNotWet[8] = "Fire";
-// };
-
-// datablock ShockwaveData(ProTrailShockwave){
-//    width = 32;
-//    numSegments = 20;
-//    numVertSegments = 2;
-//    velocity = 20;
-//    acceleration = 2;
-//    lifetimeMS = 500;
-//    height = 32;
-//    verticalCurve = 0.5;
-
-//    //mapToTerrain = false;
-//    //renderBottom = true;
-//    mapToTerrain = false;
-//    renderBottom = true;
-//    orientToNormal = true;
-
-//    texture[0] = "special/shockwave4";
-//    texture[1] = "special/gradient";
-//    texWrap = 6;
-
-//    times[0] = 0;
-//    times[1] = 0.8;
-//    times[2] = 1;
-
-//    colors[0] = "1 0.1 0 1";
-//    colors[1] = "1 0.1 0 1";
-//    colors[2] = "1 0.1 0 1";
-// };
-
-// datablock AudioProfile(Weapon9ExpSound){
-//    filename = "fx/Bonuses/upward_straipass2_elevator.wav";
-//    description = AudioDefault3d;
-//    preload = true;
-// };
-
-// datablock ExplosionData(ProTrailExplosion){
-//    soundProfile = Weapon9ExpSound;
-//    faceViewer = true;
-//    shockwave = ProTrailShockwave;
-// };
-
-// datablock LinearProjectileData(shockwaveTrailProj){
-//    projectileShapeName = "weapon_chaingun_ammocasing.dts";
-//    emitterDelay = -1;
-//    directDamage = 0;
-//    hasDamageRadius = false;
-//    indirectDamage = 0;
-//    damageRadius = 3;
-//    radiusDamageType = $DamageType::Dark;
-//    kickBackStrength = 3000;
-//    mass = 10;
-//    explosion = "ProTrailExplosion";
-//    underwaterExplosion = "ProTrailExplosion";
-//    splash = ChaingunSplash;
-//    dryVelocity = 1;
-//    wetVelocity = 1;
-//    velInheritFactor = 0;
-//    fizzleTimeMS = 1;
-//    lifetimeMS = 32;
-//    explodeOnDeath = true;
-//    reflectOnWaterImpactAngle = 0;
-//    explodeOnWaterImpact = false;
-//    deflectionOnWaterImpact = 0;
-//    fizzleUnderwaterMS = 5000;
-//    activateDelayMS = -1;
-//    hasLight = true;
-//    lightRadius = 6;
-//    lightColor = "0.19 0.17 0.5";
-//    ignoreExEffects = 1;
-// };
-
-// function waveTrails(%obj, %data){
-//    if(isObject(%obj)){
-//       %p = new LinearProjectile(){
-//          datablock = %data;
-//          initialPosition = %obj.getPosition();
-//          initialDirection = %obj.initialDirection;
-//          sourceObject = -1;
-//          sourceSlot = 0;
-//          vehicleObject = 0;
-//       };
-//       MissionCleanup.add(%p);
-//       schedule(32,0, "waveTrails", %obj, %data);
-//    }
-// }
-
-// function ThetaCShot::onExplode(%data, %proj, %pos, %mod){
-//    parent::onExplode(%data, %proj, %pos, %mod);
-//    %damageMasks = $TypeMasks::VehicleObjectType | $TypeMasks::PlayerObjectType |
-//                   $TypeMasks::StationObjectType | $TypeMasks::GeneratorObjectType |
-//                   $TypeMasks::SensorObjectType | $TypeMasks::TurretObjectType;
-//    initContainerRadiusSearch(%pos, %data.damageRadius, %damageMasks );
-//    while ( (%targetObj = containerSearchNext()) != 0 ){
-//       %targetObj.schedule(32, "damage", %proj.sourceObject, %pos, 100, $DamageType::Dark);
-//    }
-   
-// }
-
-// datablock ShapeBaseImageData(ThetaStrike2Image){
-//    offset = "0.005 1.0 0.13";
-//    rotation = "0 1 0 0";
-//    shapeFile = "pack_upgrade_cloaking.dts";
-//     emap = true;
-// };
-
-// datablock ShapeBaseImageData(ThetaStrike3Image){
-//    offset = "0.005 1.1 0.13";
-//    shapeFile = "pack_upgrade_cloaking.dts";
-//     emap = true;
-// };
-
-// datablock ShapeBaseImageData(ThetaStrike4Image){
-//    offset = "0.005 1.2 0.13";
-//    rotation = "0 1 0 0";
-//    shapeFile = "pack_upgrade_cloaking.dts";
-// };
-
-// datablock ShapeBaseImageData(ThetaStrike5Image){
-//    offset = "0.005 1.3 0.13";
-//    rotation = "0 1 0 0";
-//    shapeFile = "pack_upgrade_cloaking.dts";
-// };
-
-// function ThetaStrikeImage::onMount(%this,%obj,%slot){
-//    Parent::onMount(%this, %obj, %slot);
-//    %obj.mountImage(ThetaStrike2Image, 4);
-//    %obj.mountImage(ThetaStrike3Image, 5);
-//    %obj.mountImage(ThetaStrike4Image, 6);
-//    %obj.mountImage(ThetaStrike5Image, 7);
-//    commandToClient( %obj.client, 'BottomPrint', %this.item.wepNameID SPC %this.item.wepName NL %this.item.description, 4, 3);
-//    %this.dwOnMount(%obj, %slot);
-// }
-
-// function ThetaStrikeImage::onUnmount(%this,%obj,%slot){
-//    Parent::onUnmount(%this, %obj, %slot);
-//    %obj.unmountImage(4);
-//    %obj.unmountImage(5);
-//    %obj.unmountImage(6);
-//    %obj.unmountImage(7);
-//    %this.dwUnMount(%obj, %slot);
-// }
-
-// function ThetaStrikeImage::onFire(%data, %obj, %slot){
-//    %p =  parent::onFire(%data, %obj, %slot);
-//    %obj.applyImpulse(%obj.getPosition(), VectorScale(%obj.getMuzzleVector(0), -4000));
-//    waveTrails(%p, shockwaveTrailProj);
-// }
-///////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////
-
-// datablock ItemData(StarNova){
-//    className = Weapon;
-//    catagory = "Spawn Items";
-//    shapeFile = "weapon_plasma.dts";
-//    image = StarNovaImage;
-//    mass = 1;
-//    elasticity = 0.2;
-//    friction = 0.6;
-//    pickupRadius = 2;
-//    pickUpName = "a dark weapon";
-//    computeCRC = false; 
-
-//    isEX = true; 
-
-//    wepClass = "EX";
-//    wepNameID = "ST-9600";
-//    wepName = "Star Nova";
-//    light = 1;
-//    medium = 1;
-//    heavy = 1;
-//    description = "A weapon that bursts open into a fractal tree shape, then at each of its end points starts targeting everything it can see."; 
-// };
-
-// datablock ParticleData(novaTrailParticle){
-//    dragCoefficient      = 1;
-//    gravityCoefficient   = 0;
-//    inheritedVelFactor   = 0;
-//    constantAcceleration = 0;
-//    lifetimeMS           = 12000;
-//    lifetimeVarianceMS   = 0;
-//    windCoefficient   = 0.0;
-//    textureName          = "particleTest";
-//    useInvAlpha = 0;
-//    colors[0]     = "0 0.3 1.0 1";
-//    colors[1]     = "0 0.3 1.0 0";
-//    sizes[0]      = 0.5;
-//    sizes[1]      = 0.5;
-//    times[0] = 0.1;
-//    times[1] = 1.0;
-// };
-
-// datablock ParticleEmitterData(novaTrailEmitter){
-//    ejectionPeriodMS = 5;
-//    periodVarianceMS = 0;
-//    ejectionVelocity = 0;
-//    velocityVariance = 0;
-//    ejectionOffset   = 0;
-//    thetaMin         = 0;
-//    thetaMax         = 0;
-//    phiReferenceVel  = 345;
-//    phiVariance      = 0;
-//    overrideAdvances = 0;
-//    orientParticles = 1;
-//    particles = novaTrailParticle;
-// };
-
-// datablock ParticleData(novaExplosionParticle){
-//    dragCoefficient      = 0.0;
-//    gravityCoefficient   = 0.0;
-//    inheritedVelFactor   = 0.0;
-//    constantAcceleration = -3.5;
-//    lifetimeMS           = 6000;
-//    lifetimeVarianceMS   = 500;
-//    useInvAlpha          =  0;
-//    textureName          = "special/bluespark";
-//    colors[0]     = "0.0 1.0 1.0 1.0";
-//    colors[1]     = "1.0 0.5 0.0 1.0";
-//    sizes[0]      = 1;
-//    sizes[1]      = 1;
-// };
-
-// datablock ParticleEmitterData(novaExplosionEmitter){
-//    ejectionPeriodMS = 1;
-//    periodVarianceMS = 0;
-//    ejectionVelocity = 10;
-//    velocityVariance = 1.0;
-//    ejectionOffset   = 0.0;
-//    thetaMin         = 0;
-//    thetaMax         = 90;
-//    lifetimeMS       = 9000;
-//    phiReferenceVel  = 0;
-//    phiVariance      = 360;
-//    orientParticles  = true;
-//    overrideAdvances = false;
-//    particles = "novaExplosionParticle";
-// };
-
-// datablock ExplosionData(novaStarExplosion){
-//    explosionShape = "effect_plasma_explosion.dts";
-//    particleEmitter = novaExplosionEmitter;
-//    particleDensity = 50;
-//    particleRadius = 10;
-//    faceViewer = true;
-   
-//    colors[0] = "0.0 0.0 1.0 0.0";
-//    colors[1] = "0.0 0.0 1.0 1.0";
-//    times[0] = 0.0;
-//    times[1] = 0.4;
-//    sizes[0] = "1 1 1";
-//    sizes[1] = "1 1 1";
-// };
-
-// datablock ExplosionData(novaStarExplosion2){
-//    explosionShape = "disc_explosion.dts";
-//    faceViewer           = true;
-//    playSpeed = 0.9;
-
-//    sizes[0] = "7.0 7.0 7.0";
-//    sizes[1] = "10.0 10.0 10.0";
-//    times[0] = 0.0;
-//    times[1] = 1.0;
-// };
-
-// datablock LinearFlareProjectileData(StarNovaProj3){
-//    projectileShapeName = "";
-//    scale               = "1 1 1";
-//    faceViewer          = true;
-//    directDamage        = 0.0;
-//    hasDamageRadius     = true;
-//    indirectDamage      = 5.0;
-//    damageRadius        = 100;
-//    kickBackStrength    = 6000.0;
-//    radiusDamageType    = $DamageType::Dark;
-
-//    explosion           = "novaStarExplosion2";
-   
-//    baseEmitter = "novaTrailEmitter";
-
-//    dryVelocity       = 1.0;
-//    wetVelocity       = -1;
-//    velInheritFactor  = 0.3;
-//    fizzleTimeMS      = 256;
-//    lifetimeMS        = 256;
-//    explodeOnDeath    = true;
-//    reflectOnWaterImpactAngle = 0.0;
-//    explodeOnWaterImpact      = true;
-//    deflectionOnWaterImpact   = 0.0;
-//    fizzleUnderwaterMS        = -1;
-
-//    activateDelayMS = -1;
-
-//    size[0]           = 0.0;
-//    size[1]           = 0.0;
-//    size[2]           = 0.0;
-
-
-//    numFlares         = 0;
-//    flareColor        = "0.0 0.0 0.0";
-//    flareModTexture   = "flaremod";
-//    flareBaseTexture  = "flarebase";
-
-// 	//sound        = PlasmaProjectileSound;
-//    //fireSound    = PlasmaFireSound;
-//    //wetFireSound = PlasmaFireWetSound;
-
-//    hasLight    = true;
-//    lightRadius = 3.0;
-//    lightColor  = "1 0.75 0.25";
-//    ignoreExEffects = 1;
-// };
-
-// datablock LinearFlareProjectileData(StarNovaProj2){
-//    projectileShapeName = "";
-//    scale               = "1 1 1";
-//    faceViewer          = true;
-//    directDamage        = 0.0;
-//    hasDamageRadius     = true;
-//    indirectDamage      = 0.1;
-//    damageRadius        = 1;
-//    kickBackStrength    = 6000.0;
-//    radiusDamageType    = $DamageType::Dark;
-
-//    explosion           = "novaStarExplosion";
-   
-//    baseEmitter = "novaTrailEmitter";
-
-//    dryVelocity       = 95.0;
-//    wetVelocity       = -1;
-//    velInheritFactor  = 0.3;
-//    fizzleTimeMS      = 500;
-//    lifetimeMS        = 500;
-//    explodeOnDeath    = true;
-//    reflectOnWaterImpactAngle = 0.0;
-//    explodeOnWaterImpact      = true;
-//    deflectionOnWaterImpact   = 0.0;
-//    fizzleUnderwaterMS        = -1;
-
-//    activateDelayMS = -1;
-
-//    size[0]           = 0.0;
-//    size[1]           = 0.0;
-//    size[2]           = 0.0;
-
-
-//    numFlares         = 0;
-//    flareColor        = "0.0 0.0 0.0";
-//    flareModTexture   = "flaremod";
-//    flareBaseTexture  = "flarebase";
-
-// 	//sound        = PlasmaProjectileSound;
-//    //fireSound    = PlasmaFireSound;
-//    //wetFireSound = PlasmaFireWetSound;
-
-//    hasLight    = true;
-//    lightRadius = 3.0;
-//    lightColor  = "1 0.75 0.25";
-//    ignoreExEffects = 1;
-// };
-
-// datablock LinearFlareProjectileData(StarNovaProj){
-//    projectileShapeName = "";
-//    scale               = "1 1 1";
-//    faceViewer          = true;
-//    directDamage        = 0.0;
-//    hasDamageRadius     = true;
-//    indirectDamage      = 0.1;
-//    damageRadius        = 1;
-//    kickBackStrength    = 6000.0;
-//    radiusDamageType    = $DamageType::Dark;
-
-//    //explosion           = "StarExplosion";
-   
-//    baseEmitter = novaTrailEmitter;
-
-//    dryVelocity       = 95.0;
-//    wetVelocity       = -1;
-//    velInheritFactor  = 0.3;
-//    fizzleTimeMS      = 3100;
-//    lifetimeMS        = 3100;
-//    explodeOnDeath    = true;
-//    reflectOnWaterImpactAngle = 0.0;
-//    explodeOnWaterImpact      = true;
-//    deflectionOnWaterImpact   = 0.0;
-//    fizzleUnderwaterMS        = -1;
-
-//    activateDelayMS = -1;
-
-//    size[0]           = 0.0;
-//    size[1]           = 0.0;
-//    size[2]           = 0.0;
-
-
-//    numFlares         = 0;
-//    flareColor        = "0.0 0.0 0.0";
-//    flareModTexture   = "flaremod";
-//    flareBaseTexture  = "flarebase";
-
-//    //sound        = PlasmaProjectileSound;
-//    //fireSound    = PlasmaFireSound;
-//    //wetFireSound = PlasmaFireWetSound;
-
-//    hasLight    = true;
-//    lightRadius = 3.0;
-//    lightColor  = "1 0.75 0.25";
-//    ignoreExEffects = 1;
-// };
-
-// datablock ShapeBaseImageData(StarNovaImage){
-//    className = WeaponImage;
-//    shapeFile = "weapon_plasma.dts";
-//    item = STBurstCannon0;
-//    ammo = DarkAmmo;
-//    offset = "0 0 0";
-//    projectile = StarNovaProj;
-//    projectileType = LinearFlareProjectile;
-
-//    stateName[0] = "Activate";
-//    stateTransitionOnTimeout[0] = "ActivateReady";
-//    stateTimeoutValue[0] = 0.5;
-//    stateSequence[0] = "Activate";
-//    stateSound[0] = PlasmaSwitchSound;
-//    stateName[1] = "ActivateReady";
-//    stateTransitionOnLoaded[1] = "Ready";
-//    stateTransitionOnNoAmmo[1] = "NoAmmo";
-//    stateName[2] = "Ready";
-//    stateTransitionOnNoAmmo[2] = "NoAmmo";
-//    stateTransitionOnTriggerDown[2] = "CheckWet";
-//    stateName[3] = "Fire";
-//    stateTransitionOnTimeout[3] = "Reload";
-//    stateTimeoutValue[3] = 0.1;
-//    stateFire[3] = true;
-//    stateRecoil[3] = LightRecoil;
-//    stateAllowImageChange[3] = false;
-//    stateScript[3] = "onFire";
-//    stateEmitterTime[3] = 0.2;
-//    stateSound[3] = PlasmaFireSound;
-//    stateName[4] = "Reload";
-//    stateTransitionOnNoAmmo[4] = "NoAmmo";
-//    stateTransitionOnTimeout[4] = "Ready";
-//    stateTimeoutValue[4] = 0.6;
-//    stateAllowImageChange[4] = false;
-//    stateSequence[4] = "Reload";
-//    stateSound[4] = PlasmaReloadSound;
-//    stateName[5] = "NoAmmo";
-//    stateTransitionOnAmmo[5] = "Reload";
-//    stateSequence[5] = "NoAmmo";
-//    stateTransitionOnTriggerDown[5] = "DryFire";
-//    stateName[6]       = "DryFire";
-//    stateSound[6]      = PlasmaDryFireSound;
-//    stateTimeoutValue[6]        = 1.5;
-//    stateTransitionOnTimeout[6] = "NoAmmo";
-//    stateName[7]       = "WetFire";
-//    stateSound[7]      = PlasmaFireWetSound;
-//    stateTimeoutValue[7]        = 1.5;
-//    stateTransitionOnTimeout[7] = "Ready";
-//    stateName[8]               = "CheckWet";
-//    stateTransitionOnWet[8]    = "WetFire";
-//    stateTransitionOnNotWet[8] = "Fire";
-// };
-
-// function StarNovaImage::onMount(%this,%obj,%slot){
-//    Parent::onMount(%this,%obj,%slot);
-//    commandToClient( %obj.client, 'BottomPrint', %this.item.wepNameID SPC %this.item.wepName NL %this.item.description, 4, 3);
-//    %this.dwOnMount(%obj, %slot);
-// }
-
-// function StarNovaImage::onUnmount(%this,%obj,%slot){
-//    Parent::onUnmount(%this, %obj, %slot);
-//    %this.dwUnMount(%obj, %slot);
-// }
-
-// function StarNovaProj::onExplode(%data, %proj, %pos, %mod){
-//    parent::onExplode(%data, %proj, %pos, %mod);
-//    %burstCount = 1;
-//    %obj =  %proj.sourceObject;
-//    %obj.expDepth = 0;
-//    %obj.starlockout = 0;
-//    for(%i = 0; %i < %burstCount; %i++){
-//       %vector = "0 0 1";
-//       %x = (getRandom() - 0.5) * 2 * 3.1415926 * 0.1;
-//       %y = (getRandom() - 0.5) * 2 * 3.1415926 * 0.1;
-//       %z = (getRandom() - 0.5) * 2 * 3.1415926 * 0.1;
-//       %mat = MatrixCreateFromEuler(%x SPC %y SPC %z);
-//       %vector = MatrixMulVector(%mat, %vector);
-//       %p = new LinearFlareProjectile() 
-//       {
-//          dataBlock = StarNovaProj2;
-//          initialDirection = %vector;
-//          initialPosition  = %pos;
-//          sourceObject = -1;
-//          sourceSlot = 0;
-//          sObj =  %obj;
-//       };
-//       MissionCleanup.add(%p);
-//    }  
-// }
-
-// function starBoom(%obj,%pos){
-//          %vector = "0 0 -1";
-//          %p = new LinearFlareProjectile() 
-//          {
-//             dataBlock = StarNovaProj3;
-//             initialDirection = %vector;
-//             initialPosition  = %pos;
-//             sourceObject = -1;
-//             sourceSlot = 0;
-//             sObj = %obj;
-//          };
-//          MissionCleanup.add(%p);  
-// }
-
-// function startBoomDelay(%obj){
-//    for(%i = 1; %i <= %obj.expDepth; %i++){
-//       schedule(16*%i, 0, "starBoom", %obj, %obj.starPos[%i]);
-//    }    
-   
-// }
-
-// function StarNovaProj2::onExplode(%data, %proj, %pos, %mod){
-//    %obj =  %proj.sObj;
-//    %proj.sourceObject = %obj;
-//    parent::onExplode(%data, %proj, %pos, %mod);
-//    %burstCount = 4;
-//    %obj.starPos[%obj.expDepth++] = %pos;
-//    if(%obj.expDepth > 100){
-//       //error(%obj.expDepth);
-//       if(!%obj.starlockout){
-//          schedule(2000, 0, "startBoomDelay", %obj); 
-//          %obj.starlockout = 1;
-//       }
-//       return;
-//    }
-//    else{
-//       for(%i = 0; %i < %burstCount; %i++){
-//          %vector = "0 0 1";
-//          %x = (getRandom() - 0.5) * 2 * 3.1415926 * 0.5; 
-//          %y = (getRandom() - 0.5) * 2 * 3.1415926 * 0.5;
-//          %z = (getRandom() - 0.5) * 2 * 3.1415926 * 0.5;
-//          %mat = MatrixCreateFromEuler(%x SPC %y SPC %z);
-//          %vector = MatrixMulVector(%mat, %vector);
-//          %p = new LinearFlareProjectile() 
-//          {
-//             dataBlock = StarNovaProj2;
-//             initialDirection = %vector;
-//             initialPosition  = %pos;
-//             sourceObject = -1;
-//             sourceSlot = 0;
-//             sObj = %obj;
-//          };
-//          MissionCleanup.add(%p);
-//       }  
-//    }
-// }
-
-// datablock ShockwaveData(StarNovaBeamShockwave){
-//    width = 30;
-//    numSegments = 32;
-//    numVertSegments = 7;
-//    velocity = 40;
-//    acceleration = 10.0;
-//    lifetimeMS = 1000;
-//    height = 6;
-//    verticalCurve = 0.375;
-
-//    mapToTerrain = false;
-//    renderBottom = true;
-//    orientToNormal = true;
-
-//    texture[0] = "special/shockwave5";
-//    texture[1] = "special/gradient";
-//    texWrap = 3.0;
-
-//    times[0] = 1.0;
-//    times[1] = 0.5;
-//    times[2] = 1.0;
-
-//    colors[0] = "0.0 0.3 0.9 1.0";
-//    colors[1] = "0.0 0.3 0.9 1.0";
-//    colors[2] = "0.0 0.0 1.0 0.0";
-// };
-
-// datablock ExplosionData(StarNovaBeamExplosion){
-//    explosionShape = "effect_plasma_explosion.dts";
-//    soundProfile   = PlasmaBarrelExpSound;
-//    shockwave      = StarNovaBeamShockwave;
-//    faceViewer     = true;
-//    sizes[0] = "4.0 4.0 4.0";
-//    sizes[1] = "4.0 4.0 4.0";
-//    times[0] = 0.0;
-//    times[1] = 1.0;
-// };
-
-// datablock SniperProjectileData(StarNovaBeam){
-//    directDamage        = 10;
-//    hasDamageRadius     = false;
-//    indirectDamage      = 0.0;
-//    damageRadius        = 0.0;
-//    velInheritFactor    = 1.0;
-//    sound 			   = BlasterProjectileSound;
-//    explosion           = "StarNovaBeamExplosion";
-//    splash              = PlasmaSplash;
-//    directDamageType    = $DamageType::Dark;
-
-//    maxRifleRange       = 600;
-//    rifleHeadMultiplier = 1;   
-//    beamColor           = "0 0 1";
-//    fadeTime            = 2.0;
-
-//    startBeamWidth		  = 1.5;
-//    endBeamWidth 	     = 1.5;
-//    pulseBeamWidth 	  = 0.5;
-//    beamFlareAngle 	  = 30.0;
-//    minFlareSize        = 0.0;
-//    maxFlareSize        = 400.0;
-//    pulseSpeed          = 6.0;
-//    pulseLength         = 0.150;
-
-//    lightRadius         = 1.0;
-//    lightColor          = "0 0.0 1.0";
-
-//    textureName[0]      = "special/flare";
-//    textureName[1]      = "special/nonlingradient";
-//    textureName[2]      = "special/skyLightning";// special/laserrip01
-//    textureName[3]      = "special/skyLightning";
-//    textureName[4]      = "special/skyLightning";
-//    textureName[5]      = "special/skyLightning";
-//    textureName[6]      = "special/skyLightning";
-//    textureName[7]      = "special/skyLightning";
-//    textureName[8]      = "special/skyLightning";
-//    textureName[9]      = "special/skyLightning";
-//    textureName[10]     = "special/skyLightning";
-//    textureName[11]     = "special/skyLightning";
-
-// };
-
-// function StarNovaBeam::onCollision(%data, %projectile, %targetObject, %modifier, %position, %normal){
-//    if(isObject(%targetObject)) {
-//       %targetObject.damage(%projectile.sObj, %position, %data.directDamage, %data.directDamageType);
-//    }
-// }
-
-// function StarNovaProj3::onExplode(%data, %proj, %pos, %mod){
-//    %obj =  %proj.sObj;
-//    %proj.sourceObject = %obj;
-//    parent::onExplode(%data, %proj, %pos, %mod);
-   
-//    %damageMasks = $TypeMasks::PlayerObjectType | $TypeMasks::VehicleObjectType |
-//                   $TypeMasks::StationObjectType | $TypeMasks::GeneratorObjectType |
-//                   $TypeMasks::SensorObjectType | $TypeMasks::TurretObjectType;
-//    %found = 0;
-//    initContainerRadiusSearch( %pos, 500, %damageMasks );
-//    while ( (%targetObj = containerSearchNext()) != 0 ){
-//       %endPos = %targetObj.getWorldBoxCenter();
-//       if(getSimTime() - %targetObj.lastNovaHit > 2000 || !%targetObj.lastNovaHit){
-//          %targetObj.lastNovaHit = getSimTime();
-//          %p = new SniperProjectile() {
-//             dataBlock        = StarNovaBeam;
-//             initialDirection = vectorNormalize(vectorSub(%endPos,%pos));
-//             initialPosition  = %pos;
-//             sourceObject     = -1;
-//             damageFactor     = 2;
-//             sourceSlot       = "";
-//             sObj = %obj;
-//          };
-//          %p.setEnergyPercentage(1);
-//          MissionCleanup.add(%p);
-//          %found =1;
-//          break;
-//       }
-//    }
-//    if(!%found){
-//       %vector = "0 0 -1";
-//       %x = (getRandom() - 0.5) * 2 * 3.1415926 * 0.5; 
-//       %y = (getRandom() - 0.5) * 2 * 3.1415926 * 0.5;
-//       %z = (getRandom() - 0.5) * 2 * 3.1415926 * 0.5;
-//       %mat = MatrixCreateFromEuler(%x SPC %y SPC %z);
-//       %vector = MatrixMulVector(%mat, %vector);
-//       %p = new SniperProjectile() {
-//          dataBlock        = StarNovaBeam;
-//          initialDirection = %vector;
-//          initialPosition  = %pos;
-//          sourceObject     = -1;
-//          damageFactor     = 2;
-//          sourceSlot       = "";
-//          sObj = %obj;
-//       };
-//       %p.setEnergyPercentage(1);
-//       MissionCleanup.add(%p);
-//    }
-// }
-// ////////////////////////////////////////////////////////////////////////////////
-// ////////////////////////////////////////////////////////////////////////////////
-// ////////////////////////////////////////////////////////////////////////////////
-
-// datablock ItemData(ZapNukeGun){
-//    className    = Weapon;
-//    catagory     = "Spawn Items";
-//    shapeFile    = "weapon_elf.dts";
-//    image        = ZapLauncherImage;
-//    mass         = 1;
-//    elasticity   = 0.2;
-//    friction     = 0.6;
-//    pickupRadius = 2;
-//    pickUpName = "a dark weapon";
-//    computeCRC = false;
-//    emap = true;
-
-//    isEX = true;   
-
-//    wepClass = "EX";
-//    wepNameID = "EW-9524";
-//    wepName = "Electrical Nuke";
-//    light = 1;
-//    medium = 1;
-//    heavy = 1;
-//    description = "A devastating weapon that creates an electrical storm that culminates in a massive power surge";
-// };
-
-// datablock ShapeBaseImageData(ZapLauncherImage)
-// {
-//    className = WeaponImage;
-//    shapeFile = "weapon_grenade_launcher.dts";
-//    item = ZapNukeGun;
-//    ammo = DarkAmmo;
-//    offset = "0 0 0";
-//    emap = true;
-
-//    projectile = BasicGrenade;
-//    projectileType = GrenadeProjectile;
-
-//    stateName[0] = "Activate";
-//    stateTransitionOnTimeout[0] = "ActivateReady";
-//    stateTimeoutValue[0] = 0.5;
-//    stateSequence[0] = "Activate";
-//    stateSound[0] = GrenadeSwitchSound;
-
-//    stateName[1] = "ActivateReady";
-//    stateTransitionOnLoaded[1] = "Ready";
-//    stateTransitionOnNoAmmo[1] = "NoAmmo";
-
-//    stateName[2] = "Ready";
-//    stateTransitionOnNoAmmo[2] = "NoAmmo";
-//    stateTransitionOnTriggerDown[2] = "Fire";
-
-//    stateName[3] = "Fire";
-//    stateTransitionOnTimeout[3] = "Reload";
-//    stateTimeoutValue[3] = 0.4;
-//    stateFire[3] = true;
-//    stateRecoil[3] = LightRecoil;
-//    stateAllowImageChange[3] = false;
-//    stateSequence[3] = "Fire";
-//    stateScript[3] = "onFire";
-//    stateSound[3] = LightningZapSound;
-
-//    stateName[4] = "Reload";
-//    stateTransitionOnNoAmmo[4] = "NoAmmo";
-//    stateTransitionOnTimeout[4] = "Ready";
-//    stateTimeoutValue[4] = 0.5;
-//    stateAllowImageChange[4] = false;
-//    stateSequence[4] = "Reload";
-//    //stateSound[4] = GrenadeReloadSound;
-
-//    stateName[5] = "NoAmmo";
-//    stateTransitionOnAmmo[5] = "Reload";
-//    stateSequence[5] = "NoAmmo";
-//    stateTransitionOnTriggerDown[5] = "DryFire";
-
-//    stateName[6]       = "DryFire";
-//    stateSound[6]      = GrenadeDryFireSound;
-//    stateTimeoutValue[6]        = 1.5;
-//    stateTransitionOnTimeout[6] = "NoAmmo";
-// };
-
-// datablock ParticleData(ENChargedProj){
-//    dragCoefficient      = 0.0;
-//    gravityCoefficient   = 0.0;
-//    inheritedVelFactor   = 0.0;
-//    constantAcceleration = 0.0;
-//    lifetimeMS           = 500;
-//    lifetimeVarianceMS   = 0;
-//    useInvAlpha          = false;
-//    spinRandomMin        = -90.0;
-//    spinRandomMax        = 50.0;
-//    textureName          = "special/lightning1frame1";
-//    colors[0]     = "0.0 0.3 0.9 1.0";
-//    colors[1]     = "0.0 0.3 0.9 1.0";
-//    colors[2]     = "0.0 0.3 0.9 0.0";
-//    sizes[0]      = 0.2;
-//    sizes[1]      = 20.6;
-//    sizes[2]      = 30.0;
-//    times[0]      = 0.0;
-//    times[1]      = 0.7;
-//    times[2]      = 1.0;
-// };
-
-// datablock ParticleEmitterData(ENChargedProjEmitter){
-//    ejectionPeriodMS = 1;
-//    periodVarianceMS = 0;
-//    ejectionVelocity = 0.0;
-//    velocityVariance = 0.0;
-//    ejectionOffset   = 300.0;
-//    thetaMin         = 0;
-//    thetaMax         = 180;
-//    phiReferenceVel  = 0;
-//    phiVariance      = 360;
-//    overrideAdvances = false;
-//    orientParticles  = false;
-//    lifetimeMS       = 1000;
-//    particles = "ENChargedProj";
-// };
-
-// datablock ShockwaveData(ENShockwave){
-//    width = 30;
-//    numSegments = 32;
-//    numVertSegments = 7;
-//    velocity = 100;
-//    acceleration = 1000.0;
-//    lifetimeMS = 2000;
-//    height = 800;
-//    verticalCurve = 0.375;
-
-//    mapToTerrain = true;
-//    renderBottom = true;
-//    orientToNormal = false;
-
-//    texture[0] = "special/shockwave4";
-//    texture[1] = "special/gradient";
-//    texWrap = 6.0;
-
-//    times[0] = 0.0;
-//    times[1] = 0.5;
-//    times[2] = 1.0;
-
-//    colors[0] = "0.8 0.8 1.0 1.00";
-//    colors[1] = "0.8 0.5 1.0 0.20";
-//    colors[2] = "0.2 0.8 1.0 0.0";
-// };
-// datablock ExplosionData(ENBoltExplosion){
-//    explosionShape = "effect_plasma_explosion.dts";
-//    soundProfile   = MissileExplosionSound;
-//    emitter[0] = ENChargedProjEmitter;
-//    emitter[1] = ENChargedProjEmitter;
-
-//    shockwave      = ENShockwave;
-//    faceViewer = true;
-   
-//    times[0] = 0.0;
-//    times[1] = 0.4;
-//    sizes[0] = "2.0 2.0 2.0";
-//    sizes[1] = "2.0 2.0 2.0";
-   
-//    shakeCamera = true;
-//    camShakeFreq = "8.0 9.0 7.0";
-//    camShakeAmp = "10.0 10.0 10.0";
-//    camShakeDuration = 2;
-//    camShakeRadius = 800.0;
-
-// };
-// datablock LinearFlareProjectileData(ENStrikeProj){
-//    projectileShapeName = "plasmabolt.dts";
-//    scale               = "1 1 1";
-//    faceViewer          = true;
-//    directDamage        = 0.0;
-//    hasDamageRadius     = true;
-//    indirectDamage      = 50;
-//    damageRadius        = 5;
-//    kickBackStrength    = 0.0;
-//    directDamageType    = $DamageType::Dark;
-//    radiusDamageType    = $DamageType::Dark;
-//    Impulse = true;
-//    explosion           = "ENBoltExplosion";
-
-//    dryVelocity       = 800;
-//    wetVelocity       = 800;
-//    velInheritFactor  = 0;
-//    fizzleTimeMS      = 3000;
-//    lifetimeMS        = 3000;
-//    explodeOnDeath    = true;
-//    reflectOnWaterImpactAngle = 0.0;
-//    explodeOnWaterImpact      = true;
-//    deflectionOnWaterImpact   = 0.0;
-//    fizzleUnderwaterMS        = -1;
-
-//    activateDelayMS = -1;
-
-//    size[0]           = 20.0;
-//    size[1]           = 20.5;
-//    size[2]           = 80.0;
-
-
-//    numFlares         = 100;
-//    flareColor        = "0 0.5 1";
-//    flareModTexture   = "flaremod";
-//    flareBaseTexture  = "flarebase";
-
-//    hasLight    = true;
-//    lightRadius = 3.0;
-//    lightColor  = "0 0 1";
-//    ignoreExEffects = 1;
-// };
-// datablock ShapeBaseImageData(ZapLauncherImage2){
-
-//    offset = "0.0 0.6 0.1";
-//    rotation = "1 0 0 90";
-//    shapeFile = "pack_upgrade_energy.dts";
-//     emap = true;
-
-// };
-
-// datablock ShapeBaseImageData(ZapLauncherImage3){
-//    offset = "0.00 0.5 0.1";
-//     rotation = "1 0 0 90";
-//    shapeFile = "pack_upgrade_energy.dts";
-//     emap = true;
-// };
-
-// datablock ShapeBaseImageData(ZapLauncherImage4){
-//    offset = "0.0 0.4 0.1";
-//     rotation = "1 0 0 90";
-//    shapeFile = "pack_upgrade_energy.dts";
-//     emap = true;
-// };
-
-// function ZapLauncherImage::onMount(%this,%obj,%slot){
-//    Parent::onMount(%this,%obj,%slot);
-//    commandToClient( %obj.client, 'BottomPrint', %this.item.wepNameID SPC %this.item.wepName NL %this.item.description, 4, 3);
-//    %obj.mountImage(ZapLauncherImage2, 4); 
-//    %obj.mountImage(ZapLauncherImage3, 5); 
-//    %obj.mountImage(ZapLauncherImage4, 6); 
-//    %this.dwOnMount(%obj, %slot);
-// }
-
-// function ZapLauncherImage::onUnmount(%this,%obj,%slot){
-//    Parent::onUnmount(%this, %obj, %slot);
-//    %obj.unmountImage(4);
-//    %obj.unmountImage(5);
-//    %obj.unmountImage(6);
-//    %this.dwUnMount(%obj, %slot);
-// }
-
-// function ZapLauncherImage::onFire(%data,%obj,%slot){
-//    %muzzlePos = %obj.getMuzzlePoint(%slot);
-//    %muzzleVec = %obj.getMuzzleVector(%slot);
-//    %endPos    = VectorAdd(%muzzlePos, VectorScale(%muzzleVec, 500));
-//    %mask = $TypeMasks::StaticShapeObjectType | 
-//    $TypeMasks::InteriorObjectType | 
-//    $TypeMasks::TerrainObjectType;
-   
-//    %hit = ContainerRayCast(%muzzlePos, %endPos, %mask, %obj);
-//    if(%hit){  
-//       zapGun(1000, 0, getWords(%hit,1,3), %obj.client);
-//       %obj.decInventory(%data.ammo, 1);
-//    }
-//    else{
-//       messageClient(%obj.client, 'MsgClient', "~wfx/misc/warning_beep.wav");
-//        commandToClient( %obj.client, 'BottomPrint', "Invalid target or too far way, 500m range", 3, 1); 
-//    }
-// }
-// function zapGun(%count, %srCount, %pos, %client){
-//    %count -= 20;
-//    if(%count < 1)
-//       %count = 5;
-//    %srCount += 10;
-//    %var = new Lightning() {
-// 		position = %pos;
-// 		rotation = "1 0 0 0";
-// 		scale =  %count SPC %count SPC 1000;
-// 		dataBlock = "DefaultStorm";
-// 		strikesPerMinute = %srCount;
-// 		strikeWidth = "2.5";
-// 		chanceToHitTarget = "0";
-// 		strikeRadius = "1";
-// 		boltStartRadius = "10";
-// 		color = "1.0 1.0 1.0 1.0";
-// 		fadeColor = "0.3 0.3 1.0 1.0";
-// 		useFog = "1";
-// 	};
-//    MissionCleanup.add(%var);
-//    %var.schedule(2000, "delete");
-//    %damageMasks = $TypeMasks::VehicleObjectType | $TypeMasks::PlayerObjectType |
-//                $TypeMasks::StationObjectType | $TypeMasks::GeneratorObjectType |
-//                $TypeMasks::SensorObjectType | $TypeMasks::TurretObjectType;            
-//    initContainerRadiusSearch(%pos, mFloor(%count/2), %damageMasks );
-//    while ( (%targetObject = containerSearchNext()) != 0 ){ 
-//       if(%targetObject != %client.player){
-//          %mask = $TypeMasks::StaticShapeObjectType | $TypeMasks::InteriorObjectType | 
-//          $TypeMasks::TerrainObjectType | $TypeMasks::ForceFieldObjectType;
-//          %tgPos = %targetObject.getPosition();    
-//          %hit = ContainerRayCast(vectorAdd(%tgPos,"0 0 1000"), %tgPos, %mask, %targetObject);
-//          if(!%hit){
-//             %zap = new Lightning(){
-//                position = %tgPos;
-//                rotation = "1 0 0 0";
-//                scale = "1 1 1000";
-//                dataBlock = "DefaultStorm";
-//                lockCount = "0";
-//                homingCount = "0";
-//                strikesPerMinute = "60";
-//                strikeWidth = "2.5";
-//                chanceToHitTarget = "1";
-//                strikeRadius = "10";
-//                boltStartRadius = "70"; //altitude the lightning starts from
-//                color = "0.000000 0.100000 1.000000 1.000000";
-//                fadeColor = "0.100000 0.100000 1.000000 1.000000";
-//                useFog = "1";
-//                shouldCloak = 0;
-//             };
-//             MissionCleanup.add(%zap);
-//             %zap.schedule(2000,"delete");
-//             %targetObject.damage(%client.player, %tgPos, 20, $DamageType::Dark);
-//          }
-//       }
-//    }
-// 	if(%count > 20){
-// 	   schedule(256, 0, "zapGun", %count, %srCount, %pos, %client);
-// 	}
-// 	else{
-//       schedule(512, 0, "enStart", %pos, %client);
-// 	}
-// }
-
-
-// function enStart(%pos, %client){
-//    %damageMasks = $TypeMasks::VehicleObjectType | $TypeMasks::PlayerObjectType |
-//                   $TypeMasks::StationObjectType | $TypeMasks::GeneratorObjectType |
-//                   $TypeMasks::SensorObjectType | $TypeMasks::TurretObjectType;            
-//    initContainerRadiusSearch(vectorAdd(%pos,"0 0 1"), 500, %damageMasks );
-//    while ( (%targetObject = containerSearchNext()) != 0 ){ 
-//       //schedule(126,0, "powerSurge", %targetObject, %pos, %client.player);
-//       schedule(126,0, "cycleMeltDown", %targetObject, %pos, %proj, %client.player);
-//    }
-   
-//    for (%i = 0; %i < 3; %i++){
-//       %p = new LinearFlareProjectile() {
-//             dataBlock        = ENStrikeProj;
-//             initialDirection = "0 0 -1";
-//             initialPosition  = vectorAdd(%pos,"0 0 1000");
-//             sourceObject     =  %client.player;
-//             sourceSlot       = 0;
-//             vehicleObject    = 0;
-//             sObj = %sobj;
-//       };
-//       MissionCleanup.add(%p);
-//    } 
-//   %var = new Lightning() {
-// 		position = %pos;
-// 		rotation = "1 0 0 0";
-// 		scale =  500 SPC 500 SPC 1000;
-// 		dataBlock = "DefaultStorm";
-// 		strikesPerMinute = 200;
-// 		strikeWidth = "2.5";
-// 		chanceToHitTarget = "1";
-// 		strikeRadius = "500";
-// 		boltStartRadius = "10";
-// 		color = "1.0 1.0 1.0 1.0";
-// 		fadeColor = "0.3 0.3 1.0 1.0";
-// 		useFog = "1";
-// 	};
-//    MissionCleanup.add(%var);
-//    %var.schedule(2000, "delete");
-// }
-
-// function ENStrikeProj::onExplode(%data, %proj, %pos, %mod){
-//    %proj.sourceObject = %proj.sObj;
-//    parent::onExplode(%data, %proj, %pos, %mod);
-//    expFlash(vectorAdd(%pos,"0 0 0.5"), 600, 0.7);
-// }
-
-// datablock LinearFlareProjectileData(MeltDownProj){
-//    projectileShapeName = "plasmabolt.dts";
-//    scale               = "1 1 1";
-//    faceViewer          = true;
-//    directDamage        = 0.0;
-//    hasDamageRadius     = false;
-//    indirectDamage      = 0.2;
-//    damageRadius        = 300;
-//    kickBackStrength    = 8000.0;
-//    radiusDamageType    = $DamageType::Dark;
-//    Impulse = true;
-//    explosion           = "SatchelMainExplosion";
-//    underwaterExplosion = "UnderwaterSatchelSubExplosion";
-//    splash              = PlasmaSplash;
-
-//    dryVelocity       = 500.0;
-//    wetVelocity       = 500;
-//    velInheritFactor  = 0.5;
-//    fizzleTimeMS      = 100;
-//    lifetimeMS        = 100;
-//    explodeOnDeath    = true;
-//    reflectOnWaterImpactAngle = 0.0;
-//    explodeOnWaterImpact      = false;
-//    deflectionOnWaterImpact   = 0.0;
-//    fizzleUnderwaterMS        = -1;
-
-//    //activateDelayMS = 100;
-//    activateDelayMS = -1;
-
-//    size[0]           = 0.9;
-//    size[1]           = 10.0;
-//    size[2]           = 10.1;
-
-
-//    numFlares         = 55;
-//    flareColor        = "1 0.75 0.25";
-//    flareModTexture   = "flaremod";
-//    flareBaseTexture  = "flarebase";
-
-//    hasLight    = true;
-//    lightRadius = 15.0;
-//    lightColor  = "1 0.75 0.25"; 
-//    ignoreExEffects = 1;
-// };
-
-
-// datablock ParticleData(MeltDownEmitterParticle){
-//    dragCoefficient      = 0.2;
-//    gravityCoefficient   = 0;
-//    inheritedVelFactor   = 0;
-//    constantAcceleration = 0;
-//    lifetimeMS           = 1250;
-//    lifetimeVarianceMS   = 500;
-//    spinRandomMin    = "-90";
-//    spinRandomMax    = "90";
-//    textureName          = "particleTest";
-//    colors[0]     = "0 0 1 0.6";
-//    colors[1]     = "0 0.2 1 0.3";
-//    colors[2]     = "0 0.2 1 0";
-//    sizes[0]      = 5.5;
-//    sizes[1]      = 10.8;
-//    sizes[2]      = 10.8;
-//    times[0]      = 0;
-//    times[1]      = 0.6;
-//    times[2]      = 1;
-// };
-
-// datablock ParticleEmitterData(MeltDownEmitter){
-//    ejectionPeriodMS = 45;
-//    periodVarianceMS = 0;
-//    ejectionVelocity = 4;
-//    velocityVariance = 3.9;
-//    ejectionOffset   = 0.0;
-//    thetaMin         = 0;
-//    thetaMax         = 180;
-//    phiReferenceVel  = 0;
-//    phiVariance      = 360;
-//    orientParticles  = false;
-//    overrideAdvance = false;
-//    orientOnVelocity = 1;
-//    ambientFactor = "0.85";
-//    particles = "MeltDownEmitterParticle";
-// };
-
-// function cycleMeltDown(%targetObject, %pos, %proj, %sObj){
-//    if(%targetObject.getType() & $TypeMasks::GeneratorObjectType){
-//       %targetObject.damage(%sObj, %pos, 100, $DamageType::Dark);   
-//       %p = new LinearFlareProjectile() {
-//          dataBlock        = MeltDownProj;
-//          initialDirection = "0 0 1";
-//          initialPosition  = %targetObject.getWorldBoxCenter();
-//          sourceObject     = %sObj;
-//          sourceSlot       = 0;
-//       };
-//       MissionCleanup.add(%p);
-      
-//       %part = new ParticleEmissionDummy() {
-//          position =  %targetObject.getPosition();
-//          rotation = "1 0 0 0";
-//          scale = "1 1 1";
-//          dataBlock = defaultEmissionDummy;
-//          emitter = "MeltDownEmitter";
-//          velocity = "1";
-//       };
-//       MissionCleanup.add(%part);
-      
-//       %trig = new Trigger() {
-//             position = vectorAdd(%targetObject.getPosition(),"0 0 1.5");
-//             rotation = "0 0 1 0";
-//             scale = "10 10 6";
-//             dataBlock = "AnomalyTrig";
-//             polyhedron = "-0.5 0.5 -0.5 1.0 0.0 0.0 -0.0 -1.0 -0.0 -0.0 -0.0 1.0";
-
-//             locked = "true";
-//             type = "9";
-//             client = %sObj.client;
-//             part = %part;
-//       };
-//       MissionCleanup.add(%trig);
-//       %part.schedule(60000, "delete");
-//       %trig.schedule(60000, "delete");  
-//       shockLanceGenLoop(%trig);
-//    }
-//    else{
-//       %targetObject.damage(%sObj, %pos, 100, $DamageType::Dark); 
-//       %p = new LinearFlareProjectile() {
-//          dataBlock        = MeltDownProj;
-//          initialDirection = "0 0 1";
-//          initialPosition  = %targetObject.getWorldBoxCenter();
-//          sourceObject     = %sObj;
-//          sourceSlot       = 0;
-//       };
-//       MissionCleanup.add(%p);
-//    }  
-// }
-
-// function shockLanceGenLoop(%p){
-//    %everythingElseMask = $TypeMasks::TerrainObjectType |
-//                          $TypeMasks::InteriorObjectType |
-//                          $TypeMasks::ForceFieldObjectType |
-//                          $TypeMasks::StaticObjectType |
-//                          $TypeMasks::MoveableObjectType |
-//                          $TypeMasks::DamagableItemObjectType |
-//                          $TypeMasks::PlayerObjectType;
-//    if(isObject(%p)){
-//       initContainerRadiusSearch(%p.getPosition(), 25, $TypeMasks::PlayerObjectType );
-//       while ( (%targetObj = containerSearchNext()) != 0 ){ 
-//          %hit = ContainerRayCast(%p.getPosition(), %targetObj.getPosition(), %everythingElseMask, %p);
-//          %hitobj = getWord(%hit, 0);
-//          if(%hit && (%hitobj.getType() & $TypeMasks::PlayerObjectType)){
-//             %hitpos = getWord(%hit, 1) @ " " @ getWord(%hit, 2) @ " " @ getWord(%hit, 3);
-//             %vec = vectorNormalize(vectorSub(%targetObj.getWorldBoxCenter(),%p.getPosition()));
-//             %v = new ShockLanceProjectile() {
-//                dataBlock        = BasicShocker;
-//                initialDirection = %vec;
-//                initialPosition  = %p.getPosition();
-//                sourceObject     = -1;
-//                sourceSlot       = 0;
-//                targetId         = %hit;
-//             };
-//            //error("player" SPC %p.client.player);
-//             MissionCleanup.add(%v);
-//             %hitObj.damage(%p.client.player, %hitpos, 0.5, $DamageType::Dark); 
-//          }
-
-//       }
-//       schedule(512, 0, "shockLanceGenLoop", %p);
-//    }
-// }
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////

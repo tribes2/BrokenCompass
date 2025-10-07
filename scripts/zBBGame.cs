@@ -2074,7 +2074,7 @@ function BoostTrigBB::onEnterTrigger(%data, %trigger, %player){
       }
    }
 }
-function BoostTrigBB::onTriggerTick(%this, %triggerId){
+function BoostTrigBB::onTickTrigger(%this, %triggerId){
  // anti spam
 }
 

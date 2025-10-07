@@ -1528,7 +1528,7 @@ new SimGroup(MissionGroup) {
 			position = "88.2 390.8 199";
 			rotation = "1 0 0 0";
 			scale = "320 320 1";
-			dataBlock = "DragonFireTrig";
+			dataBlock = "waterSkiTrig";
 			lockCount = "0";
 			homingCount = "0";
 			polyhedron = "-0.5000000 0.5000000 -0.5000000 1.0000000 0.0000000 0.0000000 -0.0000000 -1.0000000 -0.0000000 -0.0000000 -0.0000000 1.0000000";
@@ -1553,7 +1553,7 @@ new SimGroup(MissionGroup) {
 			position = "-45.8 -415.8 199";
 			rotation = "1 0 0 0";
 			scale = "320 320 1";
-			dataBlock = "DragonFireTrig";
+			dataBlock = "waterSkiTrig";
 			lockCount = "0";
 			homingCount = "0";
 			polyhedron = "-0.5000000 0.5000000 -0.5000000 1.0000000 0.0000000 0.0000000 -0.0000000 -1.0000000 -0.0000000 -0.0000000 -0.0000000 1.0000000";

@@ -2909,7 +2909,6 @@ datablock StaticShapeData(t1SolarPanel) : StaticShapeDamageProfile
    debris = StaticShapeDebris;
 };
 
-
 datablock SeekerProjectileData(t1TurretMissile)
 {
    casingShapeName     = "weapon_missile_casement.dts";
@@ -3398,9 +3397,7 @@ datablock FlyingVehicleData(T1ScoutFlyer) : ShrikeDamageProfile
    damageLevelTolerance[1] = 0.7;
    numDmgEmitterAreas = 1;
 
-   //
-   max[chaingunAmmo] = 1000;
-
+   
    minMountDist = 4;
 
    splashEmitter[0] = VehicleFoamDropletsEmitter;
@@ -3426,12 +3423,273 @@ datablock FlyingVehicleData(T1ScoutFlyer) : ShrikeDamageProfile
    shieldEffectScale = "0.937 1.125 0.60";
 
 };
+datablock AudioProfile(T1ScoutFireSound)
+{
+   filename    = "t1sounds/flierRocket.wav";
+   description = AudioDefault3d;
+   preload = true;
+};
+
+function T1ScoutFlyer::onAdd(%this, %obj)
+{
+   Parent::onAdd(%this, %obj);
+   %obj.mountImage(T1ScoutMissileParam, 0);
+   %obj.mountImage(T1ScoutMissileImage, 2);
+   %obj.mountImage(T1ScoutMissilePairImage, 3);
+   %obj.nextWeaponFire = 2;
+}
+
+datablock ParticleData(T1MissileSmokeParticle)
+{
+   dragCoeffiecient     = 0.0;
+   gravityCoefficient   = -0.02;
+   inheritedVelFactor   = 0.1;
+
+   lifetimeMS           = 1200;
+   lifetimeVarianceMS   = 100;
+
+   textureName          = "particleTest";
+
+   useInvAlpha = false;
+   spinRandomMin = -90.0;
+   spinRandomMax = 90.0;
+
+   colors[0]     = "1.0 0.75 0.0 0.0";
+   colors[1]     = "0.5 0.5 0.5 1.0";
+   colors[2]     = "0.3 0.3 0.3 0.0";
+   sizes[0]      = 1;
+   sizes[1]      = 2;
+   sizes[2]      = 3;
+   times[0]      = 0.0;
+   times[1]      = 0.1;
+   times[2]      = 1.0;
+
+};
+
+datablock ParticleEmitterData(T1MissileSmokeEmitter)
+{
+   ejectionPeriodMS = 10;
+   periodVarianceMS = 0;
+
+   ejectionVelocity = 1.5;
+   velocityVariance = 0.3;
+
+   thetaMin         = 0.0;
+   thetaMax         = 50.0;  
+
+   particles = "T1MissileSmokeParticle";
+};
+datablock ExplosionData(ScoutMissileExplosion)
+{
+   explosionShape = "effect_plasma_explosion.dts";
+   soundProfile   = T1DiscExpSound;
+   particleEmitter = MissileExplosionSmokeEmitter;
+   particleDensity = 150;
+   particleRadius = 1.25;
+   faceViewer = true;
+
+   sizes[0] = "1.0 1.0 1.0";
+   sizes[1] = "1.0 1.0 1.0";
+   times[0] = 0.0;
+   times[1] = 1.5;
+};
+datablock LinearProjectileData(T1ScoutRocket)
+{
+   projectileShapeName = "weapon_missile_projectile.dts";
+   emitterDelay = -1;
+   baseEmitter = T1MissileSmokeEmitter;
+   delayEmitter = MissileFireEmitter;
+   bubbleEmitter = GrenadeBubbleEmitter;
+   bubbleEmitTime = 1.0;
+   directDamage = 0.0;
+   hasDamageRadius = true;
+   indirectDamage = 0.25;
+   damageRadius = 7.5;
+   radiusDamageType = $DamageType::Missile;
+   kickBackStrength = 1000;
+   sound = "";
+   explosion = "ScoutMissileExplosion";
+   underwaterExplosion = "UnderwaterDiscExplosion";
+   splash = MissileSplash;
+   dryVelocity = 90;
+   wetVelocity = 50;
+   velInheritFactor = 1.0;
+   fizzleTimeMS = 5000;
+   lifetimeMS = 5000;
+   explodeOnDeath = true;
+   reflectOnWaterImpactAngle = 15.0;
+   explodeOnWaterImpact = false;
+   deflectionOnWaterImpact = 20.0;
+   fizzleUnderwaterMS = 5000;
+//   activateDelayMS = 200;
+   hasLight = true;
+   lightRadius = 6.0;
+   lightColor = "0.175 0.175 0.5";
+};
+
+datablock ShapeBaseImageData(T1ScoutMissilePairImage)
+{
+   className = WeaponImage;
+   shapeFile = "weapon_energy_vehicle.dts";
+   item      = Chaingun;
+   ammo   = ChaingunAmmo;
+   projectile = T1ScoutRocket;
+   projectileType = LinearProjectile;
+   mountPoint = 10;
+   offset = "0.8 -0.1 0.1";
+   
+   usesEnergy = true;
+   useMountEnergy = true;
+   // DAVEG -- balancing numbers below!
+   minEnergy = 5;
+   fireEnergy = 5;
+   fireTimeout = 500;
+
+   stateName[0]                     = "Activate";
+   stateTransitionOnTimeout[0]      = "ActivateReady";
+   stateTimeoutValue[0]             = 0.5;
+   stateSequence[0]                 = "Activate";
+   stateSound[0]                    = MissileSwitchSound;
+
+   stateName[1]                     = "ActivateReady";
+   stateTransitionOnLoaded[1]       = "Ready";
+   stateTransitionOnNoAmmo[1]       = "NoAmmo";
+
+   stateName[2]                     = "Ready";
+   stateTransitionOnNoAmmo[2]       = "NoAmmo";
+   stateTransitionOnTriggerDown[2]  = "CheckTarget";
+
+   stateName[3]                     = "Fire";
+   stateTransitionOnTimeout[3]      = "Reload";
+   stateTimeoutValue[3]             = 1.0;
+   stateFire[3]                     = true;
+   stateRecoil[3]                   = LightRecoil;
+   stateAllowImageChange[3]         = false;
+   stateSequence[3]                 = "Fire";
+   stateScript[3]                   = "onFire";
+   stateSound[3]                    = T1ScoutFireSound;
+
+   stateName[4]                     = "Reload";
+   stateTransitionOnNoAmmo[4]       = "NoAmmo";
+   stateTransitionOnTimeout[4]      = "Ready";
+   stateTimeoutValue[4]             = 1.0;
+   stateAllowImageChange[4]         = false;
+   stateSequence[4]                 = "Reload";
+   //stateSound[4]                    = MissileReloadSound;
+
+   stateName[5]                     = "NoAmmo";
+   stateTransitionOnAmmo[5]         = "Reload";
+   stateSequence[5]                 = "NoAmmo";
+   stateTransitionOnTriggerDown[5]  = "Fire"; // Was DryFire
+
+   stateName[6]                     = "DryFire";
+   //stateSound[6]                    = "MissileDryFireSound";
+   stateTimeoutValue[6]             = 1.0;
+   stateTransitionOnTimeout[6]      = "ActivateReady";
+   
+   stateName[7]                     = "CheckTarget";
+   stateTransitionOnNoTarget[7]     = "Fire"; // Was DryFire
+   stateTransitionOnTarget[7]       = "Fire";
+};
+
+datablock ShapeBaseImageData(T1ScoutMissileImage) : T1ScoutMissilePairImage
+{
+   offset = "-0.8 -0.1 0.1";
+   //stateScript[3]           = "onTriggerDown";
+   //stateScript[5]           = "onTriggerUp";
+   //stateScript[6]           = "onTriggerUp";
+};
+
+datablock ShapeBaseImageData(T1ScoutMissileParam)
+{
+   mountPoint = 2;
+   shapeFile = "turret_muzzlepoint.dts";
+
+   projectile = T1ScoutRocket;
+   projectileType = LinearProjectile;
+};
+
+function T1ScoutFlyer::onTrigger(%data, %obj, %trigger, %state)
+{
+   // data = Sparrow datablock
+   // obj = Sparrow object number
+   // trigger = 0 for "fire", 1 for "jump", 3 for "thrust"
+   // state = 1 for firing, 0 for not firing
+   if(%trigger == 0)
+   {
+      switch (%state) {
+         case 0:
+            %obj.fireWeapon = false;
+            %obj.setImageTrigger(2, false);
+            %obj.setImageTrigger(3, false);
+         case 1:
+            %obj.fireWeapon = true;
+            if(%obj.nextWeaponFire == 2) {
+               %obj.setImageTrigger(2, true);
+               %obj.setImageTrigger(3, false);
+            }
+            else {
+               %obj.setImageTrigger(2, false);
+               %obj.setImageTrigger(3, true);
+            }
+      }
+   }
+}
+
+function T1ScoutMissileImage::onFire(%data,%obj,%slot)
+{
+   // obj = SparrowFlyer object number
+   // slot = 2
+
+   %p = Parent::onFire(%data,%obj,%slot);
+   MissileSet.add(%p);
+   %obj.nextWeaponFire = 3;
+   schedule(%data.fireTimeout, 0, "fireNextGun", %obj);
+}
+
+function T1ScoutMissilePairImage::onFire(%data,%obj,%slot)
+{
+   // obj = SparrowFlyer object number
+   // slot = 3
+
+   %p = Parent::onFire(%data,%obj,%slot);
+   MissileSet.add(%p);
+   %obj.nextWeaponFire = 2;
+   schedule(%data.fireTimeout, 0, "fireNextGun", %obj);
+}
+
+function T1ScoutMissileImage::onTriggerDown(%this, %obj, %slot)
+{
+}
+
+function T1ScoutMissileImage::onTriggerUp(%this, %obj, %slot)
+{
+}
+
+function T1ScoutMissileImage::onMount(%this, %obj, %slot)
+{
+}
+
+function T1ScoutMissilePairImage::onMount(%this, %obj, %slot)
+{
+}
+
+function T1ScoutMissileImage::onUnmount(%this,%obj,%slot)
+{
+}
+
+function T1ScoutMissilePairImage::onUnmount(%this,%obj,%slot)
+{
+}
+
 
 function T1ScoutFlyer::playerMounted(%data, %obj, %player, %node)
 {
    if(%node == 0) {
       // pilot position
-	   commandToClient(%player.client, 'setHudMode', 'Pilot', "HAPC", %node);
+	   //commandToClient(%player.client, 'setHudMode', 'Pilot', "HAPC", %node);
+      commandToClient(%player.client, 'setHudMode', 'Pilot', "Shrike", %node);
+
    }
    else {
       // all others
@@ -3440,6 +3698,14 @@ function T1ScoutFlyer::playerMounted(%data, %obj, %player, %node)
    // update observers who are following this guy...
    if( %player.client.observeCount > 0 )
       resetObserveFollow( %player.client, false );
+}
+
+function T1ScoutFlyer::playerDismounted(%data, %obj, %player)
+{
+   %obj.fireWeapon = false;
+   %obj.setImageTrigger(2, false);
+   %obj.setImageTrigger(3, false);
+   setTargetSensorGroup(%obj.getTarget(), %obj.team);
 }
 
 $Vehiclemax[T12ScoutFlyer]     = 4;

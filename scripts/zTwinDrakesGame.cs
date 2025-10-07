@@ -1,7 +1,9 @@
 //autoExec("scripts/twinDrakesGame.cs",0,0);
 
 $dragon::fireTime = 1000 * 20;
-$dragon::burn = 0;
+$dragon::burn = 0;//leave zero
+$dragon::burnBoltEnable = 0; // enable burning on dragon bolt
+
 datablock ParticleData(midMapSmokeParticle) {
    dragCoefficient = "0";
    windCoefficient = "0";
@@ -80,39 +82,6 @@ function fireFireSwitch::onCollision(%data,%obj,%col)
    }
 
 }
-package tdSki{
-  function Armor::onTrigger(%data, %player, %triggerNum, %val){
-      parent::onTrigger(%data, %player, %triggerNum, %val);
-      if(%triggerNum == 2 && (isObject(bigWep))){
-         %player.isKeySki = %val;
-      }
-  }   
-};
-if(!isActivePackage(tdSki))
-   activatePackage(tdSki);
-
-function tdWaterSki(%this,%trigger){
-   if(isObject(%this)){
-      %vel = %this.getVelocity();
-      %xyspeed  = vectorLen(getWords(%vel,0,1) SPC 0);
-      %trigZDis = getWord(%this.getPosition(), 2) - getWord(%trigger.getPosition(),2);
-      if(!%this.isJetting && %trigZDis < 1){
-         if(%xyspeed < 20 || %this.getState() $= "Dead" || %trigZDis < -0.8 || !%this.isKeySki){
-            %this.setVelocity(getWords(%vel,0,1) SPC getGravity() * 0.128);
-            //error("sink");
-            %this.waterSki = 0;
-         }
-         else{
-            %drag  = 1;
-            %Upforce  = 0.3;
-            %z = %trigZDis < 0.8 ? getWord(%vel,2)+%Upforce : 0;
-            %this.setVelocity(getWord(%vel,0) * %drag SPC getWord(%vel,1) * %drag SPC %z);//water drag
-            schedule(128, 0, "tdWaterSki", %this, %trigger); 
-            %this.waterSki = 1;    
-         }
-      }
-   }
-}
 
 function DragonFireTrig::onEnterTrigger(%data, %trigger, %player){
    if(isObject(PZones)){
@@ -121,24 +90,7 @@ function DragonFireTrig::onEnterTrigger(%data, %trigger, %player){
    if(!game.firstTrig){
       game.firstTrig = getSimTime();
    }
-   if(%trigger.mode == 2){
-      %drag =  1; //how much we slow down every time we hit the water note its percentage baesd
-      %maxSpeed = 15;//how fast we need to be going to be able to skip across the water
-      %minZ = -30; // if or downward speed is to much will drag to much and sink  
-      %pingFactor = 0.09;
-      %zvel = getWord(%player.getVelocity(),2);
-      %xyspeed  = vectorLen(getWords(%player.getVelocity(),0,1) SPC 0);
-      %ping = %player.client.getPing()*%pingFactor;
-      //error("water" SPC %zvel SPC %speed SPC %player.wski SPC %ping);
-      if(%zvel > %minZ && %xyspeed > %maxSpeed && %zvel < 0){
-         %player.setVelocity(getWords(vectorScale(%player.getVelocity(),%drag),0,1) SPC 0);
-         if(!%this.waterSki){
-            %player.jetCount = 0;
-            tdWaterSki(%player, %trigger);
-         }
-      } 
-   }
-   else if(%trigger.mode == 1){
+   if(%trigger.mode == 1){
       %strike = 1;
       if(getSimTime() - game.firstTrig > ((1000 * 60) * 15)){// enable after 15 min
          if(!game.hasSEWep[%player.team]){
@@ -217,7 +169,7 @@ function DragonFireTrig::onEnterTrigger(%data, %trigger, %player){
    }
 }
 
-function DragonFireTrig::onTriggerTick(%this, %triggerId){
+function DragonFireTrig::onTickTrigger(%this, %triggerId){
  // anti spam
 }
 
@@ -937,7 +889,7 @@ datablock ItemData(dragonBoltWep){
    light = 12;
    medium = 16;
    heavy = 24;
-   description = "A weapon that fires multiple projectiles and applies a fire dot (damage over time) effect to the target if any of the projectiles hit.";
+   description = "A weapon that fires multiple plasma projectiles";
 };
 
 function dragonBoltWep::onCollision(%data,%obj,%col){
@@ -1143,8 +1095,9 @@ function dragonBoltImage::onFire(%data, %obj, %slot){
 
 function dragonBolt::onCollision(%data, %projectile, %targetObject, %modifier, %position, %normal){
    parent::onCollision(%data, %projectile, %targetObject, %modifier, %position, %normal);
-   if(!%targetObject.isBurning)
+   if(!%targetObject.isBurning && $dragon::burnBoltEnable && getRandom(1,20) == 1){
       burnObjectD(%targetObject, %projectile.sourceObject);
+   }
 }
 
 //Base ammo type
@@ -1173,7 +1126,7 @@ datablock ItemData(SEStrike){
 	
 	wepClass = "EX";
    wepNameID = "PW-9600";
-   wepName = "PW Scorched Earth";
+   wepName = "Scorched Earth";
    light = 1;
    medium = 1;
    heavy = 1;
