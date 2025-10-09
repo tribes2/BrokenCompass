@@ -24,7 +24,7 @@ jobs:
         uses: tribes2/vl2-builder@v1.3
         with:
           tag-name: ${{ github.ref_name }}
-          archive-prefix: 'z_DMP'
+          archive-prefix: 'z_DMP2'
           exclude-patterns: '.git/*, *.zip, *.vl2, .github/*'
       - name: Report build success for the fun of it
         run: |
