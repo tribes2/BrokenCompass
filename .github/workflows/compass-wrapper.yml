@@ -21,7 +21,7 @@ jobs:
           sed -i "s/\(\$DMP2::Version = \)[^;]*;/\1${NEW_VERSION};/" "$VERSION_FILE"
       - name: Build and release a vl2 using the vl2-builder action
         id: 'release'
-        uses: tribes2/vl2-builder@v1.3
+        uses: tribes2/vl2-builder@c1666126e2e9668272840b49e9bef8848f435b5f
         with:
           tag-name: ${{ github.ref_name }}
           archive-prefix: 'z_DMP2'
